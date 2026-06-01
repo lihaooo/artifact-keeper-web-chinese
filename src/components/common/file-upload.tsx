@@ -43,11 +43,11 @@ function formatSpeed(bytesPerSecond: number): string {
 
 function formatEta(seconds: number): string {
   if (seconds <= 0 || !isFinite(seconds)) return "";
-  if (seconds < 60) return `~${Math.ceil(seconds)}s remaining`;
-  if (seconds < 3600) return `~${Math.ceil(seconds / 60)} min remaining`;
+  if (seconds < 60) return `~${Math.ceil(seconds)}秒`;
+  if (seconds < 3600) return `~${Math.ceil(seconds / 60)}分钟`;
   const hours = Math.floor(seconds / 3600);
   const mins = Math.ceil((seconds % 3600) / 60);
-  return `~${hours}h ${mins}m remaining`;
+  return `~${hours}小时${mins}分钟`;
 }
 
 function ChunkedProgressDisplay({
@@ -74,19 +74,19 @@ function ChunkedProgressDisplay({
           </>
         )}
         {status === "hashing" && (
-          <span className="col-span-2">Computing file checksum...</span>
+          <span className="col-span-2">正在计算文件校验和...</span>
         )}
         {status === "finalizing" && (
-          <span className="col-span-2">Finalizing upload...</span>
+          <span className="col-span-2">正在完成上传...</span>
         )}
         {status === "paused" && (
-          <span className="col-span-2">Upload paused</span>
+          <span className="col-span-2">上传已暂停</span>
         )}
       </div>
       {progress.chunksTotal > 0 && (
         <p className="text-xs text-muted-foreground">
           {progress.chunksCompleted.toLocaleString()} /{" "}
-          {progress.chunksTotal.toLocaleString()} chunks
+          {progress.chunksTotal.toLocaleString()} 块
         </p>
       )}
     </div>
@@ -208,7 +208,7 @@ export function FileUpload({
     } catch (err) {
       if (!isChunkedMode) {
         const message =
-          err instanceof Error ? err.message : "Upload failed";
+          err instanceof Error ? err.message : "上传失败";
         setError(message);
       }
     } finally {
@@ -238,10 +238,10 @@ export function FileUpload({
     <div className={cn("space-y-4", className)}>
       {showPathInput && (
         <div className="space-y-2">
-          <Label htmlFor="upload-path">Custom path (optional)</Label>
+          <Label htmlFor="upload-path">自定义路径（可选）</Label>
           <Input
             id="upload-path"
-            placeholder="e.g. libs/mylib-1.0.jar"
+            placeholder="例如 libs/mylib-1.0.jar"
             value={customPath}
             onChange={(e) => setCustomPath(e.target.value)}
             disabled={isActive}
@@ -290,7 +290,7 @@ export function FileUpload({
               <p className="text-muted-foreground">
                 {formatBytes(file.size)}
                 {isChunkedMode && (
-                  <span className="ml-2 text-xs opacity-70">(chunked upload)</span>
+                  <span className="ml-2 text-xs opacity-70">（分块上传）</span>
                 )}
               </p>
             </div>
@@ -312,10 +312,10 @@ export function FileUpload({
             <Upload className="size-8 text-muted-foreground/60" />
             <div className="text-center">
               <p className="text-sm font-medium">
-                Drop a file here, or click to browse
+                拖拽文件到此处，或点击浏览
               </p>
               <p className="text-xs text-muted-foreground mt-1">
-                Upload a single artifact file
+                上传单个制品文件
               </p>
             </div>
           </>
@@ -327,8 +327,7 @@ export function FileUpload({
         <div className="flex items-center gap-2 rounded-md border border-amber-500/30 bg-amber-500/5 p-3 text-sm">
           <RotateCcw className="size-4 text-amber-500 shrink-0" />
           <span className="text-muted-foreground">
-            A previous upload session was found for this file. Uploading will
-            resume from where it left off.
+            发现此文件的先前上传会话。上传将从上次中断的位置继续。
           </span>
         </div>
       )}
@@ -346,7 +345,7 @@ export function FileUpload({
         <div className="space-y-1.5">
           <Progress value={simpleProgress} className="h-1.5" />
           <p className="text-xs text-muted-foreground text-center">
-            Uploading... {simpleProgress}%
+            正在上传... {simpleProgress}%
           </p>
         </div>
       )}
@@ -357,7 +356,7 @@ export function FileUpload({
           role="alert"
         >
           <AlertCircle className="size-4 mt-0.5 shrink-0" />
-          <p>{error ?? `Upload failed: ${chunked.error?.message}`}</p>
+          <p>{error ?? `上传失败: ${chunked.error?.message}`}</p>
         </div>
       )}
 
@@ -367,22 +366,22 @@ export function FileUpload({
           {isChunkedMode && chunked.status === "uploading" && (
             <Button variant="outline" size="sm" onClick={chunked.pause}>
               <Pause className="size-3.5 mr-1.5" />
-              Pause
+              暂停
             </Button>
           )}
           {isChunkedMode && chunked.status === "paused" && (
             <Button variant="outline" size="sm" onClick={chunked.resume}>
               <Play className="size-3.5 mr-1.5" />
-              Resume
+              恢复
             </Button>
           )}
 
           <Button variant="outline" onClick={handleCancel} disabled={chunked.status === "finalizing"}>
-            Cancel
+            取消
           </Button>
           {!isActive && (
             <Button onClick={handleUpload}>
-              {showResumePrompt ? "Resume Upload" : "Upload"}
+              {showResumePrompt ? "恢复上传" : "上传"}
             </Button>
           )}
         </div>

@@ -76,20 +76,20 @@ const SEVERITY_BADGE: Record<string, string> = {
 };
 
 const STATUS_CONFIG: Record<string, { icon: typeof ShieldAlert; color: string; label: string }> = {
-  open: { icon: ShieldAlert, color: "text-red-500", label: "Open" },
-  fixed: { icon: ShieldCheck, color: "text-green-500", label: "Fixed" },
-  acknowledged: { icon: Eye, color: "text-yellow-500", label: "Acknowledged" },
-  false_positive: { icon: XCircle, color: "text-muted-foreground", label: "False Positive" },
+  open: { icon: ShieldAlert, color: "text-red-500", label: "开放" },
+  fixed: { icon: ShieldCheck, color: "text-green-500", label: "已修复" },
+  acknowledged: { icon: Eye, color: "text-yellow-500", label: "已确认" },
+  false_positive: { icon: XCircle, color: "text-muted-foreground", label: "误报" },
 };
 
 /** DT analysis states for triage dropdown */
 const DT_ANALYSIS_STATES = [
-  { state: "NOT_AFFECTED", label: "Not Affected", icon: XCircle, color: "text-muted-foreground" },
-  { state: "EXPLOITABLE", label: "Exploitable", icon: ShieldAlert, color: "text-red-500" },
-  { state: "IN_TRIAGE", label: "In Triage", icon: Eye, color: "text-yellow-500" },
-  { state: "RESOLVED", label: "Resolved", icon: CheckCircle2, color: "text-green-500" },
+  { state: "NOT_AFFECTED", label: "不受影响", icon: XCircle, color: "text-muted-foreground" },
+  { state: "EXPLOITABLE", label: "可利用", icon: ShieldAlert, color: "text-red-500" },
+  { state: "IN_TRIAGE", label: "分类中", icon: Eye, color: "text-yellow-500" },
+  { state: "RESOLVED", label: "已解决", icon: CheckCircle2, color: "text-green-500" },
   { state: "FALSE_POSITIVE", label: "False Positive", icon: XCircle, color: "text-muted-foreground" },
-  { state: "NOT_SET", label: "Not Set", icon: AlertTriangle, color: "text-muted-foreground" },
+  { state: "NOT_SET", label: "未设置", icon: AlertTriangle, color: "text-muted-foreground" },
 ] as const;
 
 /**
@@ -137,9 +137,9 @@ export function SecurityTabContent({ artifact }: SecurityTabContentProps) {
       sbomApi.updateCveStatus(cveId, { status, reason }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cve-history", artifact.id] });
-      toast.success("CVE status updated");
+      toast.success("CVE 状态已更新");
     },
-    onError: mutationErrorToast("Failed to update CVE status"),
+    onError: mutationErrorToast("更新 CVE 状态失败"),
   });
 
   // -------------------------------------------------------------------------
@@ -175,9 +175,9 @@ export function SecurityTabContent({ artifact }: SecurityTabContentProps) {
     enabled: dtEnabled && dtProjectUuid != null,
   });
 
-  // DT project findings
+  // DT project 个发现
   const { data: dtFindings, isLoading: dtFindingsLoading } = useQuery({
-    queryKey: ["dt-project-findings", dtProjectUuid],
+    queryKey: ["dt-project-个发现", dtProjectUuid],
     queryFn: () => dtApi.getProjectFindings(dtProjectUuid!),
     enabled: dtEnabled && dtProjectUuid != null,
   });
@@ -192,11 +192,11 @@ export function SecurityTabContent({ artifact }: SecurityTabContentProps) {
         state: params.state,
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["dt-project-findings", dtProjectUuid] });
+      queryClient.invalidateQueries({ queryKey: ["dt-project-个发现", dtProjectUuid] });
       queryClient.invalidateQueries({ queryKey: ["dt-project-metrics", dtProjectUuid] });
-      toast.success("Dependency-Track analysis updated");
+      toast.success("Dependency-Track 分析已更新");
     },
-    onError: mutationErrorToast("Failed to update analysis"),
+    onError: mutationErrorToast("更新分析失败"),
   });
 
   // -------------------------------------------------------------------------
@@ -217,7 +217,7 @@ export function SecurityTabContent({ artifact }: SecurityTabContentProps) {
     },
   );
 
-  const total = cveHistory?.length ?? 0;
+  const 总计 = cveHistory?.length ?? 0;
 
   // Sort by severity (critical first), then by date
   const sortedCves = [...(cveHistory ?? [])].sort((a, b) => {
@@ -228,7 +228,7 @@ export function SecurityTabContent({ artifact }: SecurityTabContentProps) {
   });
 
   // -------------------------------------------------------------------------
-  // Sort DT findings by severity
+  // Sort DT 个发现 by severity
   // -------------------------------------------------------------------------
 
   const sortedDtFindings = useMemo(() => {
@@ -247,25 +247,25 @@ export function SecurityTabContent({ artifact }: SecurityTabContentProps) {
   const columns: DataTableColumn<CveHistoryEntry>[] = [
     {
       id: "cve_id",
-      header: "Advisory",
+      header: "公告",
       accessor: (c) => c.cve_id,
       sortable: true,
       cell: (c) => <VulnIdLink id={c.cve_id} />,
     },
     {
       id: "severity",
-      header: "Severity",
+      header: "严重级别",
       accessor: (c) => SEVERITY_ORDER[c.severity?.toLowerCase() ?? "low"] ?? 3,
       sortable: true,
       cell: (c) => (
         <Badge variant="outline" className={`text-xs uppercase ${SEVERITY_BADGE[c.severity?.toLowerCase() ?? ""] ?? ""}`}>
-          {c.severity ?? "Unknown"}
+          {c.severity ?? "未知"}
         </Badge>
       ),
     },
     {
       id: "component",
-      header: "Component",
+      header: "组件",
       accessor: (c) => c.affected_component ?? "",
       cell: (c) => (
         <div className="max-w-[180px]">
@@ -278,7 +278,7 @@ export function SecurityTabContent({ artifact }: SecurityTabContentProps) {
     },
     {
       id: "status",
-      header: "Status",
+      header: "状态",
       accessor: (c) => c.status,
       cell: (c) => {
         const config = STATUS_CONFIG[c.status] ?? STATUS_CONFIG.open;
@@ -305,13 +305,13 @@ export function SecurityTabContent({ artifact }: SecurityTabContentProps) {
     },
     {
       id: "detected",
-      header: "Detected",
+      header: "检测时间",
       accessor: (c) => c.first_detected_at,
       sortable: true,
       cell: (c) => (
         <div className="flex items-center gap-1 text-xs text-muted-foreground">
           <Clock className="size-3" />
-          {new Date(c.first_detected_at).toLocaleDateString()}
+          {new Date(c.first_detected_at).toLocaleDateString("zh-CN")}
         </div>
       ),
     },
@@ -327,32 +327,32 @@ export function SecurityTabContent({ artifact }: SecurityTabContentProps) {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem
-              onClick={() => updateStatusMutation.mutate({ cveId: c.id, status: "acknowledged", reason: "Acknowledged via UI" })}
+              onClick={() => updateStatusMutation.mutate({ cveId: c.id, status: "acknowledged", reason: "通过界面确认" })}
               disabled={c.status === "acknowledged"}
             >
               <Eye className="size-4 mr-2 text-yellow-500" />
-              Acknowledge
+              确认
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => updateStatusMutation.mutate({ cveId: c.id, status: "false_positive", reason: "Marked as false positive" })}
+              onClick={() => updateStatusMutation.mutate({ cveId: c.id, status: "false_positive", reason: "标记为误报" })}
               disabled={c.status === "false_positive"}
             >
               <XCircle className="size-4 mr-2 text-muted-foreground" />
-              False Positive
+              误报
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => updateStatusMutation.mutate({ cveId: c.id, status: "fixed" })}
               disabled={c.status === "fixed"}
             >
               <CheckCircle2 className="size-4 mr-2 text-green-500" />
-              Mark Fixed
+              标记为已修复
             </DropdownMenuItem>
             {c.status !== "open" && (
               <DropdownMenuItem
                 onClick={() => updateStatusMutation.mutate({ cveId: c.id, status: "open" })}
               >
                 <ShieldAlert className="size-4 mr-2 text-red-500" />
-                Reopen
+                重新打开
               </DropdownMenuItem>
             )}
           </DropdownMenuContent>
@@ -362,13 +362,13 @@ export function SecurityTabContent({ artifact }: SecurityTabContentProps) {
   ];
 
   // -------------------------------------------------------------------------
-  // DT findings table columns
+  // DT 个发现 table columns
   // -------------------------------------------------------------------------
 
   const dtFindingsColumns: DataTableColumn<DtFinding>[] = [
     {
       id: "vulnId",
-      header: "Advisory",
+      header: "公告",
       accessor: (f) => f.vulnerability.vulnId,
       sortable: true,
       cell: (f) => (
@@ -380,21 +380,21 @@ export function SecurityTabContent({ artifact }: SecurityTabContentProps) {
     },
     {
       id: "severity",
-      header: "Severity",
+      header: "严重级别",
       accessor: (f) => SEVERITY_ORDER[f.vulnerability.severity?.toLowerCase() ?? "low"] ?? 3,
       sortable: true,
       cell: (f) => {
         const sev = f.vulnerability.severity?.toLowerCase() ?? "";
         return (
           <Badge variant="outline" className={`text-xs uppercase ${SEVERITY_BADGE[sev] ?? ""}`}>
-            {f.vulnerability.severity ?? "Unknown"}
+            {f.vulnerability.severity ?? "未知"}
           </Badge>
         );
       },
     },
     {
       id: "component",
-      header: "Component",
+      header: "组件",
       accessor: (f) => f.component.name,
       cell: (f) => (
         <div className="max-w-[180px]">
@@ -419,7 +419,7 @@ export function SecurityTabContent({ artifact }: SecurityTabContentProps) {
     },
     {
       id: "analysisState",
-      header: "Analysis",
+      header: "分析",
       accessor: (f) => f.analysis?.state ?? "NOT_SET",
       cell: (f) => {
         const state = f.analysis?.state ?? "NOT_SET";
@@ -512,15 +512,15 @@ export function SecurityTabContent({ artifact }: SecurityTabContentProps) {
       {/* ----------------------------------------------------------------- */}
       <div className="flex items-center gap-3">
         <ShieldAlert className="size-5 text-muted-foreground" />
-        <h3 className="text-sm font-medium">Security Vulnerabilities</h3>
-        {total > 0 && (
+        <h3 className="text-sm font-medium">安全漏洞</h3>
+        {总计 > 0 && (
           <Badge variant="secondary" className="text-xs">
-            {total} total
+            {总计} 总计
           </Badge>
         )}
       </div>
 
-      {total === 0 ? (
+      {总计 === 0 ? (
         <div className="flex flex-col items-center justify-center py-12 text-center">
           <ShieldCheck className="size-12 text-green-500/50 mb-4" />
           <p className="text-sm text-muted-foreground">
@@ -538,7 +538,7 @@ export function SecurityTabContent({ artifact }: SecurityTabContentProps) {
               {(["critical", "high", "medium", "low"] as const).map((sev) => {
                 const count = breakdown.severity[sev];
                 if (count === 0) return null;
-                const pct = (count / total) * 100;
+                const pct = (count / 总计) * 100;
                 return (
                   <div
                     key={sev}
@@ -585,14 +585,14 @@ export function SecurityTabContent({ artifact }: SecurityTabContentProps) {
             pageSize={10}
             total={sortedCves.length}
             onPageChange={setPage}
-            emptyMessage="No CVEs found"
+            emptyMessage="未发现 CVE"
             rowKey={(c) => c.id}
           />
         </>
       )}
 
-      {/* Native scan_findings (#368) — pre-#368 the per-artifact Security
-          tab never queried scan_findings, so a user who triggered a scan
+      {/* Native scan_个发现 (#368) — pre-#368 the per-artifact Security
+          tab never queried scan_个发现, so a user who triggered a scan
           had to navigate to /security/scans to find it. Mounting the
           dedicated section here makes the tab a true single-pane-of-glass. */}
       <Separator />
@@ -609,10 +609,10 @@ export function SecurityTabContent({ artifact }: SecurityTabContentProps) {
             {/* DT section header */}
             <div className="flex items-center gap-3">
               <Activity className="size-5 text-muted-foreground" />
-              <h3 className="text-sm font-medium">Dependency-Track Findings</h3>
+              <h3 className="text-sm font-medium">Dependency-Track 发现</h3>
               {dtEnabled && dtFindings && dtFindings.length > 0 && (
                 <Badge variant="secondary" className="text-xs">
-                  {dtFindings.length} findings
+                  {dtFindings.length} 个发现
                 </Badge>
               )}
             </div>
@@ -626,7 +626,7 @@ export function SecurityTabContent({ artifact }: SecurityTabContentProps) {
                     Dependency-Track is unavailable
                   </p>
                   <p className="text-xs text-yellow-700 dark:text-yellow-500 mt-1">
-                    Real-time vulnerability scanning, findings, and triage are temporarily offline.
+                    Real-time vulnerability scanning, 个发现, and triage are temporarily offline.
                     The service will reconnect automatically when the container recovers.
                   </p>
                 </div>
@@ -659,7 +659,7 @@ export function SecurityTabContent({ artifact }: SecurityTabContentProps) {
                   <DtMetricsSummary metrics={dtMetrics} />
                 ) : null}
 
-                {/* DT findings table */}
+                {/* DT 个发现 table */}
                 {dtFindingsLoading ? (
                   <Skeleton className="h-32 w-full" />
                 ) : sortedDtFindings.length > 0 ? (
@@ -670,14 +670,14 @@ export function SecurityTabContent({ artifact }: SecurityTabContentProps) {
                     pageSize={10}
                     total={sortedDtFindings.length}
                     onPageChange={setDtFindingsPage}
-                    emptyMessage="No Dependency-Track findings"
+                    emptyMessage="No Dependency-Track 个发现"
                     rowKey={(f) => `${f.component.uuid}-${f.vulnerability.uuid}`}
                   />
                 ) : (
                   <div className="flex flex-col items-center justify-center py-8 text-center">
                     <ShieldCheck className="size-10 text-green-500/50 mb-3" />
                     <p className="text-sm text-muted-foreground">
-                      No findings reported by Dependency-Track for this project.
+                      No 个发现 reported by Dependency-Track for this project.
                     </p>
                   </div>
                 )}
@@ -698,9 +698,9 @@ export function SecurityTabContent({ artifact }: SecurityTabContentProps) {
  * Status bar showing whether the Dependency-Track integration is connected.
  */
 function dtConnectionLabel(connected: boolean, enabled: boolean): string {
-  if (connected) return "Connected";
-  if (!enabled) return "Disabled";
-  return "Unhealthy";
+  if (connected) return "已连接";
+  if (!enabled) return "已禁用";
+  return "不健康";
 }
 
 function DtIntegrationStatusBar({
@@ -734,7 +734,7 @@ function DtIntegrationStatusBar({
           </Badge>
           {projectLinked && (
             <Badge variant="outline" className="text-xs text-blue-600 bg-blue-100 dark:bg-blue-950/40">
-              Project Linked
+              项目已链接
             </Badge>
           )}
         </div>
@@ -751,10 +751,10 @@ function DtIntegrationStatusBar({
  */
 function DtMetricsSummary({ metrics }: { metrics: DtProjectMetrics }) {
   const severityCounts = [
-    { label: "Critical", count: metrics.critical, color: SEVERITY_COLORS.critical, badgeColor: SEVERITY_BADGE.critical },
-    { label: "High", count: metrics.high, color: SEVERITY_COLORS.high, badgeColor: SEVERITY_BADGE.high },
-    { label: "Medium", count: metrics.medium, color: SEVERITY_COLORS.medium, badgeColor: SEVERITY_BADGE.medium },
-    { label: "Low", count: metrics.low, color: SEVERITY_COLORS.low, badgeColor: SEVERITY_BADGE.low },
+    { label: "严重", count: metrics.critical, color: SEVERITY_COLORS.critical, badgeColor: SEVERITY_BADGE.critical },
+    { label: "高危", count: metrics.high, color: SEVERITY_COLORS.high, badgeColor: SEVERITY_BADGE.high },
+    { label: "中危", count: metrics.medium, color: SEVERITY_COLORS.medium, badgeColor: SEVERITY_BADGE.medium },
+    { label: "低危", count: metrics.low, color: SEVERITY_COLORS.low, badgeColor: SEVERITY_BADGE.low },
   ];
 
   const totalViolations = metrics.policyViolationsTotal;
@@ -804,13 +804,13 @@ function DtMetricsSummary({ metrics }: { metrics: DtProjectMetrics }) {
       {/* Audit progress */}
       <div className="flex items-center gap-3 text-xs text-muted-foreground">
         <span>
-          Audited: {metrics.findingsAudited} / {metrics.findingsTotal}
+          已审计：{metrics.findingsAudited} / {metrics.findingsTotal}
         </span>
         <span>
-          Suppressed: {metrics.suppressions}
+          已抑制：{metrics.suppressions}
         </span>
         <span>
-          Risk Score: {metrics.inheritedRiskScore.toFixed(0)}
+          风险评分：{metrics.inheritedRiskScore.toFixed(0)}
         </span>
       </div>
     </div>

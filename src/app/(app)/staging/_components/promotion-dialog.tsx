@@ -89,10 +89,10 @@ export function PromotionDialog({
     mutationFn: (req: BulkPromoteRequest) => promotionApi.promoteBulk(sourceRepoKey, req),
     onSuccess: (result) => {
       if (result.promoted === result.total) {
-        toast.success(`Successfully promoted ${result.promoted} artifact(s)`);
+        toast.success(`成功提升 ${result.promoted} 个制品`);
       } else {
         toast.warning(
-          `Promoted ${result.promoted} of ${result.total} artifacts. ${result.failed} failed.`
+          `已提升 ${result.promoted}/${result.total} 个制品。${result.failed} 个失败.`
         );
       }
       queryClient.invalidateQueries({ queryKey: ["staging-artifacts", sourceRepoKey] });
@@ -103,12 +103,12 @@ export function PromotionDialog({
       setSkipPolicyCheck(false);
       onSuccess?.();
     },
-    onError: mutationErrorToast("Promotion failed"),
+    onError: mutationErrorToast("提升失败"),
   });
 
   const handlePromote = () => {
     if (!targetRepo) {
-      toast.error("Please select a target repository");
+      toast.error("请选择目标仓库");
       return;
     }
     promoteMutation.mutate({
@@ -128,26 +128,26 @@ export function PromotionDialog({
           <DialogTitle className="flex items-center gap-2">
             Promote Artifacts
             <ArrowRight className="size-4 text-muted-foreground" />
-            <span className="text-muted-foreground font-normal">Release</span>
+            <span className="text-muted-foreground font-normal">发布</span>
           </DialogTitle>
           <DialogDescription>
             Promote {selectedArtifacts.length} artifact
-            {selectedArtifacts.length !== 1 ? "s" : ""} from staging to a release repository.
+            {selectedArtifacts.length !== 1 ? "s" : ""} 从暂存提升到发布仓库.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
           {/* Target Repository */}
           <div className="space-y-2">
-            <Label>Target Repository</Label>
+            <Label>目标仓库</Label>
             <Select value={targetRepo} onValueChange={setTargetRepo} disabled={reposLoading}>
               <SelectTrigger className="w-full">
-                <SelectValue placeholder={reposLoading ? "Loading..." : "Select target repository"} />
+                <SelectValue placeholder={reposLoading ? "加载中..." : "选择目标仓库"} />
               </SelectTrigger>
               <SelectContent>
                 {targetRepoList.length === 0 ? (
                   <div className="p-2 text-sm text-muted-foreground">
-                    No release repositories found for {sourceRepoFormat}
+                    未找到以下格式的发布仓库： {sourceRepoFormat}
                   </div>
                 ) : (
                   targetRepoList.map((repo: Repository) => (
@@ -206,10 +206,10 @@ export function PromotionDialog({
 
           {/* Notes */}
           <div className="space-y-2">
-            <Label htmlFor="promo-notes">Notes (optional)</Label>
+            <Label htmlFor="promo-notes">备注（可选）</Label>
             <Textarea
               id="promo-notes"
-              placeholder="Add notes about this promotion..."
+              placeholder="添加有关此提升的备注..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={2}
@@ -232,7 +232,7 @@ export function PromotionDialog({
                   Skip policy check (Admin override)
                 </Label>
                 <p className="text-xs text-muted-foreground">
-                  This will promote artifacts with policy violations.
+                  这将提升存在策略违规的制品。
                 </p>
               </div>
             </div>
@@ -251,7 +251,7 @@ export function PromotionDialog({
               (hasBlockingViolations && !skipPolicyCheck)
             }
           >
-            {promoteMutation.isPending ? "Promoting..." : "Promote"}
+            {promoteMutation.isPending ? "提升中..." : "提升"}
           </Button>
         </DialogFooter>
       </DialogContent>

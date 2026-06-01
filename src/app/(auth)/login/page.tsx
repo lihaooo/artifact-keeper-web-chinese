@@ -32,8 +32,8 @@ import {
 } from "@/components/ui/form";
 
 const loginSchema = z.object({
-  username: z.string().min(1, "Username is required"),
-  password: z.string().min(1, "Password is required"),
+  username: z.string().min(1, "请输入用户名"),
+  password: z.string().min(1, "请输入密码"),
 });
 
 type LoginValues = z.infer<typeof loginSchema>;
@@ -52,16 +52,16 @@ const GENERIC_PROVIDER_NAMES = new Set(["default", "primary", "main", "sso"]);
 const GENERIC_LABEL_BY_PROTOCOL: Partial<
   Record<SsoProvider["provider_type"], string>
 > = {
-  oidc: "Sign in with SSO (OIDC)",
-  saml: "Sign in with SSO (SAML)",
+  oidc: "通过 SSO 登录 (OIDC)",
+  saml: "通过 SSO 登录 (SAML)",
 };
 
 export function ssoButtonLabel(provider: SsoProvider): string {
   const name = provider.name?.trim();
   if (!name || GENERIC_PROVIDER_NAMES.has(name.toLowerCase())) {
-    return GENERIC_LABEL_BY_PROTOCOL[provider.provider_type] ?? "Sign in with SSO";
+    return GENERIC_LABEL_BY_PROTOCOL[provider.provider_type] ?? "通过 SSO 登录";
   }
-  return `Sign in with ${name}`;
+  return `通过 ${name} 登录`;
 }
 
 function LoginContent() {
@@ -164,7 +164,7 @@ function LoginContent() {
       if (isAccountLocked(err)) {
         setAccountLocked(true);
       } else {
-        setError(toUserMessage(err, "Login failed. Please check your credentials."));
+        setError(toUserMessage(err, "登录失败，请检查您的凭据。"));
       }
     } finally {
       setIsLoading(false);
@@ -179,7 +179,7 @@ function LoginContent() {
       await verifyTotp(totpCode);
       router.push("/");
     } catch (err) {
-      setError(toUserMessage(err, "Invalid TOTP code"));
+      setError(toUserMessage(err, "无效的 TOTP 验证码"));
     } finally {
       setIsLoading(false);
     }
@@ -190,14 +190,14 @@ function LoginContent() {
       {setupRequired && (
         <Alert className="mb-4 border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950/30">
           <Terminal className="size-4 text-amber-600 dark:text-amber-400" />
-          <AlertTitle className="text-amber-800 dark:text-amber-200">First-Time Setup</AlertTitle>
+          <AlertTitle className="text-amber-800 dark:text-amber-200">首次设置</AlertTitle>
           <AlertDescription>
-            <p>A random admin password was generated. Retrieve it from the server:</p>
+            <p>已生成随机管理员密码。请从服务器获取：</p>
             <code className="mt-1.5 block rounded bg-amber-100 px-2 py-1.5 font-mono text-xs break-all dark:bg-amber-950/50">
               docker exec artifact-keeper-backend cat /data/storage/admin.password
             </code>
             <p className="mt-1.5">
-              Log in with username <strong>admin</strong> and the password from the file.
+              使用用户名 <strong>admin</strong> 和文件中的密码登录。
             </p>
           </AlertDescription>
         </Alert>
@@ -208,8 +208,8 @@ function LoginContent() {
             <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-full bg-primary/10">
               <Shield className="size-7 text-primary" />
             </div>
-            <CardTitle className="text-xl">Two-Factor Authentication</CardTitle>
-            <CardDescription>Enter the 6-digit code from your authenticator app</CardDescription>
+            <CardTitle className="text-xl">两步验证</CardTitle>
+            <CardDescription>请输入验证器应用中的 6 位数字验证码</CardDescription>
           </CardHeader>
           <CardContent>
             {error && (
@@ -230,16 +230,16 @@ function LoginContent() {
                 />
               </div>
               <p className="text-center text-xs text-muted-foreground">
-                You can also use a backup code
+                您也可以使用备用验证码
               </p>
               <Button type="submit" className="w-full" size="lg" disabled={isLoading || totpCode.length < 6}>
                 {isLoading ? (
                   <>
                     <Loader2 className="size-4 animate-spin" />
-                    Verifying...
+                    验证中...
                   </>
                 ) : (
-                  "Verify"
+                  "验证"
                 )}
               </Button>
               <Button
@@ -252,7 +252,7 @@ function LoginContent() {
                   setError(null);
                 }}
               >
-                Back to login
+                返回登录
               </Button>
             </form>
           </CardContent>
@@ -269,17 +269,15 @@ function LoginContent() {
             />
           </div>
           <CardTitle className="text-xl">Artifact Keeper</CardTitle>
-          <CardDescription>{setupRequired ? "Complete first-time setup" : "Sign in to your account"}</CardDescription>
+          <CardDescription>{setupRequired ? "完成首次设置" : "登录您的账户"}</CardDescription>
         </CardHeader>
         <CardContent>
           {accountLocked && (
             <Alert className="mb-4 border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950/30">
               <Lock className="size-4 text-amber-600 dark:text-amber-400" />
-              <AlertTitle className="text-amber-800 dark:text-amber-200">Account Locked</AlertTitle>
+              <AlertTitle className="text-amber-800 dark:text-amber-200">账号已锁定</AlertTitle>
               <AlertDescription className="text-amber-700 dark:text-amber-300">
-                Your account has been temporarily locked due to too many failed
-                login attempts. Please wait a few minutes and try again, or
-                contact an administrator to unlock your account.
+                由于多次登录失败，您的账号已被临时锁定。请等待几分钟后重试，或联系管理员解锁。
               </AlertDescription>
             </Alert>
           )}
@@ -300,7 +298,7 @@ function LoginContent() {
                 }`}
                 onClick={() => setSelectedProvider({ type: "local" })}
               >
-                Local
+                本地
               </button>
               {ldapProviders.map((provider) => (
                 <button
@@ -333,7 +331,7 @@ function LoginContent() {
             // resolve.
             <div className="flex items-center justify-center py-8" aria-busy="true">
               <Loader2 className="size-5 animate-spin text-muted-foreground" />
-              <span className="sr-only">Loading sign-in options</span>
+              <span className="sr-only">正在加载登录选项</span>
             </div>
           )}
 
@@ -345,10 +343,10 @@ function LoginContent() {
                   name="username"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Username</FormLabel>
+                      <FormLabel>用户名</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="Enter your username"
+                          placeholder="请输入用户名"
                           autoComplete="username"
                           disabled={isLoading}
                           {...field}
@@ -363,11 +361,11 @@ function LoginContent() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel>密码</FormLabel>
                       <FormControl>
                         <Input
                           type="password"
-                          placeholder="Enter your password"
+                          placeholder="请输入密码"
                           autoComplete="current-password"
                           disabled={isLoading}
                           {...field}
@@ -386,10 +384,10 @@ function LoginContent() {
                   {isLoading ? (
                     <>
                       <Loader2 className="size-4 animate-spin" />
-                      Signing in...
+                      登录中...
                     </>
                   ) : (
-                    "Sign In"
+                    "登录"
                   )}
                 </Button>
               </form>
@@ -402,7 +400,7 @@ function LoginContent() {
                 <div className="relative my-4">
                   <Separator />
                   <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-xs text-muted-foreground">
-                    or continue with
+                    或通过以下方式继续
                   </span>
                 </div>
               )}

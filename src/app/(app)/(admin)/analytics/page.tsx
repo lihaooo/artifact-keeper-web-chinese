@@ -79,19 +79,19 @@ export default function AnalyticsPage() {
   const snapshotMutation = useMutation({
     mutationFn: () => analyticsApi.captureSnapshot(),
     onSuccess: () => {
-      toast.success("Snapshot captured successfully");
+      toast.success("快照捕获成功");
       queryClient.invalidateQueries({ queryKey: ["analytics-growth"] });
       queryClient.invalidateQueries({ queryKey: ["analytics-trend"] });
     },
-    onError: mutationErrorToast("Failed to capture snapshot"),
+    onError: mutationErrorToast("捕获快照失败"),
   });
 
   if (!user?.is_admin) {
     return (
       <div className="space-y-6">
-        <PageHeader title="Analytics" />
+        <PageHeader title="分析" />
         <Alert variant="destructive">
-          <AlertTitle>Access Denied</AlertTitle>
+          <AlertTitle>访问被拒绝</AlertTitle>
         </Alert>
       </div>
     );
@@ -100,8 +100,8 @@ export default function AnalyticsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Storage Analytics"
-        description="Storage growth, repository breakdown, and artifact usage insights."
+        title="存储分析"
+        description="存储增长、仓库明细和制品使用洞察。"
         actions={
           <div className="flex gap-2">
             <Button
@@ -137,13 +137,13 @@ export default function AnalyticsPage() {
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           <StatCard
             icon={HardDrive}
-            label="Total Storage"
+            label="总存储"
             value={formatBytes(growth.storage_bytes_end)}
             color="blue"
           />
           <StatCard
             icon={TrendingUp}
-            label="Growth"
+            label="增长率"
             value={
               growth.storage_growth_percent >= 0
                 ? `+${growth.storage_growth_percent.toFixed(1)}%`
@@ -153,13 +153,13 @@ export default function AnalyticsPage() {
           />
           <StatCard
             icon={Package}
-            label="Artifacts"
+            label="制品"
             value={growth.artifacts_end.toLocaleString()}
             color="purple"
           />
           <StatCard
             icon={Clock}
-            label="Stale Artifacts"
+            label="过期制品"
             value={staleArtifacts?.length ?? "..."}
             color={
               (staleArtifacts?.length ?? 0) > 10 ? "yellow" : "green"
@@ -210,7 +210,7 @@ export default function AnalyticsPage() {
                 <div className="px-6 pb-4">
                   <EmptyState
                     icon={BarChart3}
-                    title="No data yet"
+                    title="暂无数据"
                     description="Storage breakdown will appear after artifacts are uploaded."
                   />
                 </div>
@@ -221,7 +221,7 @@ export default function AnalyticsPage() {
                       <TableHead>Repository</TableHead>
                       <TableHead>Format</TableHead>
                       <TableHead className="text-right">Artifacts</TableHead>
-                      <TableHead className="text-right">Storage</TableHead>
+                      <TableHead className="text-right">存储</TableHead>
                       <TableHead className="text-right">Downloads</TableHead>
                       <TableHead>Last Upload</TableHead>
                     </TableRow>
@@ -280,7 +280,7 @@ export default function AnalyticsPage() {
                 <div className="px-6 pb-4">
                   <EmptyState
                     icon={TrendingUp}
-                    title="No trend data yet"
+                    title="暂无趋势数据"
                     description="Snapshots are captured daily. Data will appear within 24 hours."
                   />
                 </div>
@@ -291,7 +291,7 @@ export default function AnalyticsPage() {
                       <TableHead>Date</TableHead>
                       <TableHead className="text-right">Repos</TableHead>
                       <TableHead className="text-right">Artifacts</TableHead>
-                      <TableHead className="text-right">Storage</TableHead>
+                      <TableHead className="text-right">存储</TableHead>
                       <TableHead className="text-right">Downloads</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -326,7 +326,7 @@ export default function AnalyticsPage() {
         <TabsContent value="downloads" className="mt-4">
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Download Trends</CardTitle>
+              <CardTitle className="text-base">下载趋势</CardTitle>
               <CardDescription>
                 Daily download counts over the selected period.
               </CardDescription>
@@ -342,7 +342,7 @@ export default function AnalyticsPage() {
                 <div className="px-6 pb-4">
                   <EmptyState
                     icon={Download}
-                    title="No download data yet"
+                    title="暂无下载数据"
                     description="Download trends will appear as artifacts are downloaded."
                   />
                 </div>
@@ -378,7 +378,7 @@ export default function AnalyticsPage() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle className="text-base">Stale Artifacts</CardTitle>
+                  <CardTitle className="text-base">过期制品</CardTitle>
                   <CardDescription>
                     Artifacts not downloaded in {staleDays}+ days.
                   </CardDescription>
@@ -408,7 +408,7 @@ export default function AnalyticsPage() {
                 <div className="px-6 pb-4">
                   <EmptyState
                     icon={Clock}
-                    title="No stale artifacts"
+                    title="无过期制品"
                     description={`All artifacts have been downloaded within the last ${staleDays} days.`}
                   />
                 </div>

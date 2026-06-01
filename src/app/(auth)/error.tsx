@@ -27,20 +27,20 @@ export default function AuthError({
         <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-destructive/10 mb-4">
           <AlertTriangle className="size-7 text-destructive" />
         </div>
-        <CardTitle className="text-lg">Authentication Error</CardTitle>
+        <CardTitle className="text-lg">认证错误</CardTitle>
       </CardHeader>
       <CardContent className="text-center space-y-4">
         <p className="text-sm text-muted-foreground">
-          Something went wrong during authentication. Please try again.
+          认证过程中出现了问题，请重试。
         </p>
         {error.digest && (
           <p className="text-xs text-muted-foreground font-mono">
-            Error ID: {error.digest}
+            错误 ID: {error.digest}
           </p>
         )}
         <Button onClick={reset} variant="default" size="sm" className="w-full">
           <RefreshCw className="mr-2 size-4" />
-          Try again
+          重试
         </Button>
       </CardContent>
     </Card>

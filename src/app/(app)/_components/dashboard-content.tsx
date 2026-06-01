@@ -103,7 +103,7 @@ function HealthCard({
       <div className="min-w-0 flex-1">
         <p className="text-xs text-muted-foreground">{label}</p>
         <p className={`text-sm font-medium capitalize ${healthColor(status)}`}>
-          {status ?? "Unknown"}
+          {status ?? "未知"}
         </p>
       </div>
     </div>
@@ -224,11 +224,11 @@ function SeverityBreakdown({ trends }: Readonly<{ trends: CveTrends }>) {
 
       {/* Status summary row */}
       <div className="flex items-center gap-6 pt-2 border-t text-xs text-muted-foreground">
-        <span>Open: <strong className="text-foreground">{trends.open_cves}</strong></span>
-        <span>Fixed: <strong className="text-foreground">{trends.fixed_cves}</strong></span>
-        <span>Acknowledged: <strong className="text-foreground">{trends.acknowledged_cves}</strong></span>
+        <span>未解决: <strong className="text-foreground">{trends.open_cves}</strong></span>
+        <span>已修复: <strong className="text-foreground">{trends.fixed_cves}</strong></span>
+        <span>已确认: <strong className="text-foreground">{trends.acknowledged_cves}</strong></span>
         {trends.avg_days_to_fix != null && (
-          <span>Avg fix time: <strong className="text-foreground">{Math.round(trends.avg_days_to_fix)}d</strong></span>
+          <span>平均修复时间: <strong className="text-foreground">{Math.round(trends.avg_days_to_fix)}天</strong></span>
         )}
       </div>
     </div>
@@ -297,8 +297,8 @@ export function DashboardContent() {
     <div className="space-y-6">
       {/* Header */}
       <PageHeader
-        title={greeting ? `Welcome back, ${greeting}` : "Dashboard"}
-        description="Overview of your Artifact Keeper instance."
+        title={greeting ? `欢迎回来，${greeting}` : "仪表盘"}
+        description="Artifact Keeper 实例概览。"
         actions={
           isAuthenticated ? (
             <Button
@@ -310,7 +310,7 @@ export function DashboardContent() {
               <RefreshCw
                 className={`size-4 ${isRefreshing ? "animate-spin" : ""}`}
               />
-              Refresh
+              刷新
             </Button>
           ) : undefined
         }
@@ -320,30 +320,30 @@ export function DashboardContent() {
       {isAuthenticated && (
         <section>
           <h2 className="mb-3 text-sm font-medium text-muted-foreground uppercase tracking-wider">
-            System Health
+            系统健康
           </h2>
           {healthLoading ? (
             <HealthSkeleton />
           ) : (
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-              <HealthCard label="Overall" status={health?.status} />
+              <HealthCard label="总体" status={health?.status} />
               <HealthCard
-                label="Database"
+                label="数据库"
                 status={health?.checks?.database?.status}
               />
               <HealthCard
-                label="Storage"
+                label="存储"
                 status={health?.checks?.storage?.status}
               />
               {health?.checks?.security_scanner && (
                 <HealthCard
-                  label="Security Scanner"
+                  label="安全扫描器"
                   status={health.checks.security_scanner.status}
                 />
               )}
               {health?.checks?.meilisearch && (
                 <HealthCard
-                  label="Search Engine"
+                  label="搜索引擎"
                   status={health.checks.meilisearch.status}
                 />
               )}
@@ -356,14 +356,14 @@ export function DashboardContent() {
       {user?.is_admin && (
         <section>
           <h2 className="mb-3 text-sm font-medium text-muted-foreground uppercase tracking-wider">
-            Statistics
+            统计
           </h2>
           {statsLoading && <StatsSkeleton />}
           {!statsLoading && stats && (
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
               <StatCard
                 icon={Database}
-                label="Repositories"
+                label="仓库"
                 value={stats.total_repositories}
                 color="blue"
                 onClick={() => {
@@ -372,19 +372,19 @@ export function DashboardContent() {
               />
               <StatCard
                 icon={FileBox}
-                label="Artifacts"
+                label="制品"
                 value={stats.total_artifacts}
                 color="green"
               />
               <StatCard
                 icon={Users}
-                label="Users"
+                label="用户"
                 value={stats.total_users}
                 color="purple"
               />
               <StatCard
                 icon={HardDrive}
-                label="Storage Used"
+                label="已用存储"
                 value={formatBytes(stats.total_storage_bytes)}
                 color="yellow"
               />
@@ -392,7 +392,7 @@ export function DashboardContent() {
           )}
           {!statsLoading && !stats && (
             <div className="rounded-lg border bg-destructive/5 px-4 py-3 text-sm text-destructive">
-              Failed to load admin statistics.
+              加载管理统计数据失败。
             </div>
           )}
         </section>
@@ -402,7 +402,7 @@ export function DashboardContent() {
       {user?.is_admin && (
         <section>
           <h2 className="mb-3 text-sm font-medium text-muted-foreground uppercase tracking-wider">
-            Security Overview
+            安全概览
           </h2>
           {cveTrendsLoading && <StatsSkeleton />}
           {!cveTrendsLoading && cveTrends && (
@@ -410,25 +410,25 @@ export function DashboardContent() {
               <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
                 <StatCard
                   icon={Shield}
-                  label="Total CVEs"
+                  label="CVE 总数"
                   value={cveTrends.total_cves}
                   color="blue"
                 />
                 <StatCard
                   icon={ShieldAlert}
-                  label="Open CVEs"
+                  label="未解决 CVE"
                   value={cveTrends.open_cves}
                   color="yellow"
                 />
                 <StatCard
                   icon={ShieldX}
-                  label="Critical"
+                  label="严重"
                   value={cveTrends.critical_count}
                   color="red"
                 />
                 <StatCard
                   icon={ShieldCheck}
-                  label="Fixed"
+                  label="已修复"
                   value={cveTrends.fixed_cves}
                   color="green"
                 />
@@ -438,7 +438,7 @@ export function DashboardContent() {
               {cveTrends.total_cves > 0 && (
                 <Card>
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-sm font-medium">Severity Breakdown</CardTitle>
+                    <CardTitle className="text-sm font-medium">严重程度分布</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <SeverityBreakdown trends={cveTrends} />
@@ -449,7 +449,7 @@ export function DashboardContent() {
           )}
           {!cveTrendsLoading && !cveTrends && (
             <div className="rounded-lg border bg-muted/50 px-4 py-3 text-sm text-muted-foreground">
-              No CVE data available yet. Generate SBOMs and run security scans to track vulnerabilities.
+              暂无 CVE 数据。生成 SBOM 并运行安全扫描以跟踪漏洞。
             </div>
           )}
         </section>
@@ -458,11 +458,11 @@ export function DashboardContent() {
       {/* Recent Repositories */}
       <Card>
         <CardHeader>
-          <CardTitle>Recent Repositories</CardTitle>
+          <CardTitle>最近的仓库</CardTitle>
           <CardAction>
             <Button variant="ghost" size="sm" asChild>
               <Link href="/repositories">
-                View all
+                查看全部
                 <ArrowRight className="size-4" />
               </Link>
             </Button>
@@ -474,10 +474,10 @@ export function DashboardContent() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Format</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead className="text-right">Storage</TableHead>
+                  <TableHead>名称</TableHead>
+                  <TableHead>格式</TableHead>
+                  <TableHead>类型</TableHead>
+                  <TableHead className="text-right">存储</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -492,11 +492,11 @@ export function DashboardContent() {
           <CardContent>
             <EmptyState
               icon={Package}
-              title="No repositories yet"
-              description="Create your first repository to get started with Artifact Keeper."
+              title="暂无仓库"
+              description="创建您的第一个仓库以开始使用 Artifact Keeper。"
               action={
                 <Button asChild>
-                  <Link href="/repositories">Create Repository</Link>
+                  <Link href="/repositories">创建仓库</Link>
                 </Button>
               }
             />

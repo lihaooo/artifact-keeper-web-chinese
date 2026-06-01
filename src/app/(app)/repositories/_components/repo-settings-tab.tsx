@@ -130,9 +130,9 @@ export function RepoSettingsTab({ repository }: RepoSettingsTabProps) {
       }
       setOverrides({});
       setQuotaOverrides({});
-      toast.success("Repository settings saved");
+      toast.success("仓库设置已保存");
     },
-    onError: mutationErrorToast("Failed to save repository settings"),
+    onError: mutationErrorToast("保存仓库设置失败"),
   });
 
   const handleSave = useCallback(() => {
@@ -171,9 +171,9 @@ export function RepoSettingsTab({ repository }: RepoSettingsTabProps) {
       queryClient.invalidateQueries({
         queryKey: ["lifecycle-policies", repository.id],
       });
-      toast.success("Cleanup policy deleted");
+      toast.success("清理策略已删除");
     },
-    onError: mutationErrorToast("Failed to delete cleanup policy"),
+    onError: mutationErrorToast("删除清理策略失败"),
   });
 
   const executePolicyMutation = useMutation({
@@ -184,20 +184,20 @@ export function RepoSettingsTab({ repository }: RepoSettingsTabProps) {
       });
       queryClient.invalidateQueries({ queryKey: ["repository", repository.key] });
       toast.success(
-        `Policy executed: ${result.artifacts_removed} artifact(s) removed, ${formatBytes(result.bytes_freed)} freed`
+        `策略已执行：移除 ${result.artifacts_removed} 个制品，释放 ${formatBytes(result.bytes_freed)}`
       );
     },
-    onError: mutationErrorToast("Failed to execute cleanup policy"),
+    onError: mutationErrorToast("执行清理策略失败"),
   });
 
   const previewPolicyMutation = useMutation({
     mutationFn: (id: string) => lifecycleApi.preview(id),
     onSuccess: (result) => {
       toast.info(
-        `Preview: ${result.artifacts_matched} artifact(s) would be removed (${formatBytes(result.bytes_freed)})`
+        `预览：${result.artifacts_matched} 个制品将被移除（${formatBytes(result.bytes_freed)}）`
       );
     },
-    onError: mutationErrorToast("Failed to preview cleanup policy"),
+    onError: mutationErrorToast("预览清理策略失败"),
   });
 
   return (
@@ -209,7 +209,7 @@ export function RepoSettingsTab({ repository }: RepoSettingsTabProps) {
         </h3>
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="settings-key">Repository Key</Label>
+            <Label htmlFor="settings-key">仓库键</Label>
             <Input
               id="settings-key"
               value={form.key}
@@ -230,7 +230,7 @@ export function RepoSettingsTab({ repository }: RepoSettingsTabProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="settings-name">Name</Label>
+            <Label htmlFor="settings-name">名称</Label>
             <Input
               id="settings-name"
               value={form.name}
@@ -242,23 +242,23 @@ export function RepoSettingsTab({ repository }: RepoSettingsTabProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="settings-description">Description</Label>
+            <Label htmlFor="settings-description">描述</Label>
             <Textarea
               id="settings-description"
               value={form.description}
               onChange={(e) =>
                 setOverrides((o) => ({ ...o, description: e.target.value }))
               }
-              placeholder="Describe the purpose of this repository..."
+              placeholder="描述此仓库的用途..."
               rows={3}
             />
           </div>
 
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label htmlFor="settings-visibility">Public Access</Label>
+              <Label htmlFor="settings-visibility">公开访问</Label>
               <p className="text-xs text-muted-foreground">
-                Public repositories allow unauthenticated read access.
+                公开仓库允许未经身份验证的读取访问。
               </p>
             </div>
             <Switch
@@ -296,23 +296,23 @@ export function RepoSettingsTab({ repository }: RepoSettingsTabProps) {
                 <span className="text-xs">
                   ({Math.round(
                     (repository.storage_used_bytes / repository.quota_bytes) * 100
-                  )}% used)
+                  )}% 已使用）
                 </span>
               </>
             ) : (
-              <> (no quota set)</>
+              <>（未设置配额）</>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="settings-quota">Storage Quota</Label>
+            <Label htmlFor="settings-quota">存储配额</Label>
             <div className="flex gap-2">
               <Input
                 id="settings-quota"
                 type="number"
                 min="0"
                 step="any"
-                placeholder="No limit"
+                placeholder="无限制"
                 value={quotaValue}
                 onChange={(e) =>
                   setQuotaOverrides((o) => ({ ...o, value: e.target.value }))
@@ -335,7 +335,7 @@ export function RepoSettingsTab({ repository }: RepoSettingsTabProps) {
               </Select>
             </div>
             <p className="text-xs text-muted-foreground">
-              Maximum storage for this repository. Leave empty for no limit.
+              此仓库的最大存储空间。留空表示无限制。
             </p>
           </div>
         </div>
@@ -351,7 +351,7 @@ export function RepoSettingsTab({ repository }: RepoSettingsTabProps) {
               Cleanup Policies
             </h3>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Lifecycle policies that automatically remove old or unused artifacts.
+              生命周期策略，自动移除旧的或未使用的制品。
             </p>
           </div>
         </div>
@@ -364,7 +364,7 @@ export function RepoSettingsTab({ repository }: RepoSettingsTabProps) {
         ) : !policies || policies.length === 0 ? (
           <div className="rounded-md border border-dashed p-6 text-center">
             <p className="text-sm text-muted-foreground">
-              No cleanup policies configured for this repository.
+              此仓库未配置清理策略。
             </p>
             <p className="text-xs text-muted-foreground mt-1">
               Cleanup policies can be created from the Lifecycle section in
@@ -397,21 +397,21 @@ export function RepoSettingsTab({ repository }: RepoSettingsTabProps) {
           Repository Info
         </h3>
         <dl className="grid grid-cols-[140px_1fr] gap-x-4 gap-y-2 text-sm">
-          <dt className="text-muted-foreground">Format</dt>
+          <dt className="text-muted-foreground">格式</dt>
           <dd>
             <Badge variant="secondary" className="text-xs">
               {repository.format.toUpperCase()}
             </Badge>
           </dd>
-          <dt className="text-muted-foreground">Type</dt>
+          <dt className="text-muted-foreground">类型</dt>
           <dd className="capitalize">{repository.repo_type}</dd>
-          <dt className="text-muted-foreground">Created</dt>
-          <dd>{new Date(repository.created_at).toLocaleDateString()}</dd>
-          <dt className="text-muted-foreground">Last Updated</dt>
-          <dd>{new Date(repository.updated_at).toLocaleDateString()}</dd>
+          <dt className="text-muted-foreground">创建时间</dt>
+          <dd>{new Date(repository.created_at).toLocaleDateString("zh-CN")}</dd>
+          <dt className="text-muted-foreground">最后更新</dt>
+          <dd>{new Date(repository.updated_at).toLocaleDateString("zh-CN")}</dd>
           {repository.upstream_url && (
             <>
-              <dt className="text-muted-foreground">Upstream URL</dt>
+              <dt className="text-muted-foreground">上游 URL</dt>
               <dd className="font-mono text-xs break-all">
                 {repository.upstream_url}
               </dd>
@@ -425,7 +425,7 @@ export function RepoSettingsTab({ repository }: RepoSettingsTabProps) {
         <div className="sticky bottom-0 bg-background border-t pt-4 pb-2 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <AlertTriangle className="size-4 text-yellow-500" />
-            <span>You have unsaved changes</span>
+            <span>您有未保存的更改</span>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="outline" onClick={handleDiscard}>
@@ -488,13 +488,13 @@ function CleanupPolicyRow({
               variant={policy.enabled ? "default" : "secondary"}
               className="text-xs font-normal"
             >
-              {policy.enabled ? "Active" : "Disabled"}
+              {policy.enabled ? "活跃" : "已禁用"}
             </Badge>
             {policy.last_run_at && (
               <span className="text-xs text-muted-foreground">
-                Last run: {new Date(policy.last_run_at).toLocaleDateString()}
+                上次运行：{new Date(policy.last_run_at).toLocaleDateString("zh-CN")}
                 {policy.last_run_items_removed != null &&
-                  ` (${policy.last_run_items_removed} removed)`}
+                  ` (${policy.last_run_items_removed} 已移除）`}
               </span>
             )}
           </div>
@@ -508,12 +508,12 @@ function CleanupPolicyRow({
               size="icon-xs"
               onClick={onPreview}
               disabled={previewPending}
-              aria-label={`Preview policy ${policy.name}`}
+              aria-label={`预览策略 ${policy.name}`}
             >
               <Eye className="size-3.5" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Preview (dry run)</TooltipContent>
+          <TooltipContent>预览（试运行）</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -522,12 +522,12 @@ function CleanupPolicyRow({
               size="icon-xs"
               onClick={onExecute}
               disabled={executePending}
-              aria-label={`Execute policy ${policy.name}`}
+              aria-label={`执行策略 ${policy.name}`}
             >
               <Play className="size-3.5" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Execute now</TooltipContent>
+          <TooltipContent>立即执行</TooltipContent>
         </Tooltip>
         <AlertDialog>
           <AlertDialogTrigger asChild>
@@ -538,24 +538,24 @@ function CleanupPolicyRow({
                   size="icon-xs"
                   className="text-destructive hover:text-destructive"
                   disabled={deletePending}
-                  aria-label={`Delete policy ${policy.name}`}
+                  aria-label={`删除策略 ${policy.name}`}
                 >
                   <Trash2 className="size-3.5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Delete policy</TooltipContent>
+              <TooltipContent>删除策略</TooltipContent>
             </Tooltip>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Delete Cleanup Policy</AlertDialogTitle>
+              <AlertDialogTitle>删除清理策略</AlertDialogTitle>
               <AlertDialogDescription>
-                Are you sure you want to delete the &quot;{policy.name}&quot; policy?
-                This will not affect any previously cleaned artifacts.
+                确定要删除 &quot;{policy.name}&quot; 策略吗？
+                此操作不会影响之前已清理的制品。
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogCancel>取消</AlertDialogCancel>
               <AlertDialogAction
                 onClick={onDelete}
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"

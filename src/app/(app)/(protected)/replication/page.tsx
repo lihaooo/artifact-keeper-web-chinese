@@ -141,16 +141,16 @@ export default function ReplicationPage() {
       queryClient.invalidateQueries({
         queryKey: ["peer-repos", selectedPeerId],
       });
-      toast.success("Replication settings updated");
+      toast.success("复制设置已更新");
     },
-    onError: mutationErrorToast("Failed to update replication settings"),
+    onError: mutationErrorToast("更新复制设置失败"),
   });
 
   // -- subscription repo columns --
   const repoColumns: DataTableColumn<Repository>[] = [
     {
       id: "key",
-      header: "Repository Key",
+      header: "仓库键",
       accessor: (r) => r.key,
       sortable: true,
       cell: (r) => (
@@ -159,7 +159,7 @@ export default function ReplicationPage() {
     },
     {
       id: "format",
-      header: "Format",
+      header: "格式",
       cell: (r) => (
         <Badge variant="secondary" className="text-xs">
           {r.format}
@@ -168,7 +168,7 @@ export default function ReplicationPage() {
     },
     {
       id: "mode",
-      header: "Replication Mode",
+      header: "复制模式",
       cell: (r) => {
         const currentMode = repoModes[r.id] ?? (assignedSet.has(r.id) ? "pull" : "none");
         return (
@@ -196,7 +196,7 @@ export default function ReplicationPage() {
     },
     {
       id: "assigned",
-      header: "Assigned",
+      header: "已分配",
       cell: (r) => (
         <Badge
           variant="secondary"
@@ -206,7 +206,7 @@ export default function ReplicationPage() {
               : "text-xs"
           }
         >
-          {assignedSet.has(r.id) ? "Yes" : "No"}
+          {assignedSet.has(r.id) ? "是" : "否"}
         </Badge>
       ),
     },
@@ -230,7 +230,7 @@ export default function ReplicationPage() {
               })
             }
           >
-            Save
+            保存
           </Button>
         );
       },
@@ -241,7 +241,7 @@ export default function ReplicationPage() {
   const connectionColumns: DataTableColumn<PeerConnection>[] = [
     {
       id: "target",
-      header: "Target Peer",
+      header: "目标对等节点",
       cell: (c) => {
         const target = peerMap.get(c.target_peer_id);
         return (
@@ -253,7 +253,7 @@ export default function ReplicationPage() {
     },
     {
       id: "status",
-      header: "Status",
+      header: "状态",
       cell: (c) => (
         <StatusBadge
           status={c.status}
@@ -263,7 +263,7 @@ export default function ReplicationPage() {
     },
     {
       id: "latency",
-      header: "Latency",
+      header: "延迟",
       accessor: (c) => c.latency_ms,
       sortable: true,
       cell: (c) => (
@@ -272,7 +272,7 @@ export default function ReplicationPage() {
     },
     {
       id: "bandwidth",
-      header: "Bandwidth",
+      header: "带宽",
       cell: (c) => (
         <span className="text-sm text-muted-foreground">
           {formatBandwidth(c.bandwidth_estimate_bps)}
@@ -281,7 +281,7 @@ export default function ReplicationPage() {
     },
     {
       id: "shared",
-      header: "Shared Artifacts",
+      header: "共享制品",
       cell: (c) => (
         <span className="text-sm text-muted-foreground">
           {c.shared_artifacts_count}
@@ -290,7 +290,7 @@ export default function ReplicationPage() {
     },
     {
       id: "transferred",
-      header: "Bytes Transferred",
+      header: "传输字节数",
       cell: (c) => (
         <span className="text-sm text-muted-foreground">
           {formatBytes(c.bytes_transferred_total)}
@@ -299,7 +299,7 @@ export default function ReplicationPage() {
     },
     {
       id: "success_failure",
-      header: "Success / Failure",
+      header: "成功 / 失败",
       cell: (c) => {
         const total = c.transfer_success_count + c.transfer_failure_count;
         if (total === 0)
@@ -327,8 +327,8 @@ export default function ReplicationPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Replication Dashboard"
-        description="Monitor peer replication status and topology."
+        title="复制仪表板"
+        description="监控对等节点复制状态和拓扑。"
         actions={
           <Tooltip>
             <TooltipTrigger asChild>
@@ -344,7 +344,7 @@ export default function ReplicationPage() {
                 />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Refresh</TooltipContent>
+            <TooltipContent>刷新</TooltipContent>
           </Tooltip>
         }
       />
@@ -354,7 +354,7 @@ export default function ReplicationPage() {
         <Card className="py-4">
           <CardContent className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted-foreground">Total Peers</p>
+              <p className="text-sm text-muted-foreground">总对等节点</p>
               <p className="text-2xl font-semibold">{peers.length}</p>
             </div>
             <Server className="size-8 text-muted-foreground/30" />
@@ -363,7 +363,7 @@ export default function ReplicationPage() {
         <Card className="py-4">
           <CardContent className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted-foreground">Online</p>
+              <p className="text-sm text-muted-foreground">在线</p>
               <p className="text-2xl font-semibold text-emerald-600">
                 {onlineCount}
               </p>
@@ -374,7 +374,7 @@ export default function ReplicationPage() {
         <Card className="py-4">
           <CardContent className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted-foreground">Syncing</p>
+              <p className="text-sm text-muted-foreground">同步中</p>
               <p className="text-2xl font-semibold text-blue-600">
                 {syncingCount}
               </p>
@@ -384,7 +384,7 @@ export default function ReplicationPage() {
         </Card>
         <Card className="py-4">
           <CardContent>
-            <p className="text-sm text-muted-foreground">Cache Usage</p>
+            <p className="text-sm text-muted-foreground">缓存使用</p>
             <p className="text-2xl font-semibold">
               {totalCacheSize > 0
                 ? `${formatBytes(totalCacheUsed)} / ${formatBytes(totalCacheSize)}`
@@ -396,9 +396,9 @@ export default function ReplicationPage() {
 
       <Tabs defaultValue="overview">
         <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="subscriptions">Subscriptions</TabsTrigger>
-          <TabsTrigger value="topology">Topology</TabsTrigger>
+          <TabsTrigger value="overview">概览</TabsTrigger>
+          <TabsTrigger value="subscriptions">订阅</TabsTrigger>
+          <TabsTrigger value="topology">拓扑</TabsTrigger>
         </TabsList>
 
         {/* -- Overview Tab -- */}
@@ -414,8 +414,8 @@ export default function ReplicationPage() {
           ) : peers.length === 0 ? (
             <EmptyState
               icon={Server}
-              title="No peers"
-              description="Register peers from the Peers page to see them here."
+              title="暂无对等节点"
+              description="从对等节点页面注册对等节点以在此处查看。"
             />
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -435,7 +435,7 @@ export default function ReplicationPage() {
                     <CardContent className="space-y-3">
                       {peer.region && (
                         <p className="text-xs text-muted-foreground">
-                          Region: {peer.region}
+                          区域: {peer.region}
                         </p>
                       )}
                       <p className="text-xs text-muted-foreground truncate">
@@ -443,7 +443,7 @@ export default function ReplicationPage() {
                       </p>
                       <div>
                         <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
-                          <span>Cache Usage</span>
+                          <span>缓存使用</span>
                           <span>
                             {formatBytes(peer.cache_used_bytes)} /{" "}
                             {formatBytes(peer.cache_size_bytes)}
@@ -457,24 +457,24 @@ export default function ReplicationPage() {
                       <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
                         <div>
                           <p className="font-medium text-foreground">
-                            Last Sync
+                            最后同步
                           </p>
                           <p>
                             {peer.last_sync_at
-                              ? new Date(peer.last_sync_at).toLocaleString()
-                              : "Never"}
+                              ? new Date(peer.last_sync_at).toLocaleString("zh-CN")
+                              : "从未"}
                           </p>
                         </div>
                         <div>
                           <p className="font-medium text-foreground">
-                            Heartbeat
+                            心跳
                           </p>
                           <p>
                             {peer.last_heartbeat_at
                               ? new Date(
                                   peer.last_heartbeat_at
-                                ).toLocaleString()
-                              : "Never"}
+                                ).toLocaleString("zh-CN")
+                              : "从未"}
                           </p>
                         </div>
                       </div>
@@ -497,10 +497,10 @@ export default function ReplicationPage() {
               }}
             >
               <SelectTrigger className="w-[300px]">
-                <SelectValue placeholder="Select a peer" />
+                <SelectValue placeholder="选择一个对等节点" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="__none__">Select a peer...</SelectItem>
+                <SelectItem value="__none__">选择一个对等节点...</SelectItem>
                 {peers.map((peer) => (
                   <SelectItem key={peer.id} value={peer.id}>
                     {peer.name} ({peer.status})
@@ -513,8 +513,8 @@ export default function ReplicationPage() {
           {selectedPeerId === "__none__" ? (
             <EmptyState
               icon={Server}
-              title="Select a peer"
-              description="Choose a peer above to manage repository subscriptions."
+              title="选择一个对等节点"
+              description="在上方选择一个对等节点以管理仓库订阅。"
             />
           ) : (
             <DataTable
@@ -522,7 +522,7 @@ export default function ReplicationPage() {
               data={repositories}
               loading={isLoading}
               rowKey={(r) => r.id}
-              emptyMessage="No repositories found."
+              emptyMessage="未找到仓库。"
             />
           )}
         </TabsContent>
@@ -535,11 +535,11 @@ export default function ReplicationPage() {
               onValueChange={setTopologyPeerId}
             >
               <SelectTrigger className="w-[300px]">
-                <SelectValue placeholder="Select a peer to view connections" />
+                <SelectValue placeholder="选择一个对等节点以查看连接" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="__none__">
-                  Select a peer...
+                  选择一个对等节点...
                 </SelectItem>
                 {peers.map((peer) => (
                   <SelectItem key={peer.id} value={peer.id}>
@@ -553,8 +553,8 @@ export default function ReplicationPage() {
           {topologyPeerId === "__none__" ? (
             <EmptyState
               icon={Globe}
-              title="Select a peer"
-              description="Choose a peer above to view its connections."
+              title="选择一个对等节点"
+              description="在上方选择一个对等节点以查看其连接。"
             />
           ) : (
             <DataTable
@@ -562,7 +562,7 @@ export default function ReplicationPage() {
               data={connections}
               loading={connectionsLoading}
               rowKey={(c) => c.id}
-              emptyMessage="No connections found for this peer."
+              emptyMessage="未找到此对等节点的连接。"
             />
           )}
         </TabsContent>

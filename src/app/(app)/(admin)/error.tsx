@@ -23,26 +23,25 @@ export default function AdminError({
           <ShieldAlert className="size-8 text-destructive" />
         </div>
         <h2 className="text-xl font-semibold tracking-tight">
-          Administration Error
+          管理面板错误
         </h2>
         <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-          An error occurred in the administration panel. This may be a temporary
-          issue. Try again, or return to the dashboard.
+          管理面板发生了错误。这可能是临时问题，请重试或返回仪表板。
         </p>
         {error.digest && (
           <p className="mt-2 text-xs text-muted-foreground font-mono">
-            Error ID: {error.digest}
+            错误 ID: {error.digest}
           </p>
         )}
         <div className="mt-6 flex items-center gap-3">
           <Button onClick={reset} variant="default" size="sm">
             <RefreshCw className="mr-2 size-4" />
-            Try again
+            重试
           </Button>
           <Button asChild variant="outline" size="sm">
             <Link href="/">
               <Home className="mr-2 size-4" />
-              Dashboard
+              仪表板
             </Link>
           </Button>
         </div>

@@ -103,22 +103,22 @@ export default function MonitoringPage() {
   const checkMutation = useMutation({
     mutationFn: () => monitoringApi.triggerCheck(),
     onSuccess: () => {
-      toast.success("Health check completed");
+      toast.success("健康检查完成");
       queryClient.invalidateQueries({ queryKey: ["monitoring-alerts"] });
       queryClient.invalidateQueries({ queryKey: ["monitoring-log"] });
     },
-    onError: mutationErrorToast("Health check failed"),
+    onError: mutationErrorToast("健康检查失败"),
   });
 
   const suppressMutation = useMutation({
     mutationFn: (req: { service_name: string; until: string }) =>
       monitoringApi.suppressAlert(req),
     onSuccess: () => {
-      toast.success("Alert suppressed");
+      toast.success("告警已抑制");
       queryClient.invalidateQueries({ queryKey: ["monitoring-alerts"] });
       setSuppressTarget(null);
     },
-    onError: mutationErrorToast("Failed to suppress alert"),
+    onError: mutationErrorToast("抑制告警失败"),
   });
 
   function handleSuppress() {
@@ -134,9 +134,9 @@ export default function MonitoringPage() {
   if (!user?.is_admin) {
     return (
       <div className="space-y-6">
-        <PageHeader title="Monitoring" />
+        <PageHeader title="监控" />
         <Alert variant="destructive">
-          <AlertTitle>Access Denied</AlertTitle>
+          <AlertTitle>访问被拒绝</AlertTitle>
         </Alert>
       </div>
     );
@@ -162,8 +162,8 @@ export default function MonitoringPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Service Monitoring"
-        description="Real-time health monitoring for all infrastructure services."
+        title="服务监控"
+        description="所有基础架构服务的实时健康监控。"
         actions={
           <Button
             size="sm"
@@ -175,7 +175,7 @@ export default function MonitoringPage() {
             ) : (
               <RefreshCw className="size-4 mr-1.5" />
             )}
-            Run Health Check
+            运行健康检查
           </Button>
         }
       />
@@ -217,12 +217,12 @@ export default function MonitoringPage() {
                           {isSuppressed ? (
                             <span className="flex items-center gap-1">
                               <BellOff className="size-3" />
-                              Suppressed
+                              已抑制
                             </span>
                           ) : alert.consecutive_failures > 0 ? (
-                            `${alert.consecutive_failures} failures`
+                            `${alert.consecutive_failures} 次失败`
                           ) : (
-                            "OK"
+                            "正常"
                           )}
                         </div>
                       </div>
@@ -232,7 +232,7 @@ export default function MonitoringPage() {
                         variant="ghost"
                         size="sm"
                         onClick={() => setSuppressTarget(alert)}
-                        aria-label={`Suppress alerts for ${alert.service_name}`}
+                        aria-label={`抑制 ${alert.service_name} 的告警`}
                       >
                         <BellOff className="size-4" />
                       </Button>
@@ -247,18 +247,18 @@ export default function MonitoringPage() {
           <div className="flex gap-2">
             <Badge variant="outline" className="gap-1">
               <Wifi className="size-3" />
-              {healthyCount} healthy
+              {healthyCount} 健康
             </Badge>
             {unhealthyCount > 0 && (
               <Badge variant="destructive" className="gap-1">
                 <WifiOff className="size-3" />
-                {unhealthyCount} unhealthy
+                {unhealthyCount} 异常
               </Badge>
             )}
             {suppressedCount > 0 && (
               <Badge variant="secondary" className="gap-1">
                 <BellOff className="size-3" />
-                {suppressedCount} suppressed
+                {suppressedCount} 已抑制
               </Badge>
             )}
           </div>
@@ -266,12 +266,12 @@ export default function MonitoringPage() {
       ) : (
         <EmptyState
           icon={Activity}
-          title="No alert data"
-          description="Run a health check to start monitoring services."
+          title="暂无告警数据"
+          description="运行健康检查以开始监控服务。"
           action={
             <Button size="sm" onClick={() => checkMutation.mutate()}>
               <RefreshCw className="size-4 mr-1.5" />
-              Run Health Check
+              运行健康检查
             </Button>
           }
         />
@@ -282,17 +282,17 @@ export default function MonitoringPage() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-base">Health Log</CardTitle>
+              <CardTitle className="text-base">健康日志</CardTitle>
               <CardDescription>
-                Recent health check results across all services.
+                所有服务的最近健康检查结果。
               </CardDescription>
             </div>
             <Select value={serviceFilter} onValueChange={setServiceFilter}>
               <SelectTrigger className="w-44">
-                <SelectValue placeholder="Filter by service" />
+                <SelectValue placeholder="按服务筛选" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="__all__">All Services</SelectItem>
+                <SelectItem value="__all__">全部服务</SelectItem>
                 {serviceNames.map((name) => (
                   <SelectItem key={name} value={name}>
                     {name}
@@ -313,22 +313,22 @@ export default function MonitoringPage() {
             <div className="px-6 pb-4">
               <EmptyState
                 icon={Clock}
-                title="No health log entries"
-                description="Health checks are recorded every 60 seconds."
+                title="暂无健康日志"
+                description="每 60 秒记录一次健康检查。"
               />
             </div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Service</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Previous</TableHead>
-                  <TableHead>Message</TableHead>
+                  <TableHead>服务</TableHead>
+                  <TableHead>状态</TableHead>
+                  <TableHead>上次状态</TableHead>
+                  <TableHead>消息</TableHead>
                   <TableHead className="text-right">
-                    Response Time
+                    响应时间
                   </TableHead>
-                  <TableHead>Checked At</TableHead>
+                  <TableHead>检查时间</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -365,21 +365,21 @@ export default function MonitoringPage() {
         </CardContent>
       </Card>
 
-      {/* Suppress Dialog */}
+      {/* 抑制告警对话框 */}
       <Dialog
         open={!!suppressTarget}
         onOpenChange={(open) => !open && setSuppressTarget(null)}
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Suppress Alerts</DialogTitle>
+            <DialogTitle>抑制告警</DialogTitle>
             <DialogDescription>
-              Suppress alerts for <strong>{suppressTarget?.service_name}</strong>{" "}
-              to prevent notification spam during maintenance.
+              抑制 <strong>{suppressTarget?.service_name}</strong>{" "}
+              的告警，在维护期间防止通知干扰。
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-2 py-2">
-            <Label htmlFor="suppress-hours">Suppress for (hours)</Label>
+            <Label htmlFor="suppress-hours">抑制时长（小时）</Label>
             <Input
               id="suppress-hours"
               type="number"
@@ -394,7 +394,7 @@ export default function MonitoringPage() {
               variant="outline"
               onClick={() => setSuppressTarget(null)}
             >
-              Cancel
+              取消
             </Button>
             <Button
               onClick={handleSuppress}
@@ -403,7 +403,7 @@ export default function MonitoringPage() {
               {suppressMutation.isPending && (
                 <Loader2 className="size-4 mr-1.5 animate-spin" />
               )}
-              Suppress
+              抑制
             </Button>
           </DialogFooter>
         </DialogContent>

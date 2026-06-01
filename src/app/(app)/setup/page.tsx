@@ -113,12 +113,12 @@ function getJvmClientVariants(repoKey: string): SetupClientVariant[] {
   // names so `my-jvm-repo` doesn't emit `my-jvm-repoUsername` (#362).
   const gradleId = repoKeyToGradleId(repoKey);
   const gradleCredentials: SetupStep = {
-    title: "Configure credentials",
-    description: "Add to ~/.gradle/gradle.properties:",
+    title: "配置凭据",
+    description: "添加到 ~/.gradle/gradle.properties：",
     code: `${gradleId}Username=YOUR_USERNAME
 ${gradleId}Password=YOUR_TOKEN`,
   };
-  const gradlePublish: SetupStep = { title: "Publish artifacts", code: "gradle publish" };
+  const gradlePublish: SetupStep = { title: "发布制品", code: "gradle publish" };
 
   return [
     {
@@ -126,8 +126,8 @@ ${gradleId}Password=YOUR_TOKEN`,
       label: "Maven",
       steps: [
         {
-          title: "Configure settings.xml",
-          description: "Add to ~/.m2/settings.xml:",
+          title: "配置 settings.xml",
+          description: "添加到 ~/.m2/settings.xml：",
           code: `<settings>
   <servers>
     <server>
@@ -139,7 +139,7 @@ ${gradleId}Password=YOUR_TOKEN`,
 </settings>`,
         },
         {
-          title: "Add repository to pom.xml",
+          title: "将仓库添加到 pom.xml",
           code: `<repositories>
   <repository>
     <id>${repoKey}</id>
@@ -152,7 +152,7 @@ ${gradleId}Password=YOUR_TOKEN`,
   <version>1.0.0</version>
 </dependency>`,
         },
-        { title: "Deploy artifacts", code: "mvn deploy" },
+        { title: "部署制品", code: "mvn deploy" },
       ],
     },
     {
@@ -161,7 +161,7 @@ ${gradleId}Password=YOUR_TOKEN`,
       steps: [
         gradleCredentials,
         {
-          title: "Add repository to build.gradle",
+          title: "将仓库添加到 build.gradle",
           code: `repositories {
     maven {
         url '${repoUrl}'
@@ -184,7 +184,7 @@ dependencies {
       steps: [
         gradleCredentials,
         {
-          title: "Add repository to build.gradle.kts",
+          title: "将仓库添加到 build.gradle.kts",
           code: `repositories {
     maven {
         url = uri("${repoUrl}")
@@ -206,20 +206,20 @@ dependencies {
       label: "SBT",
       steps: [
         {
-          title: "Configure credentials",
-          description: "Add to ~/.sbt/.credentials:",
+          title: "配置凭据",
+          description: "添加到 ~/.sbt/.credentials：",
           code: `realm=Artifact Keeper
 host=${REGISTRY_HOST}
 user=YOUR_USERNAME
 password=YOUR_TOKEN`,
         },
         {
-          title: "Add resolver to build.sbt",
+          title: "将解析器添加到 build.sbt",
           code: `credentials += Credentials(Path.userHome / ".sbt" / ".credentials")
 resolvers += "${repoKey}" at "${repoUrl}"
 libraryDependencies += "com.example" %% "your-artifact" % "1.0.0"`,
         },
-        { title: "Publish artifacts", code: "sbt publish" },
+        { title: "发布制品", code: "sbt publish" },
       ],
     },
   ];
@@ -258,17 +258,17 @@ function getRepoSetupSteps(repo: Repository): SetupStep[] {
     case "pnpm":
       return [
         {
-          title: "Configure registry",
-          description: "Add to your .npmrc file or run:",
+          title: "配置仓库源",
+          description: "添加到 .npmrc 文件或运行：",
           code: `npm config set @${repoKey}:registry ${REGISTRY_URL}/npm/${repoKey}/
 npm config set //${REGISTRY_HOST}/npm/${repoKey}/:_authToken YOUR_TOKEN`,
         },
         {
-          title: "Install a package",
+          title: "安装包",
           code: `npm install @${repoKey}/<package-name>`,
         },
         {
-          title: "Publish a package",
+          title: "发布包",
           code: `npm publish --registry ${REGISTRY_URL}/npm/${repoKey}/`,
         },
       ];
@@ -277,18 +277,18 @@ npm config set //${REGISTRY_HOST}/npm/${repoKey}/:_authToken YOUR_TOKEN`,
     case "conda":
       return [
         {
-          title: "Configure pip",
-          description: "Add to ~/.pip/pip.conf or ~/.config/pip/pip.conf:",
+          title: "配置 pip",
+          description: "添加到 ~/.pip/pip.conf 或 ~/.config/pip/pip.conf：",
           code: `[global]
 index-url = ${REGISTRY_URL}/pypi/${repoKey}/simple/
 trusted-host = ${REGISTRY_HOST}`,
         },
         {
-          title: "Install a package",
+          title: "安装包",
           code: `pip install --index-url ${REGISTRY_URL}/pypi/${repoKey}/simple/ <package-name>`,
         },
         {
-          title: "Upload with twine",
+          title: "使用 twine 上传",
           code: `twine upload --repository-url ${REGISTRY_URL}/pypi/${repoKey}/ dist/*`,
         },
       ];
@@ -298,19 +298,19 @@ trusted-host = ${REGISTRY_HOST}`,
     case "oras":
       return [
         {
-          title: "Login to registry",
+          title: "登录仓库",
           code: `docker login ${REGISTRY_HOST}`,
         },
         {
-          title: "Tag an image",
+          title: "标记镜像",
           code: `docker tag my-image:latest ${REGISTRY_HOST}/${repoKey}/my-image:latest`,
         },
         {
-          title: "Push an image",
+          title: "推送镜像",
           code: `docker push ${REGISTRY_HOST}/${repoKey}/my-image:latest`,
         },
         {
-          title: "Pull an image",
+          title: "拉取镜像",
           code: `docker pull ${REGISTRY_HOST}/${repoKey}/my-image:latest`,
         },
       ];
@@ -318,42 +318,42 @@ trusted-host = ${REGISTRY_HOST}`,
     case "lxc":
       return [
         {
-          title: "Add as SimpleStreams remote",
+          title: "添加为 SimpleStreams 远程源",
           code: `incus remote add ${repoKey} ${REGISTRY_URL}/incus/${repoKey} \\
   --protocol simplestreams --public`,
         },
         {
-          title: "Upload an image",
+          title: "上传镜像",
           code: `curl -X PUT -u admin:password \\
   -H "Content-Type: application/x-xz" \\
   --data-binary @image.tar.xz \\
   ${REGISTRY_URL}/incus/${repoKey}/images/ubuntu-noble/20240215/incus.tar.xz`,
         },
         {
-          title: "List images",
+          title: "列出镜像",
           code: `incus image list ${repoKey}:`,
         },
         {
-          title: "Launch a container",
+          title: "启动容器",
           code: `incus launch ${repoKey}:ubuntu-noble my-container`,
         },
       ];
     case "cargo":
       return [
         {
-          title: "Configure Cargo",
-          description: "Add to ~/.cargo/config.toml:",
+          title: "配置 Cargo",
+          description: "添加到 ~/.cargo/config.toml：",
           code: `[registries.${repoKey}]
 index = "${REGISTRY_URL}/cargo/${repoKey}/index"
 token = "YOUR_TOKEN"`,
         },
         {
-          title: "Publish a crate",
+          title: "发布 crate",
           code: `cargo publish --registry ${repoKey}`,
         },
         {
-          title: "Add a dependency",
-          description: "In Cargo.toml:",
+          title: "添加依赖",
+          description: "在 Cargo.toml 中：",
           code: `[dependencies]
 my-crate = { version = "0.1", registry = "${repoKey}" }`,
         },
@@ -362,68 +362,68 @@ my-crate = { version = "0.1", registry = "${repoKey}" }`,
     case "helm_oci":
       return [
         {
-          title: "Add Helm repository",
+          title: "添加 Helm 仓库",
           code: `helm repo add ${repoKey} ${REGISTRY_URL}/helm/${repoKey}/
 helm repo update`,
         },
         {
-          title: "Push a chart",
+          title: "推送 Chart",
           code: `helm push my-chart-0.1.0.tgz oci://${REGISTRY_HOST}/${repoKey}/`,
         },
         {
-          title: "Install a chart",
+          title: "安装 Chart",
           code: `helm install my-release ${repoKey}/my-chart`,
         },
       ];
     case "nuget":
       return [
         {
-          title: "Add NuGet source",
+          title: "添加 NuGet 源",
           code: `dotnet nuget add source ${REGISTRY_URL}/nuget/${repoKey}/v3/index.json \\
   --name ${repoKey} --username YOUR_USERNAME --password YOUR_TOKEN`,
         },
         {
-          title: "Push a package",
+          title: "推送包",
           code: `dotnet nuget push MyPackage.1.0.0.nupkg --source ${repoKey} --api-key YOUR_TOKEN`,
         },
         {
-          title: "Install a package",
+          title: "安装包",
           code: `dotnet add package MyPackage --source ${repoKey}`,
         },
       ];
     case "go":
       return [
         {
-          title: "Configure Go proxy",
+          title: "配置 Go 代理",
           code: `export GOPROXY=${REGISTRY_URL}/go/${repoKey},direct
 export GONOSUMCHECK=*`,
         },
         {
-          title: "Add a dependency",
+          title: "添加依赖",
           code: "go get example.com/my-module@latest",
         },
       ];
     case "rubygems":
       return [
         {
-          title: "Configure Bundler",
-          description: "In your Gemfile:",
+          title: "配置 Bundler",
+          description: "在 Gemfile 中：",
           code: `source "${REGISTRY_URL}/gems/${repoKey}/"`,
         },
         {
-          title: "Push a gem",
+          title: "发布 gem",
           code: `gem push my-gem-0.1.0.gem --host ${REGISTRY_URL}/gems/${repoKey}/`,
         },
       ];
     case "debian":
       return [
         {
-          title: "Add APT repository",
-          description: "Add to /etc/apt/sources.list.d/artifact-keeper.list:",
+          title: "添加 APT 仓库",
+          description: "添加到 /etc/apt/sources.list.d/artifact-keeper.list：",
           code: `deb ${REGISTRY_URL}/debian/${repoKey}/ stable main`,
         },
         {
-          title: "Update and install",
+          title: "更新并安装",
           code: `sudo apt update
 sudo apt install <package-name>`,
         },
@@ -431,8 +431,8 @@ sudo apt install <package-name>`,
     case "rpm":
       return [
         {
-          title: "Add YUM/DNF repository",
-          description: "Create /etc/yum.repos.d/artifact-keeper.repo:",
+          title: "添加 YUM/DNF 仓库",
+          description: "创建 /etc/yum.repos.d/artifact-keeper.repo：",
           code: `[${repoKey}]
 name=Artifact Keeper - ${repo.name}
 baseurl=${REGISTRY_URL}/rpm/${repoKey}/
@@ -440,7 +440,7 @@ enabled=1
 gpgcheck=0`,
         },
         {
-          title: "Install a package",
+          title: "安装包",
           code: `sudo dnf install <package-name>`,
         },
       ];
@@ -448,8 +448,8 @@ gpgcheck=0`,
     case "opentofu":
       return [
         {
-          title: "Configure provider mirror",
-          description: "In ~/.terraformrc:",
+          title: "配置 Provider 镜像",
+          description: "在 ~/.terraformrc 中：",
           code: `provider_installation {
   network_mirror {
     url = "${REGISTRY_URL}/terraform/${repoKey}/"
@@ -460,31 +460,31 @@ gpgcheck=0`,
     case "composer":
       return [
         {
-          title: "Add Composer repository",
+          title: "添加 Composer 仓库",
           code: `composer config repositories.${repoKey} composer ${REGISTRY_URL}/composer/${repoKey}/`,
         },
         {
-          title: "Require a package",
+          title: "引入包",
           code: `composer require vendor/package`,
         },
       ];
     case "alpine":
       return [
         {
-          title: "Add APK repository",
-          description: "Add to /etc/apk/repositories:",
+          title: "添加 APK 仓库",
+          description: "添加到 /etc/apk/repositories：",
           code: `${REGISTRY_URL}/alpine/${repoKey}/`,
         },
         {
-          title: "Install a package",
+          title: "安装包",
           code: `apk add <package-name>`,
         },
       ];
     case "protobuf":
       return [
         {
-          title: "Configure buf.yaml",
-          description: "Set the registry in your module's buf.yaml:",
+          title: "配置 buf.yaml",
+          description: "在模块的 buf.yaml 中设置仓库：",
           code: `# buf.yaml
 version: v2
 modules:
@@ -492,16 +492,16 @@ modules:
     name: ${REGISTRY_HOST}/proto/${repoKey}/myorg/mymodule`,
         },
         {
-          title: "Authenticate with buf CLI",
+          title: "使用 buf CLI 认证",
           code: `buf registry login ${REGISTRY_HOST} --username YOUR_USERNAME --token-stdin <<< "YOUR_TOKEN"`,
         },
         {
-          title: "Push a module",
+          title: "推送模块",
           code: `buf push --registry ${REGISTRY_URL}/proto/${repoKey}`,
         },
         {
-          title: "Add a dependency",
-          description: "In buf.yaml, add deps and run update:",
+          title: "添加依赖",
+          description: "在 buf.yaml 中添加依赖并运行更新：",
           code: `# buf.yaml
 deps:
   - ${REGISTRY_HOST}/proto/${repoKey}/owner/module
@@ -513,13 +513,13 @@ buf dep update`,
     default:
       return [
         {
-          title: "Upload an artifact",
+          title: "上传制品",
           code: `curl -X PUT -H "Authorization: Bearer YOUR_TOKEN" \\
   -T ./my-file.tar.gz \\
   ${REGISTRY_URL}/api/v1/repositories/${repoKey}/artifacts/my-file.tar.gz`,
         },
         {
-          title: "Download an artifact",
+          title: "下载制品",
           code: `curl -O ${REGISTRY_URL}/api/v1/repositories/${repoKey}/download/my-file.tar.gz`,
         },
       ];
@@ -532,12 +532,12 @@ const CICD_PLATFORMS: CICDPlatform[] = [
   {
     key: "github",
     name: "GitHub Actions",
-    description: "GitHub CI/CD workflows",
+    description: "GitHub CI/CD 工作流",
     steps: [
       {
-        title: "Add secrets",
+        title: "添加密钥",
         description:
-          "Go to Settings > Secrets and add ARTIFACT_KEEPER_TOKEN and ARTIFACT_KEEPER_URL.",
+          "前往 Settings > Secrets 添加 ARTIFACT_KEEPER_TOKEN 和 ARTIFACT_KEEPER_URL。",
         code: `# .github/workflows/publish.yml
 name: Publish
 on:
@@ -561,12 +561,12 @@ jobs:
   {
     key: "gitlab",
     name: "GitLab CI",
-    description: "GitLab pipelines",
+    description: "GitLab 流水线",
     steps: [
       {
-        title: "Configure .gitlab-ci.yml",
+        title: "配置 .gitlab-ci.yml",
         description:
-          "Add CI/CD variables: ARTIFACT_KEEPER_TOKEN and ARTIFACT_KEEPER_URL.",
+          "添加 CI/CD 变量：ARTIFACT_KEEPER_TOKEN 和 ARTIFACT_KEEPER_URL。",
         code: `# .gitlab-ci.yml
 publish:
   stage: deploy
@@ -581,11 +581,11 @@ publish:
   {
     key: "jenkins",
     name: "Jenkins",
-    description: "Jenkins pipelines",
+    description: "Jenkins 流水线",
     steps: [
       {
-        title: "Configure Jenkinsfile",
-        description: "Store credentials in Jenkins Credential Manager.",
+        title: "配置 Jenkinsfile",
+        description: "在 Jenkins 凭据管理器中存储凭据。",
         code: `// Jenkinsfile
 pipeline {
     agent any
@@ -608,12 +608,12 @@ pipeline {
   {
     key: "azure",
     name: "Azure DevOps",
-    description: "Azure Pipelines",
+    description: "Azure 流水线",
     steps: [
       {
-        title: "Configure azure-pipelines.yml",
+        title: "配置 azure-pipelines.yml",
         description:
-          "Add service connection for Artifact Keeper in Project Settings.",
+          "在项目设置中添加 Artifact Keeper 服务连接。",
         code: `# azure-pipelines.yml
 trigger:
   tags:
@@ -639,12 +639,12 @@ steps:
 const FORMAT_CATEGORIES: { key: string; label: string; formats: string[] }[] = [
   {
     key: "core",
-    label: "Core",
+    label: "核心",
     formats: ["maven", "gradle", "npm", "pypi", "nuget", "go", "cargo", "rubygems", "generic"],
   },
   {
     key: "container",
-    label: "Container",
+    label: "容器",
     formats: ["docker", "helm", "helm_oci", "podman", "buildx", "oras", "wasm_oci", "incus", "lxc"],
   },
   {
@@ -654,17 +654,17 @@ const FORMAT_CATEGORIES: { key: string; label: string; formats: string[] }[] = [
   },
   {
     key: "ecosystem",
-    label: "Ecosystem",
+    label: "生态系统",
     formats: ["poetry", "conda", "yarn", "pnpm", "composer", "cocoapods", "swift", "hex", "pub", "sbt", "cran"],
   },
   {
     key: "infra",
-    label: "Infrastructure",
+    label: "基础设施",
     formats: ["terraform", "opentofu", "chef", "puppet", "ansible", "vagrant"],
   },
   {
     key: "other",
-    label: "Other",
+    label: "其他",
     formats: ["generic", "gitlfs", "bazel", "p2", "protobuf", "huggingface", "mlmodel", "vscode", "jetbrains"],
   },
 ];
@@ -769,19 +769,19 @@ export default function SetupPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Setup Guide"
-        description="Configure your build tools and CI/CD pipelines to work with Artifact Keeper."
+        title="安装指南"
+        description="配置您的构建工具和 CI/CD 流水线以使用 Artifact Keeper。"
       />
 
       <Tabs defaultValue="repositories">
         <TabsList>
           <TabsTrigger value="repositories">
             <Package className="size-4" />
-            Repositories
+            仓库
           </TabsTrigger>
           <TabsTrigger value="cicd">
             <Rocket className="size-4" />
-            CI/CD Platforms
+            CI/CD 平台
           </TabsTrigger>
         </TabsList>
 
@@ -792,7 +792,7 @@ export default function SetupPage() {
             <div className="relative flex-1">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
               <Input
-                placeholder="Search repositories..."
+                placeholder="搜索仓库..."
                 className="pl-8"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -807,7 +807,7 @@ export default function SetupPage() {
               size="sm"
               onClick={() => setCategoryFilter("all")}
             >
-              All
+              全部
             </Button>
             {FORMAT_CATEGORIES.map((cat) => (
               <Button
@@ -830,8 +830,8 @@ export default function SetupPage() {
                 <Package className="size-10 text-muted-foreground/40 mx-auto mb-3" />
                 <p className="text-sm text-muted-foreground">
                   {repositories.length === 0
-                    ? "No repositories available. Create a repository first."
-                    : "No repositories match your filters."}
+                    ? "暂无可用仓库，请先创建仓库。"
+                    : "没有匹配筛选条件的仓库。"}
                 </p>
               </CardContent>
             </Card>
@@ -844,7 +844,7 @@ export default function SetupPage() {
                       {format}
                     </Badge>
                     <span className="text-xs text-muted-foreground">
-                      {repos.length} {repos.length === 1 ? "repository" : "repositories"}
+                      {repos.length} 个仓库
                     </span>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -899,7 +899,7 @@ export default function SetupPage() {
                     {platform.description}
                   </p>
                   <Button className="mt-3" size="sm" variant="outline">
-                    Get Started
+                    开始使用
                   </Button>
                 </CardContent>
               </Card>
@@ -918,15 +918,15 @@ export default function SetupPage() {
         <DialogContent className="sm:max-w-4xl max-h-[80vh]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              Set Up: {selectedRepo?.key}
+              设置：{selectedRepo?.key}
               <Badge variant="secondary" className="text-xs uppercase">
                 {selectedRepo?.format}
               </Badge>
             </DialogTitle>
             <DialogDescription>
-              Configure your tools to work with the{" "}
+              配置您的工具以使用{" "}
               <span className="font-medium text-foreground">{selectedRepo?.name}</span>{" "}
-              repository.
+              仓库。
             </DialogDescription>
           </DialogHeader>
           <ScrollArea className="max-h-[60vh] pr-4">
@@ -968,10 +968,9 @@ export default function SetupPage() {
       >
         <DialogContent className="sm:max-w-4xl max-h-[80vh]">
           <DialogHeader>
-            <DialogTitle>{selectedPlatform?.name} Integration</DialogTitle>
+            <DialogTitle>{selectedPlatform?.name} 集成</DialogTitle>
             <DialogDescription>
-              Configure {selectedPlatform?.name} to publish and consume
-              artifacts from Artifact Keeper.
+              配置 {selectedPlatform?.name} 以向 Artifact Keeper 发布和消费制品。
             </DialogDescription>
           </DialogHeader>
           <ScrollArea className="max-h-[60vh] pr-4">

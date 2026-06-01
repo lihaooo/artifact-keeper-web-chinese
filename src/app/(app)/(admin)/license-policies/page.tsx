@@ -119,9 +119,9 @@ export default function LicensePoliciesPage() {
       setEditOpen(false);
       setSelectedPolicy(null);
       setForm(EMPTY_FORM);
-      toast.success(selectedPolicy ? "Policy updated" : "Policy created");
+      toast.success(selectedPolicy ? "策略已更新" : "策略已创建");
     },
-    onError: mutationErrorToast("Failed to save policy"),
+    onError: mutationErrorToast("保存策略失败"),
   });
 
   const deleteMutation = useMutation({
@@ -130,9 +130,9 @@ export default function LicensePoliciesPage() {
       queryClient.invalidateQueries({ queryKey: ["license-policies"] });
       setDeleteOpen(false);
       setSelectedPolicy(null);
-      toast.success("Policy deleted");
+      toast.success("策略已删除");
     },
-    onError: mutationErrorToast("Failed to delete policy"),
+    onError: mutationErrorToast("删除策略失败"),
   });
 
   const toggleMutation = useMutation({
@@ -149,9 +149,9 @@ export default function LicensePoliciesPage() {
     },
     onSuccess: (_, policy) => {
       queryClient.invalidateQueries({ queryKey: ["license-policies"] });
-      toast.success(`Policy ${policy.is_enabled ? "disabled" : "enabled"}`);
+      toast.success(`策略已${policy.is_enabled ? "禁用" : "启用"}`);
     },
-    onError: mutationErrorToast("Failed to toggle policy"),
+    onError: mutationErrorToast("切换策略失败"),
   });
 
   // -- handlers --
@@ -214,7 +214,7 @@ export default function LicensePoliciesPage() {
   const columns: DataTableColumn<LicensePolicy>[] = [
     {
       id: "name",
-      header: "Name",
+      header: "名称",
       accessor: (p) => p.name,
       sortable: true,
       cell: (p) => (
@@ -226,7 +226,7 @@ export default function LicensePoliciesPage() {
     },
     {
       id: "action",
-      header: "Action",
+      header: "操作类型",
       accessor: (p) => p.action,
       cell: (p) => {
         const Icon = ACTION_ICONS[p.action as PolicyAction] ?? AlertTriangle;
@@ -241,7 +241,7 @@ export default function LicensePoliciesPage() {
     },
     {
       id: "allowed",
-      header: "Allowed",
+      header: "允许",
       accessor: (p) => p.allowed_licenses.length,
       cell: (p) => (
         <div className="flex flex-wrap gap-1">
@@ -259,14 +259,14 @@ export default function LicensePoliciesPage() {
               )}
             </>
           ) : (
-            <span className="text-xs text-muted-foreground">Any</span>
+            <span className="text-xs text-muted-foreground">任意</span>
           )}
         </div>
       ),
     },
     {
       id: "denied",
-      header: "Denied",
+      header: "拒绝",
       accessor: (p) => p.denied_licenses.length,
       cell: (p) => (
         <div className="flex flex-wrap gap-1">
@@ -284,18 +284,18 @@ export default function LicensePoliciesPage() {
               )}
             </>
           ) : (
-            <span className="text-xs text-muted-foreground">None</span>
+            <span className="text-xs text-muted-foreground">无</span>
           )}
         </div>
       ),
     },
     {
       id: "status",
-      header: "Status",
-      accessor: (p) => (p.is_enabled ? "Enabled" : "Disabled"),
+      header: "状态",
+      accessor: (p) => (p.is_enabled ? "已启用" : "已禁用"),
       cell: (p) => (
         <StatusBadge
-          status={p.is_enabled ? "Enabled" : "Disabled"}
+          status={p.is_enabled ? "已启用" : "已禁用"}
           color={p.is_enabled ? "green" : "default"}
         />
       ),
@@ -314,7 +314,7 @@ export default function LicensePoliciesPage() {
                 <Pencil className="size-3.5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Edit</TooltipContent>
+            <TooltipContent>编辑</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -326,7 +326,7 @@ export default function LicensePoliciesPage() {
                 )}
               </Button>
             </TooltipTrigger>
-            <TooltipContent>{p.is_enabled ? "Disable" : "Enable"}</TooltipContent>
+            <TooltipContent>{p.is_enabled ? "禁用" : "启用"}</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -339,7 +339,7 @@ export default function LicensePoliciesPage() {
                 <Trash2 className="size-3.5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Delete</TooltipContent>
+            <TooltipContent>删除</TooltipContent>
           </Tooltip>
         </div>
       ),
@@ -350,11 +350,11 @@ export default function LicensePoliciesPage() {
   if (!user?.is_admin) {
     return (
       <div className="space-y-6">
-        <PageHeader title="License Policies" />
+        <PageHeader title="许可证策略" />
         <Alert variant="destructive">
-          <AlertTitle>Access Denied</AlertTitle>
+          <AlertTitle>访问被拒绝</AlertTitle>
           <AlertDescription>
-            You must be an administrator to view this page.
+            您必须是管理员才能查看此页面。
           </AlertDescription>
         </Alert>
       </div>
@@ -367,12 +367,12 @@ export default function LicensePoliciesPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="License Policies"
-        description="Define allowed and denied software licenses for compliance."
+        title="许可证策略"
+        description="定义合规的允许和拒绝的软件许可证。"
         actions={
           <Button onClick={handleCreate}>
             <Plus className="size-4" />
-            Create Policy
+            创建策略
           </Button>
         }
       />
@@ -380,12 +380,12 @@ export default function LicensePoliciesPage() {
       {!isLoading && (policies?.length ?? 0) === 0 ? (
         <EmptyState
           icon={Scale}
-          title="No license policies"
-          description="Create your first license policy to enforce compliance rules."
+          title="暂无许可证策略"
+          description="创建您的第一个许可证策略以执行合规规则。"
           action={
             <Button onClick={handleCreate}>
               <Plus className="size-4" />
-              Create Policy
+              创建策略
             </Button>
           }
         />
@@ -394,13 +394,13 @@ export default function LicensePoliciesPage() {
           columns={columns}
           data={policies ?? []}
           loading={isLoading}
-          emptyMessage="No policies found."
+          emptyMessage="未找到策略。"
           rowKey={(p) => p.id}
           onRowClick={handleEdit}
         />
       )}
 
-      {/* Create/Edit Policy Dialog */}
+      {/* 创建/编辑策略对话框 */}
       <Dialog
         open={FormDialog}
         onOpenChange={(o) => {
@@ -414,29 +414,29 @@ export default function LicensePoliciesPage() {
       >
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>{isEditing ? "Edit Policy" : "Create Policy"}</DialogTitle>
+            <DialogTitle>{isEditing ? "编辑策略" : "创建策略"}</DialogTitle>
             <DialogDescription>
               {isEditing
-                ? "Update the license policy settings."
-                : "Define a new license compliance policy."}
+                ? "更新许可证策略设置。"
+                : "定义新的许可证合规策略。"}
             </DialogDescription>
           </DialogHeader>
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div className="space-y-2">
-              <Label htmlFor="policy-name">Name</Label>
+              <Label htmlFor="policy-name">名称</Label>
               <Input
                 id="policy-name"
-                placeholder="e.g., Default Policy"
+                placeholder="例如，默认策略"
                 value={form.name}
                 onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="policy-desc">Description</Label>
+              <Label htmlFor="policy-desc">描述</Label>
               <Textarea
                 id="policy-desc"
-                placeholder="Optional description..."
+                placeholder="可选描述..."
                 value={form.description}
                 onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                 rows={2}
@@ -444,8 +444,8 @@ export default function LicensePoliciesPage() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="policy-allowed">
-                Allowed Licenses{" "}
-                <span className="text-muted-foreground font-normal">(comma-separated)</span>
+                允许的许可证{" "}
+                <span className="text-muted-foreground font-normal">（逗号分隔）</span>
               </Label>
               <Input
                 id="policy-allowed"
@@ -456,13 +456,13 @@ export default function LicensePoliciesPage() {
                 }
               />
               <p className="text-xs text-muted-foreground">
-                Leave empty to allow any license not in the denied list.
+                留空则允许拒绝列表之外的所有许可证。
               </p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="policy-denied">
-                Denied Licenses{" "}
-                <span className="text-muted-foreground font-normal">(comma-separated)</span>
+                拒绝的许可证{" "}
+                <span className="text-muted-foreground font-normal">（逗号分隔）</span>
               </Label>
               <Input
                 id="policy-denied"
@@ -474,7 +474,7 @@ export default function LicensePoliciesPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label>Action on Violation</Label>
+              <Label>违规操作</Label>
               <Select
                 value={form.action}
                 onValueChange={(v) => setForm((f) => ({ ...f, action: v as PolicyAction }))}
@@ -486,26 +486,26 @@ export default function LicensePoliciesPage() {
                   <SelectItem value="allow">
                     <div className="flex items-center gap-2">
                       <ShieldCheck className="size-4 text-green-500" />
-                      Allow (log only)
+                      允许（仅记录）
                     </div>
                   </SelectItem>
                   <SelectItem value="warn">
                     <div className="flex items-center gap-2">
                       <AlertTriangle className="size-4 text-yellow-500" />
-                      Warn (show warning)
+                      警告（显示警告）
                     </div>
                   </SelectItem>
                   <SelectItem value="block">
                     <div className="flex items-center gap-2">
                       <ShieldAlert className="size-4 text-red-500" />
-                      Block (prevent download)
+                      阻止（禁止下载）
                     </div>
                   </SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="flex items-center justify-between">
-              <Label htmlFor="policy-unknown">Allow Unknown Licenses</Label>
+              <Label htmlFor="policy-unknown">允许未知许可证</Label>
               <Switch
                 id="policy-unknown"
                 checked={form.allow_unknown}
@@ -513,7 +513,7 @@ export default function LicensePoliciesPage() {
               />
             </div>
             <div className="flex items-center justify-between">
-              <Label htmlFor="policy-enabled">Enabled</Label>
+              <Label htmlFor="policy-enabled">已启用</Label>
               <Switch
                 id="policy-enabled"
                 checked={form.is_enabled}
@@ -531,30 +531,30 @@ export default function LicensePoliciesPage() {
                   setForm(EMPTY_FORM);
                 }}
               >
-                Cancel
+                取消
               </Button>
               <Button type="submit" disabled={upsertMutation.isPending}>
                 {upsertMutation.isPending
-                  ? "Saving..."
+                  ? "保存中..."
                   : isEditing
-                    ? "Save Changes"
-                    : "Create Policy"}
+                    ? "保存更改"
+                    : "创建策略"}
               </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirm */}
+      {/* 删除确认 */}
       <ConfirmDialog
         open={deleteOpen}
         onOpenChange={(o) => {
           setDeleteOpen(o);
           if (!o) setSelectedPolicy(null);
         }}
-        title="Delete Policy"
-        description={`Are you sure you want to delete "${selectedPolicy?.name}"? This action cannot be undone.`}
-        confirmText="Delete Policy"
+        title="删除策略"
+        description={`确定要删除"${selectedPolicy?.name}"吗？此操作无法撤销。`}
+        confirmText="删除策略"
         danger
         loading={deleteMutation.isPending}
         onConfirm={() => {

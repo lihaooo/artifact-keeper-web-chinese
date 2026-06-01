@@ -262,32 +262,32 @@ function GateFormDialog({
         <div className="space-y-5 py-2">
           {/* Name */}
           <div className="space-y-2">
-            <Label htmlFor="gate-name">Name</Label>
+            <Label htmlFor="gate-name">名称</Label>
             <Input
               id="gate-name"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
-              placeholder="e.g., Production Release Gate"
+              placeholder="例如，生产发布门禁"
             />
           </div>
 
           {/* Description */}
           <div className="space-y-2">
-            <Label htmlFor="gate-description">Description</Label>
+            <Label htmlFor="gate-description">描述</Label>
             <Input
               id="gate-description"
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
-              placeholder="Optional description"
+              placeholder="可选描述"
             />
           </div>
 
           {/* Score Thresholds */}
           <div className="space-y-3">
-            <Label className="text-sm font-medium">Minimum Score Thresholds (0-100)</Label>
+            <Label className="text-sm font-medium">最低评分阈值 (0-100)</Label>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label htmlFor="gate-min-health-score" className="text-xs text-muted-foreground">Health Score</Label>
+                <Label htmlFor="gate-min-health-score" className="text-xs text-muted-foreground">健康评分</Label>
                 <Input
                   id="gate-min-health-score"
                   type="number"
@@ -299,7 +299,7 @@ function GateFormDialog({
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="gate-min-security-score" className="text-xs text-muted-foreground">Security Score</Label>
+                <Label htmlFor="gate-min-security-score" className="text-xs text-muted-foreground">安全评分</Label>
                 <Input
                   id="gate-min-security-score"
                   type="number"
@@ -311,7 +311,7 @@ function GateFormDialog({
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="gate-min-quality-score" className="text-xs text-muted-foreground">Quality Score</Label>
+                <Label htmlFor="gate-min-quality-score" className="text-xs text-muted-foreground">质量评分</Label>
                 <Input
                   id="gate-min-quality-score"
                   type="number"
@@ -323,7 +323,7 @@ function GateFormDialog({
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="gate-min-metadata-score" className="text-xs text-muted-foreground">Metadata Score</Label>
+                <Label htmlFor="gate-min-metadata-score" className="text-xs text-muted-foreground">元数据评分</Label>
                 <Input
                   id="gate-min-metadata-score"
                   type="number"
@@ -339,10 +339,10 @@ function GateFormDialog({
 
           {/* Max Issues */}
           <div className="space-y-3">
-            <Label className="text-sm font-medium">Maximum Issue Counts</Label>
+            <Label className="text-sm font-medium">最大问题数量</Label>
             <div className="grid grid-cols-3 gap-3">
               <div className="space-y-1.5">
-                <Label htmlFor="gate-max-critical" className="text-xs text-muted-foreground">Critical</Label>
+                <Label htmlFor="gate-max-critical" className="text-xs text-muted-foreground">严重</Label>
                 <Input
                   id="gate-max-critical"
                   type="number"
@@ -353,7 +353,7 @@ function GateFormDialog({
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="gate-max-high" className="text-xs text-muted-foreground">High</Label>
+                <Label htmlFor="gate-max-high" className="text-xs text-muted-foreground">高危</Label>
                 <Input
                   id="gate-max-high"
                   type="number"
@@ -364,7 +364,7 @@ function GateFormDialog({
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="gate-max-medium" className="text-xs text-muted-foreground">Medium</Label>
+                <Label htmlFor="gate-max-medium" className="text-xs text-muted-foreground">中危</Label>
                 <Input
                   id="gate-max-medium"
                   type="number"
@@ -379,7 +379,7 @@ function GateFormDialog({
 
           {/* Required Checks */}
           <div className="space-y-3">
-            <Label className="text-sm font-medium">Required Checks</Label>
+            <Label className="text-sm font-medium">必需检查</Label>
             <div className="grid grid-cols-2 gap-2">
               {CHECK_TYPES.map((check) => (
                 <label
@@ -400,7 +400,7 @@ function GateFormDialog({
 
           {/* Action */}
           <div className="space-y-2">
-            <Label>Action When Gate Fails</Label>
+            <Label>门禁失败时的操作</Label>
             <Select
               value={form.action}
               onValueChange={(v) => setForm({ ...form, action: v })}
@@ -409,26 +409,26 @@ function GateFormDialog({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="allow">Allow (log only)</SelectItem>
-                <SelectItem value="warn">Warn (proceed with warning)</SelectItem>
-                <SelectItem value="block">Block (prevent action)</SelectItem>
+                <SelectItem value="allow">允许（仅记录日志）</SelectItem>
+                <SelectItem value="warn">警告（继续并发出警告）</SelectItem>
+                <SelectItem value="block">阻止（阻止操作）</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           {/* Enforcement */}
           <div className="space-y-3">
-            <Label className="text-sm font-medium">Enforcement</Label>
+            <Label className="text-sm font-medium">执行方式</Label>
             <div className="space-y-3">
               <div className="flex items-center justify-between rounded-md border px-3 py-2.5">
                 <div>
-                  <p className="text-sm font-medium">Enforce on Promotion</p>
+                  <p className="text-sm font-medium">晋升时执行</p>
                   <p className="text-xs text-muted-foreground">
-                    Evaluate this gate when artifacts are promoted
+                    制品晋升时评估此门禁
                   </p>
                 </div>
                 <Switch
-                  aria-label="Enforce on Promotion"
+                  aria-label="晋升时执行"
                   checked={form.enforce_on_promotion}
                   onCheckedChange={(checked) =>
                     setForm({ ...form, enforce_on_promotion: checked })
@@ -437,13 +437,13 @@ function GateFormDialog({
               </div>
               <div className="flex items-center justify-between rounded-md border px-3 py-2.5">
                 <div>
-                  <p className="text-sm font-medium">Enforce on Download</p>
+                  <p className="text-sm font-medium">下载时执行</p>
                   <p className="text-xs text-muted-foreground">
-                    Evaluate this gate when artifacts are downloaded
+                    制品下载时评估此门禁
                   </p>
                 </div>
                 <Switch
-                  aria-label="Enforce on Download"
+                  aria-label="下载时执行"
                   checked={form.enforce_on_download}
                   onCheckedChange={(checked) =>
                     setForm({ ...form, enforce_on_download: checked })
@@ -455,7 +455,7 @@ function GateFormDialog({
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
+            取消
           </Button>
           <Button
             onClick={onSubmit}
@@ -499,33 +499,33 @@ export default function QualityGatesPage() {
   const createMutation = useMutation({
     mutationFn: (req: CreateQualityGateRequest) => qualityGatesApi.createGate(req),
     onSuccess: () => {
-      toast.success("Quality gate created");
+      toast.success("质量门禁已创建");
       queryClient.invalidateQueries({ queryKey: ["quality-gates"] });
       setCreateOpen(false);
       setCreateForm(emptyForm);
     },
-    onError: mutationErrorToast("Failed to create quality gate"),
+    onError: mutationErrorToast("创建质量门禁失败"),
   });
 
   const updateMutation = useMutation({
     mutationFn: ({ id, req }: { id: string; req: UpdateQualityGateRequest }) =>
       qualityGatesApi.updateGate(id, req),
     onSuccess: () => {
-      toast.success("Quality gate updated");
+      toast.success("质量门禁已更新");
       queryClient.invalidateQueries({ queryKey: ["quality-gates"] });
       setEditTarget(null);
     },
-    onError: mutationErrorToast("Failed to update quality gate"),
+    onError: mutationErrorToast("更新质量门禁失败"),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => qualityGatesApi.deleteGate(id),
     onSuccess: () => {
-      toast.success("Quality gate deleted");
+      toast.success("质量门禁已删除");
       queryClient.invalidateQueries({ queryKey: ["quality-gates"] });
       setDeleteTarget(null);
     },
-    onError: mutationErrorToast("Failed to delete quality gate"),
+    onError: mutationErrorToast("删除质量门禁失败"),
   });
 
   const toggleMutation = useMutation({
@@ -534,7 +534,7 @@ export default function QualityGatesPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["quality-gates"] });
     },
-    onError: mutationErrorToast("Failed to update quality gate"),
+    onError: mutationErrorToast("更新质量门禁失败"),
   });
 
   // -- Helpers --
@@ -559,9 +559,9 @@ export default function QualityGatesPage() {
   if (!user?.is_admin) {
     return (
       <div className="space-y-6">
-        <PageHeader title="Quality Gates" />
+        <PageHeader title="质量门禁" />
         <Alert variant="destructive">
-          <AlertTitle>Access Denied</AlertTitle>
+          <AlertTitle>访问被拒绝</AlertTitle>
         </Alert>
       </div>
     );
@@ -573,8 +573,8 @@ export default function QualityGatesPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Quality Gates"
-        description="Define quality thresholds that artifacts must pass before promotion or download."
+        title="质量门禁"
+        description="定义制品在晋升或下载前必须通过的质量阈值。"
         actions={
           <div className="flex gap-2">
             <Button
@@ -595,7 +595,7 @@ export default function QualityGatesPage() {
               }}
             >
               <Plus className="size-4 mr-1.5" />
-              New Gate
+              新建门禁
             </Button>
           </div>
         }
@@ -613,25 +613,25 @@ export default function QualityGatesPage() {
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
             <StatCard
               icon={Activity}
-              label="Avg Health Score"
+              label="平均健康评分"
               value={`${dashboard.avg_health_score}/100`}
               color={dashboard.avg_health_score >= 70 ? "green" : dashboard.avg_health_score >= 40 ? "yellow" : "red"}
             />
             <StatCard
               icon={BarChart3}
-              label="Artifacts Evaluated"
+              label="已评估制品"
               value={dashboard.total_artifacts_evaluated}
               color="blue"
             />
             <StatCard
               icon={Award}
-              label="Grade A Repos"
+              label="A 级仓库"
               value={dashboard.repos_grade_a}
               color="green"
             />
             <StatCard
               icon={AlertTriangle}
-              label="Grade F Repos"
+              label="F 级仓库"
               value={dashboard.repos_grade_f}
               color={dashboard.repos_grade_f > 0 ? "red" : "green"}
             />
@@ -640,7 +640,7 @@ export default function QualityGatesPage() {
           {/* Grade Distribution */}
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-base">Repository Grade Distribution</CardTitle>
+              <CardTitle className="text-base">仓库等级分布</CardTitle>
             </CardHeader>
             <CardContent>
               <GradeDistributionBar dashboard={dashboard} />
@@ -651,18 +651,18 @@ export default function QualityGatesPage() {
           {dashboard.repositories.length > 0 && (
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-base">Repository Health</CardTitle>
+                <CardTitle className="text-base">仓库健康状态</CardTitle>
               </CardHeader>
               <CardContent className="px-0">
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Repository</TableHead>
-                      <TableHead>Grade</TableHead>
-                      <TableHead>Score</TableHead>
-                      <TableHead className="text-right">Evaluated</TableHead>
-                      <TableHead className="text-right">Passing</TableHead>
-                      <TableHead className="text-right">Failing</TableHead>
+                      <TableHead>仓库</TableHead>
+                      <TableHead>等级</TableHead>
+                      <TableHead>评分</TableHead>
+                      <TableHead className="text-right">已评估</TableHead>
+                      <TableHead className="text-right">已通过</TableHead>
+                      <TableHead className="text-right">未通过</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -713,19 +713,19 @@ export default function QualityGatesPage() {
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
           <StatCard
             icon={ShieldCheck}
-            label="Total Gates"
+            label="门禁总数"
             value={gates?.length ?? 0}
             color="blue"
           />
           <StatCard
             icon={CheckCircle2}
-            label="Enabled"
+            label="已启用"
             value={enabledCount}
             color="green"
           />
           <StatCard
             icon={AlertTriangle}
-            label="Blocking"
+            label="阻止中"
             value={blockCount}
             color={blockCount > 0 ? "red" : "default"}
           />
@@ -735,7 +735,7 @@ export default function QualityGatesPage() {
       {/* Quality Gates Table */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Quality Gates</CardTitle>
+          <CardTitle className="text-base">质量门禁</CardTitle>
         </CardHeader>
         <CardContent className="px-0">
           {gatesLoading ? (
@@ -748,8 +748,8 @@ export default function QualityGatesPage() {
             <div className="px-6 pb-4">
               <EmptyState
                 icon={ShieldCheck}
-                title="No quality gates"
-                description="Create a quality gate to enforce minimum standards for your artifacts."
+                title="暂无质量门禁"
+                description="创建质量门禁以为制品强制执行最低标准。"
                 action={
                   <Button
                     size="sm"
@@ -759,7 +759,7 @@ export default function QualityGatesPage() {
                     }}
                   >
                     <Plus className="size-4 mr-1.5" />
-                    Create Gate
+                    创建门禁
                   </Button>
                 }
               />
@@ -768,11 +768,11 @@ export default function QualityGatesPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Action</TableHead>
-                  <TableHead>Thresholds</TableHead>
-                  <TableHead>Enforcement</TableHead>
-                  <TableHead>Active</TableHead>
+                  <TableHead>名称</TableHead>
+                  <TableHead>操作</TableHead>
+                  <TableHead>阈值</TableHead>
+                  <TableHead>执行方式</TableHead>
+                  <TableHead>活跃</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -842,7 +842,7 @@ export default function QualityGatesPage() {
                          gate.max_high_issues == null &&
                          gate.max_medium_issues == null && (
                           <span className="text-xs text-muted-foreground">
-                            No thresholds set
+                            未设置阈值
                           </span>
                         )}
                       </div>
@@ -851,24 +851,24 @@ export default function QualityGatesPage() {
                       <div className="flex flex-wrap gap-1">
                         {gate.enforce_on_promotion && (
                           <Badge variant="outline" className="text-xs font-normal">
-                            Promotion
+                            晋升
                           </Badge>
                         )}
                         {gate.enforce_on_download && (
                           <Badge variant="outline" className="text-xs font-normal">
-                            Download
+                            下载
                           </Badge>
                         )}
                         {!gate.enforce_on_promotion && !gate.enforce_on_download && (
                           <span className="text-xs text-muted-foreground">
-                            None
+                            无
                           </span>
                         )}
                       </div>
                     </TableCell>
                     <TableCell>
                       <Switch
-                        aria-label={`${gate.is_enabled ? "Disable" : "Enable"} gate ${gate.name}`}
+                        aria-label={`${gate.is_enabled ? "禁用" : "启用"} gate ${gate.name}`}
                         checked={gate.is_enabled}
                         onCheckedChange={(checked) =>
                           toggleMutation.mutate({
@@ -885,7 +885,7 @@ export default function QualityGatesPage() {
                           variant="ghost"
                           size="sm"
                           onClick={() => openEdit(gate)}
-                          aria-label={`Edit gate ${gate.name}`}
+                          aria-label={`编辑门禁 ${gate.name}`}
                         >
                           <Pencil className="size-4" />
                         </Button>
@@ -893,7 +893,7 @@ export default function QualityGatesPage() {
                           variant="ghost"
                           size="sm"
                           onClick={() => setDeleteTarget(gate)}
-                          aria-label={`Delete gate ${gate.name}`}
+                          aria-label={`删除门禁 ${gate.name}`}
                         >
                           <Trash2 className="size-4 text-destructive" />
                         </Button>
@@ -914,13 +914,13 @@ export default function QualityGatesPage() {
           setCreateOpen(o);
           if (!o) setCreateForm(emptyForm);
         }}
-        title="Create Quality Gate"
-        description="Define thresholds that artifacts must pass."
+        title="创建质量门禁"
+        description="定义制品必须通过的阈值。"
         form={createForm}
         setForm={setCreateForm}
         onSubmit={handleCreate}
         loading={createMutation.isPending}
-        submitLabel="Create"
+        submitLabel="创建"
       />
 
       {/* Edit Dialog */}
@@ -929,21 +929,21 @@ export default function QualityGatesPage() {
         onOpenChange={(o) => {
           if (!o) setEditTarget(null);
         }}
-        title="Edit Quality Gate"
-        description="Update the quality gate settings."
+        title="编辑质量门禁"
+        description="更新质量门禁设置。"
         form={editForm}
         setForm={setEditForm}
         onSubmit={handleUpdate}
         loading={updateMutation.isPending}
-        submitLabel="Save Changes"
+        submitLabel="保存更改"
       />
 
       {/* Delete Confirm */}
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(null)}
-        title="Delete Quality Gate"
-        description={`Delete "${deleteTarget?.name}"? This cannot be undone.`}
+        title="删除质量门禁"
+        description={`确定要删除 "${deleteTarget?.name}"吗？此操作无法撤销。`}
         danger
         onConfirm={() => {
           if (deleteTarget) deleteMutation.mutate(deleteTarget.id);

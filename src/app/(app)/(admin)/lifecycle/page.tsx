@@ -109,22 +109,22 @@ export default function LifecyclePage() {
   const createMutation = useMutation({
     mutationFn: (req: CreateLifecyclePolicyRequest) => lifecycleApi.create(req),
     onSuccess: () => {
-      toast.success("Policy created");
+      toast.success("策略已创建");
       queryClient.invalidateQueries({ queryKey: ["lifecycle-policies"] });
       setCreateOpen(false);
       resetForm();
     },
-    onError: mutationErrorToast("Failed to create policy"),
+    onError: mutationErrorToast("创建策略失败"),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => lifecycleApi.delete(id),
     onSuccess: () => {
-      toast.success("Policy deleted");
+      toast.success("策略已删除");
       queryClient.invalidateQueries({ queryKey: ["lifecycle-policies"] });
       setDeleteTarget(null);
     },
-    onError: mutationErrorToast("Failed to delete policy"),
+    onError: mutationErrorToast("删除策略失败"),
   });
 
   const toggleMutation = useMutation({
@@ -133,24 +133,24 @@ export default function LifecyclePage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["lifecycle-policies"] });
     },
-    onError: mutationErrorToast("Failed to update policy"),
+    onError: mutationErrorToast("更新策略失败"),
   });
 
   const executeMutation = useMutation({
     mutationFn: (id: string) => lifecycleApi.execute(id),
     onSuccess: (result) => {
       toast.success(
-        `Removed ${result.artifacts_removed} artifacts (${formatBytes(result.bytes_freed)} freed)`
+        `已移除 ${result.artifacts_removed} 个制品（释放 ${formatBytes(result.bytes_freed)}）`
       );
       queryClient.invalidateQueries({ queryKey: ["lifecycle-policies"] });
     },
-    onError: mutationErrorToast("Execution failed"),
+    onError: mutationErrorToast("执行失败"),
   });
 
   const previewMutation = useMutation({
     mutationFn: (id: string) => lifecycleApi.preview(id),
     onSuccess: (result) => setPreviewResult(result),
-    onError: mutationErrorToast("Preview failed"),
+    onError: mutationErrorToast("预览失败"),
   });
 
   const executeAllMutation = useMutation({
@@ -162,11 +162,11 @@ export default function LifecyclePage() {
       );
       const totalFreed = results.reduce((sum, r) => sum + r.bytes_freed, 0);
       toast.success(
-        `Executed ${results.length} policies: ${totalRemoved} artifacts removed, ${formatBytes(totalFreed)} freed`
+        `已执行 ${results.length} 个策略：移除 ${totalRemoved} 个制品，释放 ${formatBytes(totalFreed)}`
       );
       queryClient.invalidateQueries({ queryKey: ["lifecycle-policies"] });
     },
-    onError: mutationErrorToast("Execute all failed"),
+    onError: mutationErrorToast("全部执行失败"),
   });
 
   function resetForm() {
@@ -181,7 +181,7 @@ export default function LifecyclePage() {
     try {
       config = JSON.parse(formConfig);
     } catch {
-      toast.error("Invalid JSON in config field");
+      toast.error("配置字段 JSON 格式无效");
       return;
     }
     createMutation.mutate({
@@ -195,9 +195,9 @@ export default function LifecyclePage() {
   if (!user?.is_admin) {
     return (
       <div className="space-y-6">
-        <PageHeader title="Lifecycle Policies" />
+        <PageHeader title="生命周期策略" />
         <Alert variant="destructive">
-          <AlertTitle>Access Denied</AlertTitle>
+          <AlertTitle>访问被拒绝</AlertTitle>
         </Alert>
       </div>
     );
@@ -214,8 +214,8 @@ export default function LifecyclePage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Lifecycle Policies"
-        description="Manage artifact retention and cleanup policies."
+        title="生命周期策略"
+        description="管理制品保留和清理策略。"
         actions={
           <div className="flex gap-2">
             <Button
@@ -229,11 +229,11 @@ export default function LifecyclePage() {
               ) : (
                 <Play className="size-4 mr-1.5" />
               )}
-              Execute All
+              全部执行
             </Button>
             <Button size="sm" onClick={() => setCreateOpen(true)}>
               <Plus className="size-4 mr-1.5" />
-              New Policy
+              新建策略
             </Button>
           </div>
         }
@@ -250,23 +250,23 @@ export default function LifecyclePage() {
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
           <StatCard
             icon={Recycle}
-            label="Total Policies"
+            label="策略总数"
             value={policies?.length ?? 0}
             color="blue"
           />
           <StatCard
             icon={CheckCircle2}
-            label="Enabled"
+            label="已启用"
             value={enabledCount}
             color="green"
           />
           <StatCard
             icon={RefreshCw}
-            label="Last Execution"
+            label="上次执行"
             value={
               lastRunPolicy?.last_run_at
                 ? formatDateTime(lastRunPolicy.last_run_at)
-                : "Never"
+                : "从未"
             }
             color="purple"
           />
@@ -276,7 +276,7 @@ export default function LifecyclePage() {
       {/* Policy Table */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Policies</CardTitle>
+          <CardTitle className="text-base">策略</CardTitle>
         </CardHeader>
         <CardContent className="px-0">
           {isLoading ? (
@@ -289,12 +289,12 @@ export default function LifecyclePage() {
             <div className="px-6 pb-4">
               <EmptyState
                 icon={Recycle}
-                title="No lifecycle policies"
-                description="Create a policy to automatically manage artifact retention."
+                title="暂无生命周期策略"
+                description="创建策略以自动管理制品保留。"
                 action={
                   <Button size="sm" onClick={() => setCreateOpen(true)}>
                     <Plus className="size-4 mr-1.5" />
-                    Create Policy
+                    创建策略
                   </Button>
                 }
               />
@@ -303,12 +303,12 @@ export default function LifecyclePage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Last Run</TableHead>
-                  <TableHead className="text-right">Removed</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead>名称</TableHead>
+                  <TableHead>类型</TableHead>
+                  <TableHead>状态</TableHead>
+                  <TableHead className="text-right">上次执行</TableHead>
+                  <TableHead className="text-right">已移除</TableHead>
+                  <TableHead className="text-right">操作</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -339,7 +339,7 @@ export default function LifecyclePage() {
                     <TableCell className="text-right text-muted-foreground">
                       {policy.last_run_at
                         ? formatDateTime(policy.last_run_at)
-                        : "Never"}
+                        : "从未"}
                     </TableCell>
                     <TableCell className="text-right">
                       {policy.last_run_items_removed ?? "-"}
@@ -355,7 +355,7 @@ export default function LifecyclePage() {
                               enabled: !policy.enabled,
                             })
                           }
-                          aria-label={`${policy.enabled ? "Disable" : "Enable"} policy ${policy.name}`}
+                          aria-label={`${policy.enabled ? "禁用" : "启用"} policy ${policy.name}`}
                         >
                           {policy.enabled ? (
                             <XCircle className="size-4" />
@@ -404,16 +404,16 @@ export default function LifecyclePage() {
         <Alert>
           <Eye className="size-4" />
           <AlertTitle>
-            Preview: {previewResult.policy_name}
+            预览：{previewResult.policy_name}
           </AlertTitle>
           <AlertDescription>
-            Would match {previewResult.artifacts_matched} artifacts, remove{" "}
-            {previewResult.artifacts_removed}, free{" "}
-            {formatBytes(previewResult.bytes_freed)}.
+            将匹配 {previewResult.artifacts_matched} 个制品，移除{" "}
+            {previewResult.artifacts_removed} 个，释放{" "}
+            {formatBytes(previewResult.bytes_freed)}。
             {previewResult.errors.length > 0 && (
               <span className="text-destructive">
                 {" "}
-                {previewResult.errors.length} error(s).
+                {previewResult.errors.length} 个错误。
               </span>
             )}
           </AlertDescription>
@@ -424,32 +424,32 @@ export default function LifecyclePage() {
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Create Lifecycle Policy</DialogTitle>
+            <DialogTitle>创建生命周期策略</DialogTitle>
             <DialogDescription>
-              Define a policy to automatically clean up artifacts.
+              定义策略以自动清理制品。
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-2">
-              <Label htmlFor="lifecycle-name">Name</Label>
+              <Label htmlFor="lifecycle-name">名称</Label>
               <Input
                 id="lifecycle-name"
                 value={formName}
                 onChange={(e) => setFormName(e.target.value)}
-                placeholder="e.g., Cleanup old snapshots"
+                placeholder="例如，清理旧快照"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="lifecycle-description">Description</Label>
+              <Label htmlFor="lifecycle-description">描述</Label>
               <Input
                 id="lifecycle-description"
                 value={formDescription}
                 onChange={(e) => setFormDescription(e.target.value)}
-                placeholder="Optional description"
+                placeholder="可选描述"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="lifecycle-type">Policy Type</Label>
+              <Label htmlFor="lifecycle-type">策略类型</Label>
               <Select
                 value={formType}
                 onValueChange={(v) => {
@@ -470,7 +470,7 @@ export default function LifecyclePage() {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="lifecycle-config">Config (JSON)</Label>
+              <Label htmlFor="lifecycle-config">配置 (JSON)</Label>
               <Textarea
                 id="lifecycle-config"
                 value={formConfig}
@@ -482,7 +482,7 @@ export default function LifecyclePage() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setCreateOpen(false)}>
-              Cancel
+              取消
             </Button>
             <Button
               onClick={handleCreate}
@@ -491,7 +491,7 @@ export default function LifecyclePage() {
               {createMutation.isPending && (
                 <Loader2 className="size-4 mr-1.5 animate-spin" />
               )}
-              Create
+              创建
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -501,8 +501,8 @@ export default function LifecyclePage() {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(null)}
-        title="Delete Policy"
-        description={`Delete "${deleteTarget?.name}"? This cannot be undone.`}
+        title="删除策略"
+        description={`删除"${deleteTarget?.name}"？此操作无法撤销。`}
         danger
         onConfirm={() => {
           if (deleteTarget) deleteMutation.mutate(deleteTarget.id);

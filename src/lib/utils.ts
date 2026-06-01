@@ -34,9 +34,9 @@ export function formatBytes(bytes: number): string {
  * Format an ISO date string into a short locale-friendly display string.
  */
 export function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString("en-US", {
+  return new Date(dateStr).toLocaleDateString("zh-CN", {
     year: "numeric",
-    month: "short",
+    month: "long",
     day: "numeric",
   });
 }
@@ -54,8 +54,9 @@ export const REPO_TYPE_COLORS: Record<string, string> = {
  * Format a number with compact suffixes (e.g. 1.5K, 2.3M).
  */
 export function formatNumber(n: number): string {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
+  if (n >= 100_000_000) return `${(n / 100_000_000).toFixed(1)}亿`;
+  if (n >= 10_000) return `${(n / 10_000).toFixed(1)}万`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}千`;
   return n.toString();
 }
 

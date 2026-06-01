@@ -96,18 +96,18 @@ export function RepositoriesContent() {
       invalidateAllRepoQueries();
       setCreateOpen(false);
       if (variables.repo_type === "staging") {
-        toast.success("Repository created", {
-          description: "Configure promotion rules to start promoting artifacts.",
+        toast.success("仓库已创建", {
+          description: "配置推广规则以开始推广制品。",
           action: {
-            label: "Go to Staging",
+            label: "前往暂存",
             onClick: () => router.push("/staging"),
           },
         });
       } else {
-        toast.success("Repository created");
+        toast.success("仓库已创建");
       }
     },
-    onError: mutationErrorToast("Failed to create repository"),
+    onError: mutationErrorToast("创建仓库失败"),
   });
 
   const updateMutation = useMutation({
@@ -124,9 +124,9 @@ export function RepositoriesContent() {
         url.searchParams.set("selected", updatedRepo.key);
         globalThis.window.history.replaceState(null, "", url.toString());
       }
-      toast.success("Repository updated");
+      toast.success("仓库已更新");
     },
-    onError: mutationErrorToast("Failed to update repository"),
+    onError: mutationErrorToast("更新仓库失败"),
   });
 
   const deleteMutation = useMutation({
@@ -136,9 +136,9 @@ export function RepositoriesContent() {
       setDeleteOpen(false);
       setDialogRepo(null);
       if (selectedKey === deletedKey) setSelectedKey(null);
-      toast.success("Repository deleted");
+      toast.success("仓库已删除");
     },
-    onError: mutationErrorToast("Failed to delete repository"),
+    onError: mutationErrorToast("删除仓库失败"),
   });
 
   const upstreamAuthMutation = useMutation({
@@ -146,9 +146,9 @@ export function RepositoriesContent() {
       repositoriesApi.updateUpstreamAuth(key, payload),
     onSuccess: () => {
       invalidateAllRepoQueries();
-      toast.success("Upstream authentication updated");
+      toast.success("上游认证已更新");
     },
-    onError: mutationErrorToast("Failed to update upstream authentication"),
+    onError: mutationErrorToast("更新上游认证失败"),
   });
 
   // --- handlers ---
@@ -257,7 +257,7 @@ export function RepositoriesContent() {
         <div className="relative">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
           <Input
-            placeholder="Search..."
+            placeholder="搜索..."
             className="pl-8 h-8 text-sm"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -269,10 +269,10 @@ export function RepositoriesContent() {
             onValueChange={(v) => { setFormatFilter(v); setPage(1); }}
           >
             <SelectTrigger className="h-7 text-xs flex-1">
-              <SelectValue placeholder="Format" />
+              <SelectValue placeholder="格式" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="__all__">All formats</SelectItem>
+              <SelectItem value="__all__">所有格式</SelectItem>
               {FORMAT_GROUPS.map(([group, options]) => (
                 <SelectGroup key={group}>
                   <span className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">
@@ -292,10 +292,10 @@ export function RepositoriesContent() {
             onValueChange={(v) => { setTypeFilter(v); setPage(1); }}
           >
             <SelectTrigger className="h-7 text-xs w-[100px]">
-              <SelectValue placeholder="Type" />
+              <SelectValue placeholder="类型" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="__all__">All types</SelectItem>
+              <SelectItem value="__all__">所有类型</SelectItem>
               {TYPE_OPTIONS.map((o) => (
                 <SelectItem key={o.value} value={o.value}>
                   {o.label}
@@ -321,7 +321,7 @@ export function RepositoriesContent() {
         {!isLoading && filtered.length === 0 && (
           <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
             <Package className="size-8 mb-2 opacity-50" />
-            <p className="text-sm">No repositories found.</p>
+            <p className="text-sm">未找到仓库。</p>
           </div>
         )}
         {!isLoading && filtered.length > 0 && (
@@ -345,7 +345,7 @@ export function RepositoriesContent() {
       {totalPages > 1 && (
         <div className="border-t px-3 py-2 flex items-center justify-between text-xs text-muted-foreground">
           <span>
-            Page {page} of {totalPages}
+            第 {page} 页 / 共 {totalPages} 页
           </span>
           <div className="flex gap-1">
             <Button
@@ -353,7 +353,7 @@ export function RepositoriesContent() {
               size="icon-xs"
               disabled={page <= 1}
               onClick={() => setPage(page - 1)}
-              aria-label="Previous page"
+              aria-label="上一页"
             >
               &lt;
             </Button>
@@ -362,7 +362,7 @@ export function RepositoriesContent() {
               size="icon-xs"
               disabled={page >= totalPages}
               onClick={() => setPage(page + 1)}
-              aria-label="Next page"
+              aria-label="下一页"
             >
               &gt;
             </Button>
@@ -377,9 +377,9 @@ export function RepositoriesContent() {
       {/* Page header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Repositories</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">仓库</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Manage artifact repositories across all formats.
+            管理所有格式的制品仓库。
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -391,19 +391,19 @@ export function RepositoriesContent() {
                 onClick={() =>
                   queryClient.invalidateQueries({ queryKey: ["repositories"] })
                 }
-                aria-label="Refresh repositories"
+                aria-label="刷新仓库"
               >
                 <RefreshCw
                   className={`size-4 ${isFetching ? "animate-spin" : ""}`}
                 />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Refresh</TooltipContent>
+            <TooltipContent>刷新</TooltipContent>
           </Tooltip>
           {isAuthenticated && (
             <Button onClick={() => setCreateOpen(true)}>
               <Plus className="size-4" />
-              Create Repository
+              创建仓库
             </Button>
           )}
         </div>
@@ -429,9 +429,9 @@ export function RepositoriesContent() {
             ) : (
               <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
                 <Package className="size-12 mb-3 opacity-30" />
-                <p className="text-sm font-medium">Select a repository</p>
+                <p className="text-sm font-medium">选择一个仓库</p>
                 <p className="text-xs mt-1">
-                  Choose a repository from the list to view its contents.
+                  从列表中选择一个仓库以查看其内容。
                 </p>
               </div>
             )}

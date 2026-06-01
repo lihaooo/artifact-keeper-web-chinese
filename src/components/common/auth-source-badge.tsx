@@ -13,7 +13,7 @@ const providerConfig: Record<
   { label: string; colorClass: string }
 > = {
   local: {
-    label: "Local",
+    label: "本地",
     colorClass:
       "bg-slate-100 text-slate-700 dark:bg-slate-800/40 dark:text-slate-300 border-slate-200 dark:border-slate-700",
   },
@@ -44,7 +44,7 @@ function isKnownProvider(value: string): value is AuthProvider {
  * capitalized as-is.
  */
 export function getAuthProviderLabel(provider?: string): string {
-  if (!provider) return "Local";
+  if (!provider) return "本地";
   const normalized = provider.toLowerCase();
   if (isKnownProvider(normalized)) {
     return providerConfig[normalized].label;
@@ -65,7 +65,7 @@ export function AuthSourceBadge({ provider, className }: AuthSourceBadgeProps) {
         label:
           provider
             ? provider.charAt(0).toUpperCase() + provider.slice(1)
-            : "Local",
+            : "本地",
         colorClass:
           "bg-secondary text-secondary-foreground border-border",
       };

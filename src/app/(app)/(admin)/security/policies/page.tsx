@@ -97,10 +97,10 @@ function PolicyFormFields({
   return (
     <div className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="policy-name">Policy Name</Label>
+        <Label htmlFor="policy-name">策略名称</Label>
         <Input
           id="policy-name"
-          placeholder="e.g., Block Critical CVEs"
+          placeholder="例如，阻止严重 CVE"
           value={form.name}
           onChange={(e) =>
             setForm((f) => ({ ...f, name: e.target.value }))
@@ -109,7 +109,7 @@ function PolicyFormFields({
         />
       </div>
       <div className="space-y-2">
-        <Label>Max Severity Threshold</Label>
+        <Label>最大严重性阈值</Label>
         <Select
           value={form.max_severity}
           onValueChange={(v) =>
@@ -128,7 +128,7 @@ function PolicyFormFields({
           </SelectContent>
         </Select>
         <p className="text-xs text-muted-foreground">
-          Block artifacts with findings at or above this severity.
+          阻止严重性达到或超过此级别的发现对应的制品。
         </p>
       </div>
       <div className="flex items-center gap-3">
@@ -140,7 +140,7 @@ function PolicyFormFields({
           }
         />
         <Label htmlFor="block-unscanned" className="text-sm">
-          Block unscanned artifacts
+          阻止未扫描的制品
         </Label>
       </div>
       <div className="flex items-center gap-3">
@@ -152,7 +152,7 @@ function PolicyFormFields({
           }
         />
         <Label htmlFor="block-on-fail" className="text-sm">
-          Block on scan failure
+          扫描失败时阻止
         </Label>
       </div>
       {showEnabled && (
@@ -165,26 +165,25 @@ function PolicyFormFields({
             }
           />
           <Label htmlFor="policy-enabled" className="text-sm">
-            Policy enabled
+            启用策略
           </Label>
         </div>
       )}
       {showRepoId && (
         <div className="space-y-2">
           <Label htmlFor="policy-repo-id">
-            Repository ID (optional)
+            仓库 ID（可选）
           </Label>
           <Input
             id="policy-repo-id"
-            placeholder="Leave blank for a global policy"
+            placeholder="留空表示全局策略"
             value={form.repository_id}
             onChange={(e) =>
               setForm((f) => ({ ...f, repository_id: e.target.value }))
             }
           />
           <p className="text-xs text-muted-foreground">
-            Scope this policy to a specific repository, or leave blank for
-            global enforcement.
+            将此策略限定到特定仓库，或留空表示全局执行。
           </p>
         </div>
       )}
@@ -223,9 +222,9 @@ export default function SecurityPoliciesPage() {
       queryClient.invalidateQueries({ queryKey: ["security", "policies"] });
       setCreateOpen(false);
       setCreateForm({ ...DEFAULT_FORM });
-      toast.success("Policy created.");
+      toast.success("策略已创建。");
     },
-    onError: mutationErrorToast("Failed to create policy"),
+    onError: mutationErrorToast("创建策略失败"),
   });
 
   const updateMutation = useMutation({
@@ -235,9 +234,9 @@ export default function SecurityPoliciesPage() {
       queryClient.invalidateQueries({ queryKey: ["security", "policies"] });
       setEditOpen(false);
       setSelectedPolicy(null);
-      toast.success("Policy updated.");
+      toast.success("策略已更新。");
     },
-    onError: mutationErrorToast("Failed to update policy"),
+    onError: mutationErrorToast("更新策略失败"),
   });
 
   const deleteMutation = useMutation({
@@ -246,9 +245,9 @@ export default function SecurityPoliciesPage() {
       queryClient.invalidateQueries({ queryKey: ["security", "policies"] });
       setDeleteOpen(false);
       setSelectedPolicy(null);
-      toast.success("Policy deleted.");
+      toast.success("策略已删除。");
     },
-    onError: mutationErrorToast("Failed to delete policy"),
+    onError: mutationErrorToast("删除策略失败"),
   });
 
   const handleEdit = useCallback((policy: ScanPolicy) => {
@@ -273,14 +272,14 @@ export default function SecurityPoliciesPage() {
   const columns: DataTableColumn<ScanPolicy>[] = [
     {
       id: "name",
-      header: "Name",
+      header: "名称",
       accessor: (r) => r.name,
       sortable: true,
       cell: (r) => <span className="text-sm font-medium">{r.name}</span>,
     },
     {
       id: "scope",
-      header: "Scope",
+      header: "范围",
       accessor: (r) => (r.repository_id ? "repo" : "global"),
       cell: (r) =>
         r.repository_id ? (
@@ -292,13 +291,13 @@ export default function SecurityPoliciesPage() {
             variant="outline"
             className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border-blue-200 dark:border-blue-800 text-xs font-medium"
           >
-            Global
+            全局
           </Badge>
         ),
     },
     {
       id: "max_severity",
-      header: "Severity Threshold",
+      header: "严重性阈值",
       accessor: (r) => r.max_severity,
       cell: (r) => (
         <Badge
@@ -311,37 +310,37 @@ export default function SecurityPoliciesPage() {
     },
     {
       id: "block_unscanned",
-      header: "Block Unscanned",
+      header: "阻止未扫描",
       cell: (r) =>
         r.block_unscanned ? (
           <Badge
             variant="outline"
             className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 border-red-200 dark:border-red-800 text-xs font-medium"
           >
-            Yes
+            是
           </Badge>
         ) : (
-          <span className="text-sm text-muted-foreground">No</span>
+          <span className="text-sm text-muted-foreground">否</span>
         ),
     },
     {
       id: "block_on_fail",
-      header: "Block on Fail",
+      header: "失败时阻止",
       cell: (r) =>
         r.block_on_fail ? (
           <Badge
             variant="outline"
             className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 border-red-200 dark:border-red-800 text-xs font-medium"
           >
-            Yes
+            是
           </Badge>
         ) : (
-          <span className="text-sm text-muted-foreground">No</span>
+          <span className="text-sm text-muted-foreground">否</span>
         ),
     },
     {
       id: "enabled",
-      header: "Enabled",
+      header: "已启用",
       accessor: (r) => (r.is_enabled ? "yes" : "no"),
       cell: (r) =>
         r.is_enabled ? (
@@ -349,17 +348,17 @@ export default function SecurityPoliciesPage() {
             variant="outline"
             className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800 text-xs font-medium"
           >
-            Active
+            活跃
           </Badge>
         ) : (
           <Badge variant="secondary" className="text-xs font-normal">
-            Disabled
+            已禁用
           </Badge>
         ),
     },
     {
       id: "created_at",
-      header: "Created",
+      header: "创建时间",
       accessor: (r) => r.created_at,
       sortable: true,
       cell: (r) => (
@@ -386,7 +385,7 @@ export default function SecurityPoliciesPage() {
                 <Pencil className="size-3.5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Edit</TooltipContent>
+            <TooltipContent>编辑</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -399,7 +398,7 @@ export default function SecurityPoliciesPage() {
                 <Trash2 className="size-3.5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Delete</TooltipContent>
+            <TooltipContent>删除</TooltipContent>
           </Tooltip>
         </div>
       ),
@@ -409,12 +408,12 @@ export default function SecurityPoliciesPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Security Policies"
-        description="Define enforcement rules that control which artifacts can be downloaded based on scan results."
+        title="安全策略"
+        description="定义基于扫描结果控制哪些制品可以被下载的执行规则。"
         actions={
           <Button onClick={() => setCreateOpen(true)}>
             <Plus className="size-4" />
-            Create Policy
+            创建策略
           </Button>
         }
       />
@@ -424,11 +423,11 @@ export default function SecurityPoliciesPage() {
         columns={columns}
         data={policies ?? []}
         loading={isLoading}
-        emptyMessage="No security policies defined yet."
+        emptyMessage="否 security policies defined yet."
         rowKey={(r) => r.id}
       />
 
-      {/* Create Policy Dialog */}
+      {/* 创建策略 Dialog */}
       <Dialog
         open={createOpen}
         onOpenChange={(o) => {
@@ -438,10 +437,9 @@ export default function SecurityPoliciesPage() {
       >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Create Security Policy</DialogTitle>
+            <DialogTitle>创建安全策略</DialogTitle>
             <DialogDescription>
-              Define a new policy to enforce security requirements on artifact
-              downloads.
+              定义新策略以在制品下载时执行安全要求。
             </DialogDescription>
           </DialogHeader>
           <form
@@ -471,7 +469,7 @@ export default function SecurityPoliciesPage() {
                   setCreateForm({ ...DEFAULT_FORM });
                 }}
               >
-                Cancel
+                取消
               </Button>
               <Button
                 type="submit"
@@ -479,7 +477,7 @@ export default function SecurityPoliciesPage() {
                   !createForm.name.trim() || createMutation.isPending
                 }
               >
-                {createMutation.isPending ? "Creating..." : "Create Policy"}
+                {createMutation.isPending ? "创建中..." : "创建策略"}
               </Button>
             </DialogFooter>
           </form>
@@ -496,9 +494,9 @@ export default function SecurityPoliciesPage() {
       >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Edit Policy</DialogTitle>
+            <DialogTitle>编辑策略</DialogTitle>
             <DialogDescription>
-              Update the enforcement rules for this security policy.
+              更新此安全策略的执行规则。
             </DialogDescription>
           </DialogHeader>
           <form
@@ -533,7 +531,7 @@ export default function SecurityPoliciesPage() {
                   setSelectedPolicy(null);
                 }}
               >
-                Cancel
+                取消
               </Button>
               <Button
                 type="submit"
@@ -541,7 +539,7 @@ export default function SecurityPoliciesPage() {
                   !editForm.name.trim() || updateMutation.isPending
                 }
               >
-                {updateMutation.isPending ? "Saving..." : "Save Changes"}
+                {updateMutation.isPending ? "保存中..." : "保存更改"}
               </Button>
             </DialogFooter>
           </form>
@@ -555,9 +553,9 @@ export default function SecurityPoliciesPage() {
           setDeleteOpen(o);
           if (!o) setSelectedPolicy(null);
         }}
-        title="Delete Policy"
-        description={`Are you sure you want to delete the policy "${selectedPolicy?.name}"? This action cannot be undone.`}
-        confirmText="Delete Policy"
+        title="删除策略"
+        description={`确定要删除策略 "${selectedPolicy?.name}"? 此操作无法撤销。`}
+        confirmText="删除策略"
         danger
         loading={deleteMutation.isPending}
         onConfirm={() => {

@@ -65,15 +65,15 @@ import { EmptyState } from "@/components/common/empty-state";
 // -- constants --
 
 const WEBHOOK_EVENTS: { value: WebhookEvent; label: string }[] = [
-  { value: "artifact_uploaded", label: "Artifact Uploaded" },
-  { value: "artifact_deleted", label: "Artifact Deleted" },
-  { value: "repository_created", label: "Repository Created" },
-  { value: "repository_deleted", label: "Repository Deleted" },
-  { value: "user_created", label: "User Created" },
-  { value: "user_deleted", label: "User Deleted" },
-  { value: "build_started", label: "Build Started" },
-  { value: "build_completed", label: "Build Completed" },
-  { value: "build_failed", label: "Build Failed" },
+  { value: "artifact_uploaded", label: "制品已上传" },
+  { value: "artifact_deleted", label: "制品已删除" },
+  { value: "repository_created", label: "仓库已创建" },
+  { value: "repository_deleted", label: "仓库已删除" },
+  { value: "user_created", label: "用户已创建" },
+  { value: "user_deleted", label: "用户已删除" },
+  { value: "build_started", label: "构建已开始" },
+  { value: "build_completed", label: "构建已完成" },
+  { value: "build_failed", label: "构建已失败" },
 ];
 
 function eventColor(event: string): "green" | "red" | "blue" | "default" {
@@ -133,9 +133,9 @@ export default function WebhooksPage() {
       queryClient.invalidateQueries({ queryKey: ["webhooks"] });
       setCreateOpen(false);
       resetForm();
-      toast.success("Webhook created");
+      toast.success("Webhook 已创建");
     },
-    onError: mutationErrorToast("Failed to create webhook"),
+    onError: mutationErrorToast("创建 Webhook 失败"),
   });
 
   const deleteMutation = useMutation({
@@ -143,42 +143,42 @@ export default function WebhooksPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["webhooks"] });
       setDeleteId(null);
-      toast.success("Webhook deleted");
+      toast.success("Webhook 已删除");
     },
-    onError: mutationErrorToast("Failed to delete webhook"),
+    onError: mutationErrorToast("删除 Webhook 失败"),
   });
 
   const enableMutation = useMutation({
     mutationFn: (id: string) => webhooksApi.enable(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["webhooks"] });
-      toast.success("Webhook enabled");
+      toast.success("Webhook 已启用");
     },
-    onError: mutationErrorToast("Failed to enable webhook"),
+    onError: mutationErrorToast("启用 Webhook 失败"),
   });
 
   const disableMutation = useMutation({
     mutationFn: (id: string) => webhooksApi.disable(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["webhooks"] });
-      toast.success("Webhook disabled");
+      toast.success("Webhook 已禁用");
     },
-    onError: mutationErrorToast("Failed to disable webhook"),
+    onError: mutationErrorToast("禁用 Webhook 失败"),
   });
 
   const testMutation = useMutation({
     mutationFn: (id: string) => webhooksApi.test(id),
     onSuccess: (result) => {
       if (result.success) {
-        toast.success(`Test succeeded (HTTP ${result.status_code})`);
+        toast.success(`测试成功 (HTTP ${result.status_code})`);
       } else {
         toast.warning(
-          `Test failed: ${result.error || `HTTP ${result.status_code}`}`
+          `测试失败：${result.error || `HTTP ${result.status_code}`}`
         );
       }
       queryClient.invalidateQueries({ queryKey: ["webhook-deliveries"] });
     },
-    onError: mutationErrorToast("Failed to send test"),
+    onError: mutationErrorToast("发送测试失败"),
   });
 
   const redeliverMutation = useMutation({
@@ -190,10 +190,10 @@ export default function WebhooksPage() {
       deliveryId: string;
     }) => webhooksApi.redeliver(webhookId, deliveryId),
     onSuccess: () => {
-      toast.success("Redelivery sent");
+      toast.success("重新投递已发送");
       queryClient.invalidateQueries({ queryKey: ["webhook-deliveries"] });
     },
-    onError: mutationErrorToast("Failed to redeliver"),
+    onError: mutationErrorToast("重新投递失败"),
   });
 
   const resetForm = () => {
@@ -216,7 +216,7 @@ export default function WebhooksPage() {
   const columns: DataTableColumn<WebhookType>[] = [
     {
       id: "name",
-      header: "Name",
+      header: "名称",
       accessor: (w) => w.name,
       sortable: true,
       cell: (w) => (
@@ -225,7 +225,7 @@ export default function WebhooksPage() {
           <span className="font-medium text-sm">{w.name}</span>
           {!w.is_enabled && (
             <Badge variant="secondary" className="text-xs">
-              Disabled
+              已禁用
             </Badge>
           )}
         </div>
@@ -243,7 +243,7 @@ export default function WebhooksPage() {
     },
     {
       id: "events",
-      header: "Events",
+      header: "事件",
       cell: (w) => (
         <div className="flex flex-wrap gap-1">
           {w.events.map((e) => (
@@ -259,23 +259,23 @@ export default function WebhooksPage() {
     },
     {
       id: "status",
-      header: "Status",
+      header: "状态",
       cell: (w) => (
         <StatusBadge
-          status={w.is_enabled ? "Active" : "Disabled"}
+          status={w.is_enabled ? "活跃" : "已禁用"}
           color={w.is_enabled ? "green" : "default"}
         />
       ),
     },
     {
       id: "last_triggered",
-      header: "Last Triggered",
+      header: "最后触发",
       accessor: (w) => w.last_triggered_at ?? "",
       cell: (w) => (
         <span className="text-sm text-muted-foreground">
           {w.last_triggered_at
-            ? new Date(w.last_triggered_at).toLocaleString()
-            : "Never"}
+            ? new Date(w.last_triggered_at).toLocaleString("zh-CN")
+            : "从未"}
         </span>
       ),
     },
@@ -297,7 +297,7 @@ export default function WebhooksPage() {
                 <History className="size-3.5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>View deliveries</TooltipContent>
+            <TooltipContent>查看投递记录</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -309,7 +309,7 @@ export default function WebhooksPage() {
                 <Zap className="size-3.5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Send test</TooltipContent>
+            <TooltipContent>发送测试</TooltipContent>
           </Tooltip>
           {w.is_enabled ? (
             <Tooltip>
@@ -322,7 +322,7 @@ export default function WebhooksPage() {
                   <Pause className="size-3.5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Disable</TooltipContent>
+              <TooltipContent>禁用</TooltipContent>
             </Tooltip>
           ) : (
             <Tooltip>
@@ -335,7 +335,7 @@ export default function WebhooksPage() {
                   <Play className="size-3.5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Enable</TooltipContent>
+              <TooltipContent>启用</TooltipContent>
             </Tooltip>
           )}
           <Tooltip>
@@ -349,7 +349,7 @@ export default function WebhooksPage() {
                 <Trash2 className="size-3.5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Delete</TooltipContent>
+            <TooltipContent>删除</TooltipContent>
           </Tooltip>
         </div>
       ),
@@ -359,8 +359,8 @@ export default function WebhooksPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Webhooks"
-        description="Manage webhooks for event-driven integrations."
+        title="Webhook"
+        description="管理用于事件驱动集成的 Webhook。"
         actions={
           <div className="flex items-center gap-2">
             <Tooltip>
@@ -377,11 +377,11 @@ export default function WebhooksPage() {
                   />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Refresh</TooltipContent>
+              <TooltipContent>刷新</TooltipContent>
             </Tooltip>
             <Button onClick={() => setCreateOpen(true)}>
               <Plus className="size-4" />
-              Create Webhook
+              创建 Webhook
             </Button>
           </div>
         }
@@ -392,7 +392,7 @@ export default function WebhooksPage() {
         <Card className="py-4">
           <CardContent className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted-foreground">Total</p>
+              <p className="text-sm text-muted-foreground">总计</p>
               <p className="text-2xl font-semibold">{webhooks.length}</p>
             </div>
             <Send className="size-8 text-muted-foreground/30" />
@@ -401,7 +401,7 @@ export default function WebhooksPage() {
         <Card className="py-4">
           <CardContent className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted-foreground">Active</p>
+              <p className="text-sm text-muted-foreground">活跃</p>
               <p className="text-2xl font-semibold text-emerald-600">
                 {enabledCount}
               </p>
@@ -412,7 +412,7 @@ export default function WebhooksPage() {
         <Card className="py-4">
           <CardContent className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted-foreground">Disabled</p>
+              <p className="text-sm text-muted-foreground">已禁用</p>
               <p className="text-2xl font-semibold">
                 {webhooks.length - enabledCount}
               </p>
@@ -426,12 +426,12 @@ export default function WebhooksPage() {
       {webhooks.length === 0 && !isLoading ? (
         <EmptyState
           icon={Webhook}
-          title="No webhooks configured"
-          description="Create a webhook to receive event notifications via HTTP callbacks."
+          title="暂无已配置的 Webhook"
+          description="创建一个 Webhook 以通过 HTTP 回调接收事件通知。"
           action={
             <Button onClick={() => setCreateOpen(true)}>
               <Plus className="size-4" />
-              Create Webhook
+              创建 Webhook
             </Button>
           }
         />
@@ -441,7 +441,7 @@ export default function WebhooksPage() {
           data={webhooks}
           loading={isLoading}
           rowKey={(w) => w.id}
-          emptyMessage="No webhooks found."
+          emptyMessage="未找到 Webhook。"
         />
       )}
 
@@ -455,9 +455,9 @@ export default function WebhooksPage() {
       >
         <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Create Webhook</DialogTitle>
+            <DialogTitle>创建 Webhook</DialogTitle>
             <DialogDescription>
-              Configure a new webhook to receive event notifications.
+              配置新的 Webhook 以接收事件通知。
             </DialogDescription>
           </DialogHeader>
           <form
@@ -465,7 +465,7 @@ export default function WebhooksPage() {
             onSubmit={(e) => {
               e.preventDefault();
               if (formEvents.length === 0) {
-                toast.error("Select at least one event");
+                toast.error("请至少选择一个事件");
                 return;
               }
               createMutation.mutate({
@@ -477,17 +477,17 @@ export default function WebhooksPage() {
             }}
           >
             <div className="space-y-2">
-              <Label htmlFor="wh-name">Name</Label>
+              <Label htmlFor="wh-name">名称</Label>
               <Input
                 id="wh-name"
                 value={formName}
                 onChange={(e) => setFormName(e.target.value)}
-                placeholder="e.g., Slack Notifications"
+                placeholder="例如：Slack 通知"
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="wh-url">Payload URL</Label>
+              <Label htmlFor="wh-url">载荷 URL</Label>
               <Input
                 id="wh-url"
                 type="url"
@@ -498,7 +498,7 @@ export default function WebhooksPage() {
               />
             </div>
             <div className="space-y-3">
-              <Label>Events</Label>
+              <Label>事件</Label>
               <div className="grid grid-cols-2 gap-2">
                 {WEBHOOK_EVENTS.map((ev) => (
                   <label
@@ -516,9 +516,9 @@ export default function WebhooksPage() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="wh-secret">
-                Secret{" "}
+                密钥{" "}
                 <span className="text-muted-foreground font-normal">
-                  (optional)
+                  (可选)
                 </span>
               </Label>
               <Input
@@ -526,7 +526,7 @@ export default function WebhooksPage() {
                 type="password"
                 value={formSecret}
                 onChange={(e) => setFormSecret(e.target.value)}
-                placeholder="Shared secret for payload signing"
+                placeholder="用于载荷签名的共享密钥"
               />
             </div>
             <DialogFooter>
@@ -538,10 +538,10 @@ export default function WebhooksPage() {
                   resetForm();
                 }}
               >
-                Cancel
+                取消
               </Button>
               <Button type="submit" disabled={createMutation.isPending}>
-                {createMutation.isPending ? "Creating..." : "Create Webhook"}
+                {createMutation.isPending ? "创建中..." : "创建 Webhook"}
               </Button>
             </DialogFooter>
           </form>
@@ -558,10 +558,10 @@ export default function WebhooksPage() {
         <SheetContent className="sm:max-w-lg overflow-y-auto">
           <SheetHeader>
             <SheetTitle>
-              Deliveries: {deliveryWebhook?.name ?? ""}
+              投递记录: {deliveryWebhook?.name ?? ""}
             </SheetTitle>
             <SheetDescription>
-              Recent webhook delivery attempts and their results.
+              最近的 Webhook 投递尝试及其结果。
             </SheetDescription>
           </SheetHeader>
           <div className="p-4 space-y-3">
@@ -573,7 +573,7 @@ export default function WebhooksPage() {
               </div>
             ) : (deliveries?.items ?? []).length === 0 ? (
               <p className="text-center text-sm text-muted-foreground py-12">
-                No deliveries yet
+                暂无投递记录
               </p>
             ) : (
               (deliveries?.items ?? []).map((d: WebhookDelivery) => (
@@ -593,17 +593,17 @@ export default function WebhooksPage() {
                           ? `HTTP ${d.response_status}`
                           : d.response_status
                             ? `HTTP ${d.response_status}`
-                            : "Failed"
+                            : "失败"
                       }
                       color={d.success ? "green" : "red"}
                     />
                     <span className="text-xs text-muted-foreground ml-auto">
-                      {new Date(d.created_at).toLocaleString()}
+                      {new Date(d.created_at).toLocaleString("zh-CN")}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-muted-foreground">
-                      Attempts: {d.attempts}
+                      尝试次数: {d.attempts}
                     </span>
                     {!d.success && deliveryWebhook && (
                       <Button
@@ -619,7 +619,7 @@ export default function WebhooksPage() {
                         disabled={redeliverMutation.isPending}
                       >
                         <RotateCcw className="size-3 mr-1" />
-                        Redeliver
+                        重新投递
                       </Button>
                     )}
                   </div>
@@ -641,9 +641,9 @@ export default function WebhooksPage() {
         onOpenChange={(o) => {
           if (!o) setDeleteId(null);
         }}
-        title="Delete Webhook"
-        description="This will permanently remove the webhook and its delivery history. This action cannot be undone."
-        confirmText="Delete"
+        title="删除 Webhook"
+        description="这将永久移除该 Webhook 及其投递历史。此操作无法撤销。"
+        confirmText="删除"
         danger
         loading={deleteMutation.isPending}
         onConfirm={() => {

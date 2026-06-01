@@ -61,18 +61,18 @@ function renderRepoAccess(t: ServiceAccountToken) {
   if (t.repo_selector) {
     const parts: string[] = [];
     if (t.repo_selector.match_formats?.length) {
-      parts.push(`${t.repo_selector.match_formats.length} format(s)`);
+      parts.push(`${t.repo_selector.match_formats.length} 个格式`);
     }
     if (t.repo_selector.match_pattern) {
       parts.push(t.repo_selector.match_pattern);
     }
     const labelCount = Object.keys(t.repo_selector.match_labels ?? {}).length;
     if (labelCount > 0) {
-      parts.push(`${labelCount} label(s)`);
+      parts.push(`${labelCount} 个标签`);
     }
     return (
       <Badge variant="secondary" className="text-xs">
-        {parts.join(", ") || "Selector"}
+        {parts.join(", ") || "选择器"}
       </Badge>
     );
   }
@@ -84,7 +84,7 @@ function renderRepoAccess(t: ServiceAccountToken) {
     );
   }
   return (
-    <span className="text-xs text-muted-foreground">All repos</span>
+    <span className="text-xs text-muted-foreground">全部仓库</span>
   );
 }
 
@@ -144,9 +144,9 @@ export default function ServiceAccountsPage() {
       setCreateOpen(false);
       setCreateName("");
       setCreateDescription("");
-      toast.success("Service account created");
+      toast.success("服务账号已创建");
     },
-    onError: mutationErrorToast("Failed to create service account"),
+    onError: mutationErrorToast("创建服务账号失败"),
   });
 
   const updateMutation = useMutation({
@@ -163,9 +163,9 @@ export default function ServiceAccountsPage() {
       queryClient.invalidateQueries({ queryKey: ["service-accounts"] });
       setEditOpen(false);
       setEditAccount(null);
-      toast.success("Service account updated");
+      toast.success("服务账号已更新");
     },
-    onError: mutationErrorToast("Failed to update service account"),
+    onError: mutationErrorToast("更新服务账号失败"),
   });
 
   const deleteMutation = useMutation({
@@ -174,9 +174,9 @@ export default function ServiceAccountsPage() {
       queryClient.invalidateQueries({ queryKey: ["service-accounts"] });
       setDeleteOpen(false);
       setDeleteAccount(null);
-      toast.success("Service account deleted");
+      toast.success("服务账号已删除");
     },
-    onError: mutationErrorToast("Failed to delete service account"),
+    onError: mutationErrorToast("删除服务账号失败"),
   });
 
   const createTokenMutation = useMutation({
@@ -192,9 +192,9 @@ export default function ServiceAccountsPage() {
       setTokenScopes(["read"]);
       setTokenExpiry("90");
       setTokenRepoSelector({});
-      toast.success("Token created");
+      toast.success("令牌已创建");
     },
-    onError: mutationErrorToast("Failed to create token"),
+    onError: mutationErrorToast("创建令牌失败"),
   });
 
   const revokeTokenMutation = useMutation({
@@ -206,9 +206,9 @@ export default function ServiceAccountsPage() {
       });
       queryClient.invalidateQueries({ queryKey: ["service-accounts"] });
       setRevokeTokenId(null);
-      toast.success("Token revoked");
+      toast.success("令牌已撤销");
     },
-    onError: mutationErrorToast("Failed to revoke token"),
+    onError: mutationErrorToast("撤销令牌失败"),
   });
 
   // Handlers
@@ -226,9 +226,9 @@ export default function ServiceAccountsPage() {
   if (!currentUser?.is_admin) {
     return (
       <Alert variant="destructive">
-        <AlertTitle>Access Denied</AlertTitle>
+        <AlertTitle>访问被拒绝</AlertTitle>
         <AlertDescription>
-          You need admin privileges to manage service accounts.
+          您需要管理员权限才能管理服务账号。
         </AlertDescription>
       </Alert>
     );
@@ -238,7 +238,7 @@ export default function ServiceAccountsPage() {
   const columns: DataTableColumn<ServiceAccount>[] = [
     {
       id: "username",
-      header: "Username",
+      header: "用户名",
       accessor: (a) => a.username,
       sortable: true,
       cell: (a) => (
@@ -250,7 +250,7 @@ export default function ServiceAccountsPage() {
     },
     {
       id: "display_name",
-      header: "Description",
+      header: "描述",
       cell: (a) => (
         <span className="text-sm text-muted-foreground">
           {a.display_name || "-"}
@@ -259,17 +259,17 @@ export default function ServiceAccountsPage() {
     },
     {
       id: "status",
-      header: "Status",
+      header: "状态",
       cell: (a) => (
         <StatusBadge
-          status={a.is_active ? "Active" : "Inactive"}
+          status={a.is_active ? "活跃" : "已禁用"}
           color={a.is_active ? "green" : "red"}
         />
       ),
     },
     {
       id: "tokens",
-      header: "Tokens",
+      header: "令牌",
       accessor: (a) => a.token_count,
       cell: (a) => (
         <Badge variant="secondary" className="text-xs">
@@ -279,7 +279,7 @@ export default function ServiceAccountsPage() {
     },
     {
       id: "created",
-      header: "Created",
+      header: "创建时间",
       accessor: (a) => a.created_at,
       sortable: true,
       cell: (a) => (
@@ -303,7 +303,7 @@ export default function ServiceAccountsPage() {
                 <Key className="size-3.5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Manage Tokens</TooltipContent>
+            <TooltipContent>管理令牌</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -315,7 +315,7 @@ export default function ServiceAccountsPage() {
                 <Pencil className="size-3.5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Edit</TooltipContent>
+            <TooltipContent>编辑</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -337,7 +337,7 @@ export default function ServiceAccountsPage() {
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              {a.is_active ? "Deactivate" : "Activate"}
+              {a.is_active ? "停用" : "启用"}
             </TooltipContent>
           </Tooltip>
           <Tooltip>
@@ -354,7 +354,7 @@ export default function ServiceAccountsPage() {
                 <Trash2 className="size-3.5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Delete</TooltipContent>
+            <TooltipContent>删除</TooltipContent>
           </Tooltip>
         </div>
       ),
@@ -365,7 +365,7 @@ export default function ServiceAccountsPage() {
   const tokenColumns: DataTableColumn<ServiceAccountToken>[] = [
     {
       id: "name",
-      header: "Name",
+      header: "名称",
       accessor: (t) => t.name,
       cell: (t) => (
         <div className="flex items-center gap-2">
@@ -373,7 +373,7 @@ export default function ServiceAccountsPage() {
           <span className="font-medium text-sm">{t.name}</span>
           {t.is_expired && (
             <Badge variant="destructive" className="text-xs">
-              Expired
+              已过期
             </Badge>
           )}
         </div>
@@ -381,7 +381,7 @@ export default function ServiceAccountsPage() {
     },
     {
       id: "prefix",
-      header: "Prefix",
+      header: "前缀",
       cell: (t) => (
         <code className="rounded bg-muted px-1.5 py-0.5 text-xs">
           {t.token_prefix}...
@@ -390,7 +390,7 @@ export default function ServiceAccountsPage() {
     },
     {
       id: "scopes",
-      header: "Scopes",
+      header: "范围",
       cell: (t) => (
         <div className="flex flex-wrap gap-1">
           {t.scopes.map((s) => (
@@ -403,19 +403,19 @@ export default function ServiceAccountsPage() {
     },
     {
       id: "repo_access",
-      header: "Repo Access",
+      header: "仓库访问",
       cell: renderRepoAccess,
     },
     {
       id: "last_used",
-      header: "Last Used",
+      header: "上次使用",
       cell: (t) =>
         t.last_used_at ? (
           <span className="text-sm text-muted-foreground">
             {new Date(t.last_used_at).toLocaleDateString()}
           </span>
         ) : (
-          <span className="text-sm text-muted-foreground">Never</span>
+          <span className="text-sm text-muted-foreground">从未</span>
         ),
     },
     {
@@ -434,7 +434,7 @@ export default function ServiceAccountsPage() {
                 <Trash2 className="size-3.5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Revoke</TooltipContent>
+            <TooltipContent>撤销</TooltipContent>
           </Tooltip>
         </div>
       ),
@@ -444,12 +444,12 @@ export default function ServiceAccountsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Service Accounts"
-        description="Machine identities for CI/CD pipelines and automated systems. Each service account can have its own API tokens, independent of any human user."
+        title="服务账号"
+        description="用于 CI/CD 流水线和自动化系统的机器身份。每个服务账号可以拥有自己的 API 令牌，独立于任何人类用户。"
         actions={
           <Button onClick={() => setCreateOpen(true)}>
             <Plus className="size-4" />
-            Create Service Account
+            创建服务账号
           </Button>
         }
       />
@@ -457,12 +457,12 @@ export default function ServiceAccountsPage() {
       {accounts.length === 0 && !isLoading ? (
         <EmptyState
           icon={Bot}
-          title="No service accounts"
-          description="Create a service account to give CI/CD pipelines and automated systems their own identity and API tokens."
+          title="暂无服务账号"
+          description="创建服务账号以为 CI/CD 流水线和自动化系统提供独立的身份和 API 令牌。"
           action={
             <Button onClick={() => setCreateOpen(true)}>
               <Plus className="size-4" />
-              Create Service Account
+              创建服务账号
             </Button>
           }
         />
@@ -472,11 +472,11 @@ export default function ServiceAccountsPage() {
           data={accounts}
           loading={isLoading}
           rowKey={(a) => a.id}
-          emptyMessage="No service accounts found."
+          emptyMessage="未找到服务账号。"
         />
       )}
 
-      {/* Create Service Account Dialog */}
+      {/* 创建服务账号 Dialog */}
       <Dialog
         open={createOpen}
         onOpenChange={(o) => {
@@ -489,10 +489,9 @@ export default function ServiceAccountsPage() {
       >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Create Service Account</DialogTitle>
+            <DialogTitle>创建服务账号</DialogTitle>
             <DialogDescription>
-              Service accounts are machine identities. The username will be
-              prefixed with &quot;svc-&quot; automatically.
+              服务账号是机器身份。用户名将自动添加 &quot;svc-&quot; 前缀。
             </DialogDescription>
           </DialogHeader>
           <form
@@ -518,7 +517,7 @@ export default function ServiceAccountsPage() {
                 />
               </div>
               <p className="text-xs text-muted-foreground">
-                Alphanumeric characters and hyphens only.
+                仅允许字母数字字符和连字符。
               </p>
             </div>
             <div className="space-y-2">
@@ -527,7 +526,7 @@ export default function ServiceAccountsPage() {
                 id="svc-description"
                 value={createDescription}
                 onChange={(e) => setCreateDescription(e.target.value)}
-                placeholder="Production deployment pipeline"
+                placeholder="生产部署流水线"
               />
             </div>
             <DialogFooter>
@@ -542,14 +541,14 @@ export default function ServiceAccountsPage() {
                 type="submit"
                 disabled={createMutation.isPending || !createName}
               >
-                {createMutation.isPending ? "Creating..." : "Create"}
+                {createMutation.isPending ? "创建中..." : "创建"}
               </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
 
-      {/* Edit Service Account Dialog */}
+      {/* 编辑服务账号对话框 */}
       <Dialog
         open={editOpen}
         onOpenChange={(o) => {
@@ -560,7 +559,7 @@ export default function ServiceAccountsPage() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>
-              Edit: {editAccount?.username}
+              编辑：{editAccount?.username}
             </DialogTitle>
           </DialogHeader>
           <form
@@ -581,7 +580,7 @@ export default function ServiceAccountsPage() {
                 id="edit-display-name"
                 value={editDisplayName}
                 onChange={(e) => setEditDisplayName(e.target.value)}
-                placeholder="Description for this service account"
+                placeholder="此服务账号的描述"
               />
             </div>
             <DialogFooter>
@@ -593,7 +592,7 @@ export default function ServiceAccountsPage() {
                 Cancel
               </Button>
               <Button type="submit" disabled={updateMutation.isPending}>
-                {updateMutation.isPending ? "Saving..." : "Save"}
+                {updateMutation.isPending ? "保存中..." : "Save"}
               </Button>
             </DialogFooter>
           </form>
@@ -616,24 +615,24 @@ export default function ServiceAccountsPage() {
         <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle>
-              Tokens: {tokenAccount?.username}
+              令牌：{tokenAccount?.username}
             </DialogTitle>
             <DialogDescription>
-              Manage API tokens for this service account.
+              管理此服务账号的 API 令牌。
             </DialogDescription>
           </DialogHeader>
 
           {newlyCreatedToken ? (
             <TokenCreatedAlert
-              title="Token Created"
-              description="Copy this token now. You will not be able to see it again."
+              title="令牌已创建"
+              description="请立即复制此令牌。您将无法再次查看它。"
               token={newlyCreatedToken}
               onDone={() => setNewlyCreatedToken(null)}
             />
           ) : createTokenOpen ? (
             <TokenCreateForm
-              title="Create Token"
-              description="Generate a new API token for this service account."
+              title="创建令牌"
+              description="为此服务账号生成新的 API 令牌。"
               name={tokenName}
               onNameChange={setTokenName}
               namePlaceholder="e.g., production-deploy"
@@ -662,7 +661,7 @@ export default function ServiceAccountsPage() {
                 }
               }}
               onCancel={() => setCreateTokenOpen(false)}
-              submitLabel="Create Token"
+              submitLabel="创建令牌"
               showRepoSelector
               repoSelector={tokenRepoSelector}
               onRepoSelectorChange={setTokenRepoSelector}
@@ -675,22 +674,22 @@ export default function ServiceAccountsPage() {
                   onClick={() => setCreateTokenOpen(true)}
                 >
                   <Plus className="size-4" />
-                  Create Token
+                  创建令牌
                 </Button>
               </div>
 
               {tokens.length === 0 && !tokensLoading ? (
                 <EmptyState
                   icon={Key}
-                  title="No tokens"
-                  description="Create a token for this service account."
+                  title="暂无令牌"
+                  description="为此服务账号创建令牌。"
                   action={
                     <Button
                       size="sm"
                       onClick={() => setCreateTokenOpen(true)}
                     >
                       <Plus className="size-4" />
-                      Create Token
+                      创建令牌
                     </Button>
                   }
                 />
@@ -700,7 +699,7 @@ export default function ServiceAccountsPage() {
                   data={tokens}
                   loading={tokensLoading}
                   rowKey={(t) => t.id}
-                  emptyMessage="No tokens found."
+                  emptyMessage="未找到令牌。"
                 />
               )}
             </div>
@@ -717,9 +716,9 @@ export default function ServiceAccountsPage() {
             setDeleteAccount(null);
           }
         }}
-        title="Delete Service Account"
-        description={`This will permanently delete "${deleteAccount?.username}" and revoke all its tokens. Any pipelines using those tokens will lose access immediately.`}
-        confirmText="Delete"
+        title="删除服务账号"
+        description={`此操作将永久删除 "${deleteAccount?.username}" 并撤销其所有令牌。使用这些令牌的流水线将立即失去访问权限。`}
+        confirmText="删除"
         typeToConfirm={deleteAccount?.username}
         danger
         loading={deleteMutation.isPending}
@@ -734,9 +733,9 @@ export default function ServiceAccountsPage() {
         onOpenChange={(o) => {
           if (!o) setRevokeTokenId(null);
         }}
-        title="Revoke Token"
-        description="This will permanently invalidate this token. Any systems using it will lose access immediately."
-        confirmText="Revoke"
+        title="撤销令牌"
+        description="此操作将永久使此令牌失效。使用此令牌的系统将立即失去访问权限。"
+        confirmText="撤销"
         danger
         loading={revokeTokenMutation.isPending}
         onConfirm={() => {

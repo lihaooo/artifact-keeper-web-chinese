@@ -53,8 +53,8 @@ function SettingRow({
 }
 
 function formatPasswordPolicy(policy: PasswordPolicy | undefined): string {
-  if (!policy) return "Loading...";
-  const parts = [`Minimum ${policy.min_length} characters`];
+  if (!policy) return "加载中...";
+  const parts = [`最少 ${policy.min_length} 个字符`];
   const complexity: string[] = [];
   if (policy.require_uppercase) complexity.push("uppercase");
   if (policy.require_lowercase) complexity.push("lowercase");
@@ -70,7 +70,7 @@ function formatPasswordPolicy(policy: PasswordPolicy | undefined): string {
 }
 
 const STORAGE_BACKEND_LABELS: Record<string, string> = {
-  filesystem: "Local Filesystem",
+  filesystem: "本地文件系统",
   s3: "S3",
   gcs: "Google Cloud Storage",
   azure: "Azure Blob Storage",
@@ -108,11 +108,11 @@ function SmtpSettingsTab() {
       <Card>
         <CardContent className="py-6">
           <Alert variant="destructive">
-            <AlertTitle>SMTP configuration unavailable</AlertTitle>
+            <AlertTitle>SMTP 配置不可用</AlertTitle>
             <AlertDescription>
               {error instanceof Error
                 ? error.message
-                : "Unable to load SMTP configuration from the server."}
+                : "无法从服务器加载 SMTP 配置。"}
             </AlertDescription>
           </Alert>
         </CardContent>
@@ -143,29 +143,29 @@ function SmtpSettingsForm({
   const [tlsMode, setTlsMode] = useState<SmtpTlsMode>(
     initialConfig?.tls_mode ?? "starttls"
   );
-  const [testRecipient, setTestRecipient] = useState("");
+  const [test收件人, setTest收件人] = useState("");
   const [formDirty, setFormDirty] = useState(false);
 
   const saveMutation = useMutation({
     mutationFn: (config: SmtpConfig) => settingsApi.updateSmtpConfig(config),
     onSuccess: () => {
-      toast.success("SMTP configuration saved");
+      toast.success("SMTP 配置已保存");
       queryClient.invalidateQueries({ queryKey: ADMIN_SETTINGS_QUERY_KEY });
       setFormDirty(false);
     },
-    onError: mutationErrorToast("Failed to save SMTP configuration"),
+    onError: mutationErrorToast("保存 SMTP 配置失败"),
   });
 
   const testMutation = useMutation({
     mutationFn: (recipient: string) => settingsApi.sendTestEmail(recipient),
     onSuccess: (result) => {
       if (result.success) {
-        toast.success(result.message || "Test email sent successfully");
+        toast.success(result.message || "测试邮件发送成功");
       } else {
-        toast.error(result.message || "Test email failed");
+        toast.error(result.message || "测试邮件发送失败");
       }
     },
-    onError: mutationErrorToast("Failed to send test email"),
+    onError: mutationErrorToast("发送测试邮件失败"),
   });
 
   function handleFieldChange<T>(setter: (v: T) => void) {
@@ -178,15 +178,15 @@ function SmtpSettingsForm({
   function handleSave() {
     const portNum = parseInt(port, 10);
     if (isNaN(portNum) || portNum < 1 || portNum > 65535) {
-      toast.error("Port must be a number between 1 and 65535");
+      toast.error("端口必须是 1 到 65535 之间的数字");
       return;
     }
     if (!host.trim()) {
-      toast.error("SMTP host is required");
+      toast.error("SMTP 主机为必填项");
       return;
     }
     if (!fromAddress.trim()) {
-      toast.error("From address is required");
+      toast.error("发件人地址为必填项");
       return;
     }
     const payload: Record<string, unknown> = {
@@ -203,27 +203,26 @@ function SmtpSettingsForm({
   }
 
   function handleSendTest() {
-    if (!testRecipient.trim()) {
-      toast.error("Please enter a recipient email address");
+    if (!test收件人.trim()) {
+      toast.error("请输入收件人邮箱地址");
       return;
     }
-    testMutation.mutate(testRecipient.trim());
+    testMutation.mutate(test收件人.trim());
   }
 
   return (
     <div className="space-y-4">
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">SMTP Configuration</CardTitle>
+          <CardTitle className="text-base">SMTP 配置</CardTitle>
           <CardDescription>
-            Configure the outbound email server used for notifications, password
-            resets, and other system emails.
+            配置用于通知、密码重置和其他系统邮件的出站邮件服务器。
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="smtp-host">Host</Label>
+              <Label htmlFor="smtp-host">主机</Label>
               <Input
                 id="smtp-host"
                 placeholder="smtp.example.com"
@@ -231,11 +230,11 @@ function SmtpSettingsForm({
                 onChange={(e) => handleFieldChange(setHost)(e.target.value)}
               />
               <p className="text-xs text-muted-foreground">
-                Hostname or IP address of the SMTP server.
+                SMTP 服务器的主机名或 IP 地址。
               </p>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="smtp-port">Port</Label>
+              <Label htmlFor="smtp-port">端口</Label>
               <Input
                 id="smtp-port"
                 type="number"
@@ -246,7 +245,7 @@ function SmtpSettingsForm({
                 onChange={(e) => handleFieldChange(setPort)(e.target.value)}
               />
               <p className="text-xs text-muted-foreground">
-                Common ports: 25 (SMTP), 465 (SMTPS), 587 (Submission).
+                常用端口：25 (SMTP)、465 (SMTPS)、587 (提交)。
               </p>
             </div>
           </div>
@@ -255,7 +254,7 @@ function SmtpSettingsForm({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="smtp-username">Username</Label>
+              <Label htmlFor="smtp-username">用户名</Label>
               <Input
                 id="smtp-username"
                 placeholder="user@example.com"
@@ -264,11 +263,11 @@ function SmtpSettingsForm({
                 onChange={(e) => handleFieldChange(setUsername)(e.target.value)}
               />
               <p className="text-xs text-muted-foreground">
-                Leave blank if the server does not require authentication.
+                如果服务器不需要认证，请留空。
               </p>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="smtp-password">Password</Label>
+              <Label htmlFor="smtp-password">密码</Label>
               <Input
                 id="smtp-password"
                 type="password"
@@ -282,7 +281,7 @@ function SmtpSettingsForm({
                 }}
               />
               <p className="text-xs text-muted-foreground">
-                Stored encrypted on the server. Leave blank to keep the existing value.
+                在服务器上加密存储。留空以保留现有值。
               </p>
             </div>
           </div>
@@ -291,7 +290,7 @@ function SmtpSettingsForm({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="smtp-from">From Address</Label>
+              <Label htmlFor="smtp-from">发件人地址</Label>
               <Input
                 id="smtp-from"
                 type="email"
@@ -300,11 +299,11 @@ function SmtpSettingsForm({
                 onChange={(e) => handleFieldChange(setFromAddress)(e.target.value)}
               />
               <p className="text-xs text-muted-foreground">
-                The sender address used in outgoing emails.
+                外发邮件中使用的发件人地址。
               </p>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="smtp-tls">TLS Mode</Label>
+              <Label htmlFor="smtp-tls">TLS 模式</Label>
               <Select
                 value={tlsMode}
                 onValueChange={(v) => handleFieldChange(setTlsMode)(v as SmtpTlsMode)}
@@ -313,13 +312,13 @@ function SmtpSettingsForm({
                   <SelectValue placeholder="Select TLS mode" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none">None</SelectItem>
+                  <SelectItem value="none">无</SelectItem>
                   <SelectItem value="starttls">STARTTLS</SelectItem>
                   <SelectItem value="tls">TLS</SelectItem>
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground">
-                STARTTLS upgrades an unencrypted connection. TLS connects with encryption from the start.
+                STARTTLS 升级未加密的连接。TLS 从一开始就使用加密连接。
               </p>
             </div>
           </div>
@@ -334,7 +333,7 @@ function SmtpSettingsForm({
               {saveMutation.isPending && (
                 <Loader2 className="size-4 mr-2 animate-spin" />
               )}
-              Save SMTP Settings
+              保存 SMTP 设置
             </Button>
           </div>
         </CardContent>
@@ -342,22 +341,21 @@ function SmtpSettingsForm({
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Send Test Email</CardTitle>
+          <CardTitle className="text-base">发送测试邮件</CardTitle>
           <CardDescription>
-            Verify the SMTP configuration by sending a test message. Save any
-            pending changes before testing.
+            通过发送测试邮件验证 SMTP 配置。测试前请先保存待处理的更改。
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex items-end gap-3">
             <div className="flex-1 space-y-2">
-              <Label htmlFor="test-recipient">Recipient</Label>
+              <Label htmlFor="test-recipient">收件人</Label>
               <Input
                 id="test-recipient"
                 type="email"
                 placeholder="admin@example.com"
-                value={testRecipient}
-                onChange={(e) => setTestRecipient(e.target.value)}
+                value={test收件人}
+                onChange={(e) => setTest收件人(e.target.value)}
               />
             </div>
             <Button
@@ -368,7 +366,7 @@ function SmtpSettingsForm({
               {testMutation.isPending && (
                 <Loader2 className="size-4 mr-2 animate-spin" />
               )}
-              Send Test Email
+              发送测试邮件
             </Button>
           </div>
         </CardContent>
@@ -401,28 +399,28 @@ export default function SettingsPage() {
   // Render the storage row value, distinguishing loading from error so an
   // API failure doesn't silently fall back to placeholder strings (#334).
   const storageValue = (format: (s: StorageSettings) => string): string => {
-    if (settingsLoading) return "Loading...";
-    if (settingsError || !storageSettings) return "Unavailable";
+    if (settingsLoading) return "加载中...";
+    if (settingsError || !storageSettings) return "不可用";
     return format(storageSettings);
   };
 
   // Same loading/error/value gating as storageValue, applied to the
-  // password-policy row so a backend outage shows "Unavailable" instead
+  // password-policy row so a backend outage shows "不可用" instead
   // of plausible-looking default policy text (#347).
   function passwordPolicyValue(): string {
-    if (settingsLoading) return "Loading...";
-    if (settingsError || !passwordPolicy) return "Unavailable";
+    if (settingsLoading) return "加载中...";
+    if (settingsError || !passwordPolicy) return "不可用";
     return formatPasswordPolicy(passwordPolicy);
   }
 
   if (!user?.is_admin) {
     return (
       <div className="space-y-6">
-        <PageHeader title="Settings" />
+        <PageHeader title="设置" />
         <Alert variant="destructive">
-          <AlertTitle>Access Denied</AlertTitle>
+          <AlertTitle>访问被拒绝</AlertTitle>
           <AlertDescription>
-            You must be an administrator to view settings.
+            您必须是管理员才能查看设置。
           </AlertDescription>
         </Alert>
       </div>
@@ -432,16 +430,16 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Settings"
-        description="System configuration overview. Settings are configured via environment variables and shown read-only."
+        title="设置"
+        description="系统配置概览。设置通过环境变量配置并以只读方式显示。"
       />
 
       <Alert>
         <Info className="size-4" />
-        <AlertTitle>Read-only Configuration</AlertTitle>
+        <AlertTitle>只读配置</AlertTitle>
         <AlertDescription>
           Server settings are configured via environment variables. The values
-          shown below reflect the current runtime configuration.
+          以下显示的值反映当前运行时配置。
         </AlertDescription>
       </Alert>
 
@@ -449,28 +447,28 @@ export default function SettingsPage() {
         <TabsList>
           <TabsTrigger value="general">
             <Server className="size-4 mr-1.5" />
-            General
+            常规
           </TabsTrigger>
           <TabsTrigger value="storage">
             <HardDrive className="size-4 mr-1.5" />
-            Storage
+            存储
           </TabsTrigger>
           <TabsTrigger value="auth">
             <Lock className="size-4 mr-1.5" />
-            Authentication
+            认证
           </TabsTrigger>
           <TabsTrigger value="email">
             <Mail className="size-4 mr-1.5" />
-            Email
+            邮件
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="general" className="mt-4">
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">General Settings</CardTitle>
+              <CardTitle className="text-base">常规设置</CardTitle>
               <CardDescription>
-                Core server configuration and version information.
+                核心服务器配置和版本信息。
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -479,13 +477,13 @@ export default function SettingsPage() {
                 value={
                   typeof window !== "undefined"
                     ? process.env.NEXT_PUBLIC_API_URL || window.location.origin
-                    : "Loading..."
+                    : "加载中..."
                 }
-                description="The base URL used by the frontend to reach the API server."
+                description="前端用于访问 API 服务器的基础 URL。"
               />
               <Separator />
               <SettingRow
-                label="Server Version"
+                label="服务器版本"
                 value={
                   health?.version
                     ? health.dirty && health.commit
@@ -493,11 +491,11 @@ export default function SettingsPage() {
                       : health.version
                     : "..."
                 }
-                description="Current Artifact Keeper server version."
+                description="当前 Artifact Keeper 服务器版本。"
               />
               <Separator />
               <SettingRow
-                label="Web Version"
+                label="Web 版本"
                 value={
                   process.env.NEXT_PUBLIC_APP_VERSION?.includes("-") &&
                   process.env.NEXT_PUBLIC_GIT_SHA &&
@@ -505,13 +503,13 @@ export default function SettingsPage() {
                     ? `${process.env.NEXT_PUBLIC_APP_VERSION} (${process.env.NEXT_PUBLIC_GIT_SHA.slice(0, 7)})`
                     : process.env.NEXT_PUBLIC_APP_VERSION ?? "..."
                 }
-                description="Current web frontend version."
+                description="当前 Web 前端版本。"
               />
               <Separator />
               <div className="space-y-2">
-                <Label className="text-sm">Environment</Label>
+                <Label className="text-sm">环境</Label>
                 <div className="flex items-center gap-2">
-                  <Badge variant="secondary">Production</Badge>
+                  <Badge variant="secondary">生产环境</Badge>
                 </div>
               </div>
             </CardContent>
@@ -521,37 +519,37 @@ export default function SettingsPage() {
         <TabsContent value="storage" className="mt-4">
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Storage Settings</CardTitle>
+              <CardTitle className="text-base">存储设置</CardTitle>
               <CardDescription>
-                Artifact storage backend and path configuration.
+                制品存储后端和路径配置。
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <SettingRow
-                label="Storage Backend"
+                label="存储后端"
                 value={storageValue((s) => formatStorageBackend(s.storage_backend))}
-                description="The type of storage backend used for artifact data."
+                description="用于制品数据的存储后端类型。"
               />
               <Separator />
               <SettingRow
-                label="Storage Path"
+                label="存储路径"
                 value={storageValue((s) => s.storage_path)}
-                description="The filesystem path where artifact files are stored (when storage backend is local)."
+                description="制品文件存储的文件系统路径（当存储后端为本地时）。"
               />
               <Separator />
               <SettingRow
-                label="Max Upload Size"
+                label="最大上传大小"
                 value={storageValue((s) => formatBytes(s.max_upload_size_bytes))}
-                description="Maximum allowed size for a single artifact upload."
+                description="单个制品上传的最大允许大小。"
               />
               <Separator />
               {/* TODO(#334): swap for storageSettings.deduplication once the backend
                   exposes it on /api/v1/admin/settings. Until then this row is a
                   build-time invariant (always SHA-256 content addressing). */}
               <SettingRow
-                label="Deduplication"
+                label="去重"
                 value="Enabled (SHA-256)"
-                description="Content-addressable storage to avoid storing duplicate artifacts."
+                description="内容寻址存储，避免存储重复制品。"
               />
             </CardContent>
           </Card>
@@ -560,34 +558,34 @@ export default function SettingsPage() {
         <TabsContent value="auth" className="mt-4">
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Authentication Settings</CardTitle>
+              <CardTitle className="text-base">认证设置</CardTitle>
               <CardDescription>
-                Token and session configuration for user authentication.
+                用于用户认证的令牌和会话配置。
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <SettingRow
-                label="Authentication Method"
+                label="认证方式"
                 value="JWT (JSON Web Token)"
-                description="The method used to authenticate API requests."
+                description="用于认证 API 请求的方式。"
               />
               <Separator />
               <SettingRow
-                label="Access Token Expiry"
-                value="1 hour"
-                description="How long an access token remains valid before requiring refresh."
+                label="访问令牌有效期"
+                value="1 小时"
+                description="访问令牌在需要刷新前保持有效的时间。"
               />
               <Separator />
               <SettingRow
-                label="Refresh Token Expiry"
-                value="7 days"
-                description="How long a refresh token remains valid."
+                label="刷新令牌有效期"
+                value="7 天"
+                description="刷新令牌保持有效的时间。"
               />
               <Separator />
               <SettingRow
-                label="Password Policy"
+                label="密码策略"
                 value={passwordPolicyValue()}
-                description="Minimum password requirements for user accounts."
+                description="用户账号的最低密码要求。"
               />
             </CardContent>
           </Card>

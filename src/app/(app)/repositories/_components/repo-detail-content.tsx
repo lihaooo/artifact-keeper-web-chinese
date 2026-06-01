@@ -31,7 +31,6 @@ import { SecurityTabContent } from "./security-tab-content";
 import { HealthTabContent } from "./health-tab-content";
 import { NotificationsTabContent } from "./notifications-tab-content";
 import { VirtualMembersPanel } from "./virtual-members-panel";
-import { PackagesTabContent } from "./packages-tab-content";
 import {
   ArtifactBrowserToggle,
   supportsGrouping,
@@ -41,6 +40,7 @@ import { MavenComponentList } from "./maven-component-list";
 import { DockerTagList } from "./docker-tag-list";
 import { QuarantineBadge } from "@/components/common/quarantine-badge";
 import { QuarantineBanner } from "@/components/common/quarantine-banner";
+import { PackagesTabContent } from "./packages-tab-content";
 import { RepoSettingsTab } from "./repo-settings-tab";
 import { formatBytes, REPO_TYPE_COLORS } from "@/lib/utils";
 import { useAuth } from "@/providers/auth-provider";
@@ -196,27 +196,27 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
       queryClient.invalidateQueries({ queryKey: ["repository", repoKey] });
       setDetailOpen(false);
       setSelectedArtifact(null);
-      toast.success("Artifact deleted");
+      toast.success("制品已删除");
     },
-    onError: mutationErrorToast("Failed to delete artifact"),
+    onError: mutationErrorToast("删除制品失败"),
   });
 
   const scanArtifactMutation = useMutation({
     mutationFn: (artifactId: string) =>
       securityApi.triggerScan({ artifact_id: artifactId }),
     onSuccess: (res) => {
-      toast.success(`Scan queued for ${res.artifacts_queued} artifact(s).`);
+      toast.success(`已为 ${res.artifacts_queued} 个制品排队扫描。`);
     },
-    onError: mutationErrorToast("Failed to trigger scan"),
+    onError: mutationErrorToast("触发扫描失败"),
   });
 
   const scanRepoMutation = useMutation({
     mutationFn: () =>
       securityApi.triggerScan({ repository_id: repository?.id }),
     onSuccess: (res) => {
-      toast.success(`Scan queued for ${res.artifacts_queued} artifact(s).`);
+      toast.success(`已为 ${res.artifacts_queued} 个制品排队扫描。`);
     },
-    onError: mutationErrorToast("Failed to trigger scan"),
+    onError: mutationErrorToast("触发扫描失败"),
   });
 
   const updateSecurityMutation = useMutation({
@@ -225,9 +225,9 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["repository-security", repoKey] });
       setSecForm(null); // reset to refetched defaults
-      toast.success("Security settings saved");
+      toast.success("安全设置已保存");
     },
-    onError: mutationErrorToast("Failed to save security settings"),
+    onError: mutationErrorToast("保存安全设置失败"),
   });
 
   // --- handlers ---
@@ -278,7 +278,7 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
   const artifactColumns: DataTableColumn<Artifact>[] = [
     {
       id: "name",
-      header: "Name",
+      header: "名称",
       accessor: (a) => a.name,
       sortable: true,
       cell: (a) => (
@@ -304,7 +304,7 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
     },
     {
       id: "path",
-      header: "Path",
+      header: "路径",
       accessor: (a) => a.path,
       cell: (a) => (
         <code className="text-xs text-muted-foreground max-w-[200px] truncate block">
@@ -314,7 +314,7 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
     },
     {
       id: "version",
-      header: "Version",
+      header: "版本",
       accessor: (a) => a.version ?? "",
       cell: (a) =>
         a.version ? (
@@ -327,7 +327,7 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
     },
     {
       id: "size",
-      header: "Size",
+      header: "大小",
       accessor: (a) => a.size_bytes,
       sortable: true,
       cell: (a) => (
@@ -338,23 +338,23 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
     },
     {
       id: "downloads",
-      header: "Downloads",
+      header: "下载次数",
       accessor: (a) => a.download_count,
       sortable: true,
       cell: (a) => (
         <span className="text-sm text-muted-foreground">
-          {a.download_count.toLocaleString()}
+          {a.download_count.toLocaleString("zh-CN")}
         </span>
       ),
     },
     {
       id: "created",
-      header: "Created",
+      header: "创建时间",
       accessor: (a) => a.created_at,
       sortable: true,
       cell: (a) => (
         <span className="text-sm text-muted-foreground">
-          {new Date(a.created_at).toLocaleDateString()}
+          {new Date(a.created_at).toLocaleDateString("zh-CN")}
         </span>
       ),
     },
@@ -376,7 +376,7 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
                 <Info className="size-3.5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Details</TooltipContent>
+            <TooltipContent>详情</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -388,7 +388,7 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
                 <Download className="size-3.5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Download</TooltipContent>
+            <TooltipContent>下载</TooltipContent>
           </Tooltip>
           {user?.is_admin && (
             <Tooltip>
@@ -402,7 +402,7 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
                   <Shield className="size-3.5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Scan</TooltipContent>
+              <TooltipContent>扫描</TooltipContent>
             </Tooltip>
           )}
           {isAuthenticated && (
@@ -417,7 +417,7 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
                   <Trash2 className="size-3.5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Delete</TooltipContent>
+              <TooltipContent>删除</TooltipContent>
             </Tooltip>
           )}
         </div>
@@ -444,13 +444,13 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
   if (!repository) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-muted-foreground">
-        <p className="text-lg font-medium">Repository not found</p>
+        <p className="text-lg font-medium">未找到仓库</p>
         <Button
           variant="outline"
           className="mt-4"
           onClick={() => router.push("/repositories")}
         >
-          Back to Repositories
+          返回仓库列表
         </Button>
       </div>
     );
@@ -465,7 +465,7 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href="/repositories">Repositories</BreadcrumbLink>
+                <BreadcrumbLink href="/repositories">仓库</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
@@ -502,10 +502,10 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
                 variant={repository.is_public ? "outline" : "secondary"}
                 className="text-xs font-normal"
               >
-                {repository.is_public ? "Public" : "Private"}
+                {repository.is_public ? "公开" : "私有"}
               </Badge>
               <span className="text-sm text-muted-foreground ml-2">
-                {formatBytes(repository.storage_used_bytes)} used
+                已使用 {formatBytes(repository.storage_used_bytes)}
               </span>
             </div>
 
@@ -528,7 +528,7 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
                   </a>
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Open in new tab</TooltipContent>
+              <TooltipContent>在新标签页中打开</TooltipContent>
             </Tooltip>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -544,10 +544,10 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
               variant={repository.is_public ? "outline" : "secondary"}
               className="text-xs font-normal"
             >
-              {repository.is_public ? "Public" : "Private"}
+              {repository.is_public ? "公开" : "私有"}
             </Badge>
             <span className="text-sm text-muted-foreground ml-2">
-              {formatBytes(repository.storage_used_bytes)} used
+              已使用 {formatBytes(repository.storage_used_bytes)}
             </span>
           </div>
           {repository.description && (
@@ -559,34 +559,34 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
       {/* Tabs */}
       <Tabs defaultValue="artifacts">
         <TabsList variant="line">
-          <TabsTrigger value="artifacts">Artifacts</TabsTrigger>
+          <TabsTrigger value="artifacts">制品</TabsTrigger>
           <TabsTrigger value="packages">
             <PackageIcon className="size-3.5 mr-1" />
-            Packages
+            包
           </TabsTrigger>
-          {isAuthenticated && <TabsTrigger value="upload">Upload</TabsTrigger>}
+          {isAuthenticated && <TabsTrigger value="upload">上传</TabsTrigger>}
           {repository.repo_type === "virtual" && (
             <TabsTrigger value="members">
               <Layers className="size-3.5 mr-1" />
-              Members
+              成员
             </TabsTrigger>
           )}
           {user?.is_admin && (
             <TabsTrigger value="security">
               <Shield className="size-3.5 mr-1" />
-              Security
+              安全
             </TabsTrigger>
           )}
           {user?.is_admin && (
             <TabsTrigger value="notifications">
               <Bell className="size-3.5 mr-1" />
-              Notifications
+              通知
             </TabsTrigger>
           )}
           {user?.is_admin && (
             <TabsTrigger value="settings">
               <Settings className="size-3.5 mr-1" />
-              Settings
+              设置
             </TabsTrigger>
           )}
         </TabsList>
@@ -597,7 +597,7 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
             <div className="relative max-w-sm flex-1">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
               <Input
-                placeholder="Search artifacts..."
+                placeholder="搜索制品..."
                 className="pl-8"
                 value={searchQuery}
                 onChange={(e) => {
@@ -621,7 +621,7 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
                 disabled={scanRepoMutation.isPending}
               >
                 <Shield className="size-4" />
-                {scanRepoMutation.isPending ? "Scanning..." : "Scan All"}
+                {scanRepoMutation.isPending ? "扫描中..." : "扫描全部"}
               </Button>
             )}
           </div>
@@ -634,8 +634,8 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
           */}
           <div role="status" aria-live="polite" className="sr-only">
             {viewMode === "grouped"
-              ? `Showing grouped ${repoFormat === "docker" ? "tag" : "component"} view`
-              : "Showing flat list view"}
+              ? `正在显示分组${repoFormat === "docker" ? "标签" : "组件"}视图`
+              : "正在显示平铺列表视图"}
           </div>
 
           {useServerGrouping ? (
@@ -643,7 +643,7 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
               components={artifactsData?.components ?? []}
               loading={artifactsLoading}
               total={artifactsData?.pagination?.total}
-              emptyMessage="No Maven components could be grouped — switch to flat view to see raw files."
+              emptyMessage="无法分组 Maven 组件 — 切换到平铺视图查看原始文件。"
             />
           ) : isDockerGrouped ? (
             <DockerTagList
@@ -670,14 +670,13 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
                 setPage(1);
               }}
               loading={artifactsLoading}
-              emptyMessage="No artifacts in this repository."
+              emptyMessage="此仓库中暂无制品。"
               rowKey={(a) => a.id}
               onRowClick={showDetail}
             />
           )}
         </TabsContent>
 
-        {/* --- Packages Tab --- */}
         <TabsContent value="packages" className="mt-4">
           <PackagesTabContent
             repositoryKey={repoKey}
@@ -690,7 +689,7 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
           <TabsContent value="upload" className="mt-4">
             <div className="max-w-lg">
               <h3 className="text-sm font-medium mb-4">
-                Upload an artifact to {repository.key}
+                上传制品到 {repository.key}
               </h3>
               <FileUpload
                 onUpload={handleUpload}
@@ -727,7 +726,7 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
                 }}
               >
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="sec-enabled">Enable Scanning</Label>
+                  <Label htmlFor="sec-enabled">启用扫描</Label>
                   <Switch
                     id="sec-enabled"
                     checked={currentSecForm.scan_enabled}
@@ -737,7 +736,7 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
                   />
                 </div>
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="sec-upload">Scan on Upload</Label>
+                  <Label htmlFor="sec-upload">上传时扫描</Label>
                   <Switch
                     id="sec-upload"
                     checked={currentSecForm.scan_on_upload}
@@ -747,7 +746,7 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
                   />
                 </div>
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="sec-proxy">Scan on Proxy</Label>
+                  <Label htmlFor="sec-proxy">代理时扫描</Label>
                   <Switch
                     id="sec-proxy"
                     checked={currentSecForm.scan_on_proxy}
@@ -757,7 +756,7 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
                   />
                 </div>
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="sec-block">Block on Violation</Label>
+                  <Label htmlFor="sec-block">违规时阻止</Label>
                   <Switch
                     id="sec-block"
                     checked={currentSecForm.block_on_policy_violation}
@@ -770,7 +769,7 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Severity Threshold</Label>
+                  <Label>严重级别阈值</Label>
                   <Select
                     value={currentSecForm.severity_threshold}
                     onValueChange={(v) =>
@@ -793,8 +792,8 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
                   disabled={updateSecurityMutation.isPending}
                 >
                   {updateSecurityMutation.isPending
-                    ? "Saving..."
-                    : "Save Settings"}
+                    ? "保存中..."
+                    : "保存设置"}
                 </Button>
               </form>
             )}
@@ -822,7 +821,7 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <FileIcon className="size-4" />
-              {selectedArtifact?.name ?? "Artifact Details"}
+              {selectedArtifact?.name ?? "制品详情"}
             </DialogTitle>
           </DialogHeader>
           {selectedArtifact && isActivelyQuarantined(selectedArtifact) && (
@@ -844,7 +843,7 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
                 </TabsTrigger>
                 <TabsTrigger value="security">
                   <Shield className="size-3.5 mr-1" />
-                  Security
+                  安全
                 </TabsTrigger>
                 <TabsTrigger value="health">
                   <HeartPulse className="size-3.5 mr-1" />
@@ -854,40 +853,40 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
 
               <TabsContent value="details" className="flex-1 overflow-y-auto mt-4">
                 <div className="space-y-3 text-sm">
-                  <DetailRow label="Name" value={selectedArtifact.name} />
-                  <DetailRow label="Path" value={selectedArtifact.path} copy />
+                  <DetailRow label="名称" value={selectedArtifact.name} />
+                  <DetailRow label="路径" value={selectedArtifact.path} copy />
                   {selectedArtifact.version && (
-                    <DetailRow label="Version" value={selectedArtifact.version} />
+                    <DetailRow label="版本" value={selectedArtifact.version} />
                   )}
                   <DetailRow
-                    label="Size"
-                    value={`${formatBytes(selectedArtifact.size_bytes)} (${selectedArtifact.size_bytes.toLocaleString()} bytes)`}
+                    label="大小"
+                    value={`${formatBytes(selectedArtifact.size_bytes)} (${selectedArtifact.size_bytes.toLocaleString("zh-CN")} bytes)`}
                   />
                   <DetailRow
-                    label="Content Type"
+                    label="内容类型"
                     value={selectedArtifact.content_type}
                   />
                   <DetailRow
-                    label="Downloads"
-                    value={selectedArtifact.download_count.toLocaleString()}
+                    label="下载次数"
+                    value={selectedArtifact.download_count.toLocaleString("zh-CN")}
                   />
                   {isActivelyQuarantined(selectedArtifact) && (
                     <>
                       <DetailRow
-                        label="Quarantine"
-                        value={selectedArtifact.quarantine_reason || "Active"}
+                        label="隔离"
+                        value={selectedArtifact.quarantine_reason || "活跃"}
                       />
                       {selectedArtifact.quarantine_until && (
                         <DetailRow
-                          label="Quarantine Until"
-                          value={new Date(selectedArtifact.quarantine_until).toLocaleString()}
+                          label="隔离至"
+                          value={new Date(selectedArtifact.quarantine_until).toLocaleString("zh-CN")}
                         />
                       )}
                     </>
                   )}
                   <DetailRow
-                    label="Created"
-                    value={new Date(selectedArtifact.created_at).toLocaleString()}
+                    label="创建时间"
+                    value={new Date(selectedArtifact.created_at).toLocaleString("zh-CN")}
                   />
                   <DetailRow
                     label="SHA-256"
@@ -896,7 +895,7 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
                     mono
                   />
                   <DetailRow
-                    label="Download URL"
+                    label="下载 URL"
                     value={artifactsApi.getDownloadUrl(repoKey, selectedArtifact.path)}
                     copy
                     mono
@@ -905,7 +904,7 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
                     Object.keys(selectedArtifact.metadata).length > 0 && (
                       <div>
                         <p className="text-xs font-medium text-muted-foreground mb-1">
-                          Metadata
+                          元数据
                         </p>
                         <pre className="rounded-md bg-muted p-3 text-xs overflow-auto max-h-40">
                           {JSON.stringify(selectedArtifact.metadata, null, 2)}
@@ -933,7 +932,7 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
               variant="outline"
               onClick={() => setDetailOpen(false)}
             >
-              Close
+              关闭
             </Button>
             {selectedArtifact && (
               <>
@@ -944,7 +943,7 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
                     disabled={scanArtifactMutation.isPending}
                   >
                     <Shield className="size-4" />
-                    {scanArtifactMutation.isPending ? "Scanning..." : "Scan"}
+                    {scanArtifactMutation.isPending ? "扫描中..." : "扫描"}
                   </Button>
                 )}
                 <Button
@@ -959,7 +958,7 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
                 </Button>
                 <Button onClick={() => selectedArtifact && handleDownload(selectedArtifact)}>
                   <Download className="size-4" />
-                  Download
+                  下载
                 </Button>
               </>
             )}

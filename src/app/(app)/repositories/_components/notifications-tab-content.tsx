@@ -51,48 +51,48 @@ import { ConfirmDialog } from "@/components/common/confirm-dialog";
 export const WEBHOOK_EVENTS: { value: WebhookEvent; label: string; description: string }[] = [
   {
     value: "artifact_uploaded",
-    label: "Artifact Uploaded",
-    description: "Triggered when an artifact is pushed to this repository",
+    label: "制品上传",
+    description: "当制品被推送到此仓库时触发",
   },
   {
     value: "artifact_deleted",
-    label: "Artifact Deleted",
-    description: "Triggered when an artifact is removed from this repository",
+    label: "制品删除",
+    description: "当制品从此仓库中删除时触发",
   },
   {
     value: "build_started",
-    label: "Build Started",
-    description: "Triggered when a build begins for artifacts in this repository",
+    label: "构建开始",
+    description: "当此仓库中的制品开始构建时触发",
   },
   {
     value: "build_completed",
-    label: "Build Completed",
-    description: "Triggered when a build finishes successfully",
+    label: "构建完成",
+    description: "当构建成功完成时触发",
   },
   {
     value: "build_failed",
-    label: "Build Failed",
-    description: "Triggered when a build finishes with errors",
+    label: "构建失败",
+    description: "当构建完成但有错误时触发",
   },
   {
     value: "repository_created",
-    label: "Repository Created",
-    description: "Triggered when a new repository is created",
+    label: "仓库创建",
+    description: "当创建新仓库时触发",
   },
   {
     value: "repository_deleted",
-    label: "Repository Deleted",
-    description: "Triggered when a repository is deleted",
+    label: "仓库删除",
+    description: "当仓库被删除时触发",
   },
   {
     value: "user_created",
-    label: "User Created",
-    description: "Triggered when a new user account is created",
+    label: "用户创建",
+    description: "当创建新用户账户时触发",
   },
   {
     value: "user_deleted",
-    label: "User Deleted",
-    description: "Triggered when a user account is removed",
+    label: "用户删除",
+    description: "当用户账户被删除时触发",
   },
 ];
 
@@ -151,9 +151,9 @@ export function NotificationsTabContent({ repositoryId }: NotificationsTabConten
       queryClient.invalidateQueries({ queryKey: ["webhooks", repositoryId] });
       setCreateOpen(false);
       resetForm();
-      toast.success("Webhook created");
+      toast.success("Webhook 已创建");
     },
-    onError: mutationErrorToast("Failed to create webhook"),
+    onError: mutationErrorToast("创建 Webhook 失败"),
   });
 
   const deleteMutation = useMutation({
@@ -162,11 +162,11 @@ export function NotificationsTabContent({ repositoryId }: NotificationsTabConten
       queryClient.invalidateQueries({ queryKey: ["webhooks", repositoryId] });
       setWebhookToDelete(null);
       setActingWebhookId(null);
-      toast.success("Webhook deleted");
+      toast.success("Webhook 已删除");
     },
     onError: (err: unknown) => {
       setActingWebhookId(null);
-      toast.error(toUserMessage(err, "Failed to delete webhook"));
+      toast.error(toUserMessage(err, "删除 Webhook 失败"));
     },
   });
 
@@ -175,11 +175,11 @@ export function NotificationsTabContent({ repositoryId }: NotificationsTabConten
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["webhooks", repositoryId] });
       setActingWebhookId(null);
-      toast.success("Webhook enabled");
+      toast.success("Webhook 已启用");
     },
     onError: (err: unknown) => {
       setActingWebhookId(null);
-      toast.error(toUserMessage(err, "Failed to enable webhook"));
+      toast.error(toUserMessage(err, "启用 Webhook 失败"));
     },
   });
 
@@ -188,11 +188,11 @@ export function NotificationsTabContent({ repositoryId }: NotificationsTabConten
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["webhooks", repositoryId] });
       setActingWebhookId(null);
-      toast.success("Webhook disabled");
+      toast.success("Webhook 已禁用");
     },
     onError: (err: unknown) => {
       setActingWebhookId(null);
-      toast.error(toUserMessage(err, "Failed to disable webhook"));
+      toast.error(toUserMessage(err, "禁用 Webhook 失败"));
     },
   });
 
@@ -201,14 +201,14 @@ export function NotificationsTabContent({ repositoryId }: NotificationsTabConten
     onSuccess: (result) => {
       setActingWebhookId(null);
       if (result.success) {
-        toast.success(`Test delivery succeeded (HTTP ${result.status_code})`);
+        toast.success(`测试投递成功 (HTTP ${result.status_code})`);
       } else {
-        toast.error(result.error ?? "Test delivery failed");
+        toast.error(result.error ?? "测试投递失败");
       }
     },
     onError: (err: unknown) => {
       setActingWebhookId(null);
-      toast.error(toUserMessage(err, "Failed to send test"));
+      toast.error(toUserMessage(err, "发送测试失败"));
     },
   });
 
@@ -227,12 +227,12 @@ export function NotificationsTabContent({ repositoryId }: NotificationsTabConten
 
   const handleCreate = useCallback(() => {
     if (!formName.trim() || !formUrl.trim() || formEvents.length === 0) {
-      toast.error("Name, URL, and at least one event are required");
+      toast.error("名称、URL 和至少一个事件为必填项");
       return;
     }
     const trimmedUrl = formUrl.trim();
     if (!trimmedUrl.startsWith("http://") && !trimmedUrl.startsWith("https://")) {
-      setUrlError("URL must start with http:// or https://");
+      setUrlError("URL 必须以 http:// 或 https:// 开头");
       return;
     }
     setUrlError(null);
@@ -269,10 +269,10 @@ export function NotificationsTabContent({ repositoryId }: NotificationsTabConten
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Bell className="size-5 text-muted-foreground" />
-          <h3 className="text-sm font-medium">Webhook Notifications</h3>
+          <h3 className="text-sm font-medium">Webhook 通知</h3>
           {webhooks.length > 0 && (
             <Badge variant="secondary" className="text-xs">
-              {webhooks.length} configured
+              {webhooks.length} 个已配置
             </Badge>
           )}
         </div>
@@ -282,7 +282,7 @@ export function NotificationsTabContent({ repositoryId }: NotificationsTabConten
           data-testid="add-webhook-button"
         >
           <Plus className="size-4 mr-1" />
-          Add Webhook
+          添加 Webhook
         </Button>
       </div>
 
@@ -291,10 +291,10 @@ export function NotificationsTabContent({ repositoryId }: NotificationsTabConten
         <div className="flex flex-col items-center justify-center py-12 text-center">
           <Bell className="size-12 text-muted-foreground/40 mb-4" />
           <p className="text-sm text-muted-foreground">
-            No webhooks configured for this repository.
+            此仓库尚未配置 Webhook。
           </p>
           <p className="text-xs text-muted-foreground mt-1">
-            Add a webhook to receive notifications when events occur.
+            添加 Webhook 以在事件发生时接收通知。
           </p>
         </div>
       ) : (
@@ -330,15 +330,15 @@ export function NotificationsTabContent({ repositoryId }: NotificationsTabConten
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>Add Webhook</DialogTitle>
+            <DialogTitle>添加 Webhook</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4 py-2">
             <div className="space-y-2">
-              <Label htmlFor="webhook-name">Name</Label>
+              <Label htmlFor="webhook-name">名称</Label>
               <Input
                 id="webhook-name"
-                placeholder="e.g. CI/CD Pipeline"
+                placeholder="例如 CI/CD 流水线"
                 value={formName}
                 onChange={(e) => setFormName(e.target.value)}
               />
@@ -346,6 +346,7 @@ export function NotificationsTabContent({ repositoryId }: NotificationsTabConten
 
             <div className="space-y-2">
               <Label htmlFor="webhook-url">Payload URL</Label>
+
               <Input
                 id="webhook-url"
                 type="url"
@@ -365,20 +366,20 @@ export function NotificationsTabContent({ repositoryId }: NotificationsTabConten
 
             <div className="space-y-2">
               <Label htmlFor="webhook-secret">
-                Secret{" "}
-                <span className="text-muted-foreground font-normal">(optional)</span>
+                密钥{" "}
+                <span className="text-muted-foreground font-normal">（可选）</span>
               </Label>
               <Input
                 id="webhook-secret"
                 type="password"
-                placeholder="Used to sign payloads"
+                placeholder="用于签名 payload"
                 value={formSecret}
                 onChange={(e) => setFormSecret(e.target.value)}
               />
             </div>
 
             <div className="space-y-3">
-              <Label>Events</Label>
+              <Label>事件</Label>
               <div className="grid gap-2">
                 {WEBHOOK_EVENTS.map((event) => (
                   <label
@@ -412,7 +413,7 @@ export function NotificationsTabContent({ repositoryId }: NotificationsTabConten
                 resetForm();
               }}
             >
-              Cancel
+              取消
             </Button>
             <Button
               onClick={handleCreate}
@@ -422,10 +423,10 @@ export function NotificationsTabContent({ repositoryId }: NotificationsTabConten
               {createMutation.isPending ? (
                 <>
                   <Loader2 className="size-4 mr-1 animate-spin" />
-                  Creating...
+                  创建中...
                 </>
               ) : (
-                "Create Webhook"
+                "创建 Webhook"
               )}
             </Button>
           </DialogFooter>
@@ -438,9 +439,9 @@ export function NotificationsTabContent({ repositoryId }: NotificationsTabConten
         onOpenChange={(open) => {
           if (!open) setWebhookToDelete(null);
         }}
-        title="Delete Webhook"
-        description="This will permanently remove this webhook. It will no longer receive event notifications."
-        confirmText="Delete Webhook"
+        title="删除 Webhook"
+        description="此操作将永久移除此 Webhook，它将不再接收事件通知。"
+        confirmText="删除 Webhook"
         danger
         loading={deleteMutation.isPending}
         onConfirm={() => {
@@ -494,7 +495,7 @@ function WebhookCard({
                 : "text-muted-foreground"
             }`}
           >
-            {webhook.is_enabled ? "Active" : "Inactive"}
+            {webhook.is_enabled ? "活跃" : "未启用"}
           </Badge>
         </div>
 
@@ -506,7 +507,7 @@ function WebhookCard({
                 size="icon-xs"
                 onClick={() => onTest(webhook.id)}
                 disabled={isTesting}
-                aria-label="Test webhook"
+                aria-label="测试 Webhook"
               >
                 {isTesting ? (
                   <Loader2 className="size-3.5 animate-spin" />
@@ -515,7 +516,7 @@ function WebhookCard({
                 )}
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Send test delivery</TooltipContent>
+            <TooltipContent>发送测试投递</TooltipContent>
           </Tooltip>
 
           <Tooltip>
@@ -528,7 +529,7 @@ function WebhookCard({
                     ? onDisable(webhook.id)
                     : onEnable(webhook.id)
                 }
-                aria-label={webhook.is_enabled ? "Disable webhook" : "Enable webhook"}
+                aria-label={webhook.is_enabled ? "禁用 Webhook" : "启用 Webhook"}
               >
                 {webhook.is_enabled ? (
                   <PowerOff className="size-3.5" />
@@ -538,7 +539,7 @@ function WebhookCard({
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              {webhook.is_enabled ? "Disable" : "Enable"}
+              {webhook.is_enabled ? "禁用" : "启用"}
             </TooltipContent>
           </Tooltip>
 
@@ -550,12 +551,12 @@ function WebhookCard({
                 className="text-destructive hover:text-destructive"
                 onClick={() => onDelete(webhook.id)}
                 disabled={isDeleting}
-                aria-label="Delete webhook"
+                aria-label="删除 Webhook"
               >
                 <Trash2 className="size-3.5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Delete</TooltipContent>
+            <TooltipContent>删除</TooltipContent>
           </Tooltip>
         </div>
       </div>
@@ -581,14 +582,14 @@ function WebhookCard({
               <CheckCircle2 className="size-3 text-green-500" />
               <Clock className="size-3" />
               <span>
-                Last triggered{" "}
-                {new Date(webhook.last_triggered_at).toLocaleDateString()}
+                上次触发{" "}
+                {new Date(webhook.last_triggered_at).toLocaleDateString("zh-CN")}
               </span>
             </>
           ) : (
             <>
               <XCircle className="size-3" />
-              <span>Never triggered</span>
+              <span>从未触发</span>
             </>
           )}
         </div>

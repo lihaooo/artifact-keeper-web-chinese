@@ -108,62 +108,62 @@ export default function GroupsPage() {
     mutationFn: (data: GroupForm) =>
       groupsApi.create({ name: data.name, description: data.description }),
     onSuccess: () => {
-      toast.success("Group created successfully");
+      toast.success("用户组创建成功");
       invalidateGroup(queryClient, "groups");
       setCreateOpen(false);
       setForm(EMPTY_FORM);
     },
-    onError: mutationErrorToast("Failed to create group"),
+    onError: mutationErrorToast("创建用户组失败"),
   });
 
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<GroupForm> }) =>
       groupsApi.update(id, { description: data.description }),
     onSuccess: () => {
-      toast.success("Group updated successfully");
+      toast.success("用户组更新成功");
       invalidateGroup(queryClient, "groups");
       setEditOpen(false);
       setSelectedGroup(null);
     },
-    onError: mutationErrorToast("Failed to update group"),
+    onError: mutationErrorToast("更新用户组失败"),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => groupsApi.delete(id),
     onSuccess: () => {
-      toast.success("Group deleted successfully");
+      toast.success("用户组删除成功");
       invalidateGroup(queryClient, "groups");
       setDeleteOpen(false);
       setSelectedGroup(null);
     },
-    onError: mutationErrorToast("Failed to delete group"),
+    onError: mutationErrorToast("删除用户组失败"),
   });
 
   const addMemberMutation = useMutation({
     mutationFn: ({ groupId, userId }: { groupId: string; userId: string }) =>
       groupsApi.addMembers(groupId, [userId]),
     onSuccess: () => {
-      toast.success("Member added");
+      toast.success("成员已添加");
       queryClient.invalidateQueries({
         queryKey: ["admin-group-detail", selectedGroup?.id],
       });
       invalidateGroup(queryClient, "groups");
       setAddUserId("");
     },
-    onError: mutationErrorToast("Failed to add member"),
+    onError: mutationErrorToast("添加成员失败"),
   });
 
   const removeMemberMutation = useMutation({
     mutationFn: ({ groupId, userId }: { groupId: string; userId: string }) =>
       groupsApi.removeMembers(groupId, [userId]),
     onSuccess: () => {
-      toast.success("Member removed");
+      toast.success("成员已移除");
       queryClient.invalidateQueries({
         queryKey: ["admin-group-detail", selectedGroup?.id],
       });
       invalidateGroup(queryClient, "groups");
     },
-    onError: mutationErrorToast("Failed to remove member"),
+    onError: mutationErrorToast("移除成员失败"),
   });
 
   // -- handlers --
@@ -208,14 +208,14 @@ export default function GroupsPage() {
   const columns: DataTableColumn<Group>[] = [
     {
       id: "name",
-      header: "Name",
+      header: "名称",
       accessor: (g) => g.name,
       sortable: true,
       cell: (g) => <span className="text-sm font-medium">{g.name}</span>,
     },
     {
       id: "description",
-      header: "Description",
+      header: "描述",
       accessor: (g) => g.description ?? "",
       cell: (g) => (
         <span className="text-sm text-muted-foreground line-clamp-1">
@@ -225,7 +225,7 @@ export default function GroupsPage() {
     },
     {
       id: "member_count",
-      header: "Members",
+      header: "成员",
       accessor: (g) => g.member_count,
       sortable: true,
       cell: (g) => (
@@ -236,7 +236,7 @@ export default function GroupsPage() {
     },
     {
       id: "created_at",
-      header: "Created",
+      header: "创建时间",
       accessor: (g) => g.created_at,
       sortable: true,
       cell: (g) => (
@@ -263,7 +263,7 @@ export default function GroupsPage() {
                 <Pencil className="size-3.5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Edit</TooltipContent>
+            <TooltipContent>编辑</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -275,7 +275,7 @@ export default function GroupsPage() {
                 <Users2 className="size-3.5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Manage Members</TooltipContent>
+            <TooltipContent>管理成员</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -288,7 +288,7 @@ export default function GroupsPage() {
                 <Trash2 className="size-3.5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Delete</TooltipContent>
+            <TooltipContent>删除</TooltipContent>
           </Tooltip>
         </div>
       ),
@@ -299,9 +299,9 @@ export default function GroupsPage() {
   if (!currentUser?.is_admin) {
     return (
       <div className="space-y-6">
-        <PageHeader title="Groups" />
+        <PageHeader title="用户组" />
         <p className="text-sm text-muted-foreground">
-          You must be an administrator to view this page.
+          您必须是管理员才能查看此页面。
         </p>
       </div>
     );
@@ -310,12 +310,12 @@ export default function GroupsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Groups"
-        description="Organize users into groups for easier permission management."
+        title="用户组"
+        description="将用户组织为用户组以便权限管理。"
         actions={
           <Button onClick={() => setCreateOpen(true)}>
             <Plus className="size-4" />
-            Create Group
+            创建用户组
           </Button>
         }
       />
@@ -323,12 +323,12 @@ export default function GroupsPage() {
       {!isLoading && groups.length === 0 ? (
         <EmptyState
           icon={Users2}
-          title="No groups yet"
-          description="Create a group to organize users and manage permissions collectively."
+          title="暂无用户组"
+          description="创建用户组来组织用户并集中管理权限。"
           action={
             <Button onClick={() => setCreateOpen(true)}>
               <Plus className="size-4" />
-              Create Group
+              创建用户组
             </Button>
           }
         />
@@ -337,12 +337,12 @@ export default function GroupsPage() {
           columns={columns}
           data={groups}
           loading={isLoading}
-          emptyMessage="No groups found."
+          emptyMessage="未找到用户组。"
           rowKey={(g) => g.id}
         />
       )}
 
-      {/* Create Group Dialog */}
+      {/* 创建用户组对话框 */}
       <Dialog
         open={createOpen}
         onOpenChange={(o) => {
@@ -352,9 +352,9 @@ export default function GroupsPage() {
       >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Create Group</DialogTitle>
+            <DialogTitle>创建用户组</DialogTitle>
             <DialogDescription>
-              Add a new group to organize users.
+              添加新的用户组来组织用户。
             </DialogDescription>
           </DialogHeader>
           <form
@@ -365,7 +365,7 @@ export default function GroupsPage() {
             }}
           >
             <div className="space-y-2">
-              <Label htmlFor="group-name">Name</Label>
+              <Label htmlFor="group-name">名称</Label>
               <Input
                 id="group-name"
                 placeholder="engineering"
@@ -377,10 +377,10 @@ export default function GroupsPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="group-desc">Description</Label>
+              <Label htmlFor="group-desc">描述</Label>
               <Textarea
                 id="group-desc"
-                placeholder="Optional description..."
+                placeholder="可选描述..."
                 value={form.description}
                 onChange={(e) =>
                   setForm((f) => ({ ...f, description: e.target.value }))
@@ -397,17 +397,17 @@ export default function GroupsPage() {
                   setForm(EMPTY_FORM);
                 }}
               >
-                Cancel
+                取消
               </Button>
               <Button type="submit" disabled={createMutation.isPending}>
-                {createMutation.isPending ? "Creating..." : "Create Group"}
+                {createMutation.isPending ? "创建中..." : "创建用户组"}
               </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
 
-      {/* Edit Group Dialog */}
+      {/* 编辑用户组对话框 */}
       <Dialog
         open={editOpen}
         onOpenChange={(o) => {
@@ -417,9 +417,9 @@ export default function GroupsPage() {
       >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Edit Group: {selectedGroup?.name}</DialogTitle>
+            <DialogTitle>编辑用户组：{selectedGroup?.name}</DialogTitle>
             <DialogDescription>
-              Update the group description.
+              更新用户组描述。
             </DialogDescription>
           </DialogHeader>
           <form
@@ -435,11 +435,11 @@ export default function GroupsPage() {
             }}
           >
             <div className="space-y-2">
-              <Label htmlFor="edit-group-name">Name</Label>
+              <Label htmlFor="edit-group-name">名称</Label>
               <Input id="edit-group-name" value={form.name} disabled />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="edit-group-desc">Description</Label>
+              <Label htmlFor="edit-group-desc">描述</Label>
               <Textarea
                 id="edit-group-desc"
                 value={form.description}
@@ -458,17 +458,17 @@ export default function GroupsPage() {
                   setSelectedGroup(null);
                 }}
               >
-                Cancel
+                取消
               </Button>
               <Button type="submit" disabled={updateMutation.isPending}>
-                {updateMutation.isPending ? "Saving..." : "Save Changes"}
+                {updateMutation.isPending ? "保存中..." : "保存更改"}
               </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
 
-      {/* Manage Members Dialog */}
+      {/* 管理成员对话框 */}
       <Dialog
         open={membersOpen}
         onOpenChange={(o) => {
@@ -483,20 +483,20 @@ export default function GroupsPage() {
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>
-              Manage Members: {selectedGroup?.name}
+              管理成员：{selectedGroup?.name}
             </DialogTitle>
             <DialogDescription>
-              Add or remove users from this group.
+              添加或移除此用户组中的用户。
             </DialogDescription>
           </DialogHeader>
 
           {/* Add member */}
           <div className="flex items-end gap-2">
             <div className="flex-1 space-y-2">
-              <Label>Add Member</Label>
+              <Label>添加成员</Label>
               <Select value={addUserId} onValueChange={setAddUserId}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select a user..." />
+                  <SelectValue placeholder="选择用户..." />
                 </SelectTrigger>
                 <SelectContent>
                   {availableUsers.map((u: User) => (
@@ -506,7 +506,7 @@ export default function GroupsPage() {
                   ))}
                   {availableUsers.length === 0 && (
                     <div className="px-2 py-4 text-center text-sm text-muted-foreground">
-                      No users available to add
+                      没有可添加的用户
                     </div>
                   )}
                 </SelectContent>
@@ -525,7 +525,7 @@ export default function GroupsPage() {
               }}
             >
               <UserPlus className="size-3.5 mr-1" />
-              Add
+              添加
             </Button>
           </div>
 
@@ -542,7 +542,7 @@ export default function GroupsPage() {
                   <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
                   <Input
                     aria-label="Filter members"
-                    placeholder="Filter members..."
+                    placeholder="筛选成员..."
                     className="pl-8 h-8 text-xs"
                     value={memberSearch}
                     onChange={(e) => setMemberSearch(e.target.value)}
@@ -553,13 +553,13 @@ export default function GroupsPage() {
             <ScrollArea className="h-[240px] rounded-md border">
               {membersLoading ? (
                 <div className="flex items-center justify-center py-8 text-sm text-muted-foreground">
-                  Loading members...
+                  加载成员中...
                 </div>
               ) : filteredMembers.length === 0 ? (
                 <div className="flex items-center justify-center py-8 text-sm text-muted-foreground">
                   {members.length === 0
-                    ? "No members in this group"
-                    : "No members match your search"}
+                    ? "此用户组中暂无成员"
+                    : "没有匹配搜索条件的成员"}
                 </div>
               ) : (
                 <div className="divide-y">
@@ -595,7 +595,7 @@ export default function GroupsPage() {
                             <UserMinus className="size-3.5" />
                           </Button>
                         </TooltipTrigger>
-                        <TooltipContent>Remove</TooltipContent>
+                        <TooltipContent>移除</TooltipContent>
                       </Tooltip>
                     </div>
                   ))}
@@ -612,23 +612,23 @@ export default function GroupsPage() {
                 setSelectedGroup(null);
               }}
             >
-              Done
+              完成
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Delete Group Confirm */}
+      {/* 删除用户组确认 */}
       <ConfirmDialog
         open={deleteOpen}
         onOpenChange={(o) => {
           setDeleteOpen(o);
           if (!o) setSelectedGroup(null);
         }}
-        title="Delete Group"
-        description={`Deleting "${selectedGroup?.name}" will remove all member associations. Members will lose any permissions granted through this group. This action cannot be undone.`}
+        title="删除用户组"
+        description={`删除"${selectedGroup?.name}"将移除所有成员关联。成员将失去通过此用户组获得的权限。此操作无法撤销。`}
         typeToConfirm={selectedGroup?.name}
-        confirmText="Delete Group"
+        confirmText="删除用户组"
         danger
         loading={deleteMutation.isPending}
         onConfirm={() => {

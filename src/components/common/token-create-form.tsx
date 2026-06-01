@@ -47,7 +47,7 @@ export function TokenCreateForm({
   description,
   name,
   onNameChange,
-  namePlaceholder = "e.g., CI/CD Pipeline",
+  namePlaceholder = "例如，CI/CD Pipeline",
   expiry,
   onExpiryChange,
   scopes,
@@ -56,7 +56,7 @@ export function TokenCreateForm({
   isPending,
   onSubmit,
   onCancel,
-  submitLabel = "Create",
+  submitLabel = "创建",
   showRepoSelector = false,
   repoSelector,
   onRepoSelectorChange,
@@ -83,7 +83,7 @@ export function TokenCreateForm({
         }}
       >
         <div className="space-y-2">
-          <Label htmlFor="token-form-name">Name</Label>
+          <Label htmlFor="token-form-name">名称</Label>
           <Input
             id="token-form-name"
             value={name}
@@ -93,7 +93,7 @@ export function TokenCreateForm({
           />
         </div>
         <div className="space-y-2">
-          <Label>Expiration</Label>
+          <Label>过期时间</Label>
           <Select value={expiry} onValueChange={onExpiryChange}>
             <SelectTrigger className="w-full">
               <SelectValue />
@@ -108,7 +108,7 @@ export function TokenCreateForm({
           </Select>
         </div>
         <div className="space-y-3">
-          <Label>Scopes</Label>
+          <Label>权限范围</Label>
           <div className="grid grid-cols-2 gap-3">
             {availableScopes.map((s) => (
               <label
@@ -126,10 +126,9 @@ export function TokenCreateForm({
         </div>
         {showRepoSelector && repoSelector && onRepoSelectorChange && (
           <div className="space-y-2 border-t pt-4">
-            <Label>Repository Access</Label>
+            <Label>仓库访问权限</Label>
             <p className="text-xs text-muted-foreground">
-              Restrict which repositories this token can access. Leave empty for
-              unrestricted access.
+              限制此令牌可以访问的仓库。留空表示不限制访问。
             </p>
             <RepoSelectorForm
               value={repoSelector}
@@ -139,10 +138,10 @@ export function TokenCreateForm({
         )}
         <DialogFooter>
           <Button variant="outline" type="button" onClick={onCancel}>
-            Cancel
+            取消
           </Button>
           <Button type="submit" disabled={isPending || !name}>
-            {isPending ? "Creating..." : submitLabel}
+            {isPending ? "创建中..." : submitLabel}
           </Button>
         </DialogFooter>
       </form>

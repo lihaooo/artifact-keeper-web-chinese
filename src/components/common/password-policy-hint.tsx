@@ -20,42 +20,42 @@ interface PolicyRule {
 function buildRules(password: string, policy: PasswordPolicy): PolicyRule[] {
   const rules: PolicyRule[] = [
     {
-      label: `Minimum ${policy.min_length} characters`,
+      label: `至少 ${policy.min_length} 个字符`,
       met: password.length >= policy.min_length,
     },
   ];
 
   if (policy.require_uppercase) {
     rules.push({
-      label: "At least one uppercase letter",
+      label: "至少一个大写字母",
       met: /[A-Z]/.test(password),
     });
   }
 
   if (policy.require_lowercase) {
     rules.push({
-      label: "At least one lowercase letter",
+      label: "至少一个小写字母",
       met: /[a-z]/.test(password),
     });
   }
 
   if (policy.require_digit) {
     rules.push({
-      label: "At least one number",
+      label: "至少一个数字",
       met: /\d/.test(password),
     });
   }
 
   if (policy.require_special) {
     rules.push({
-      label: "At least one special character",
+      label: "至少一个特殊字符",
       met: /[^A-Za-z0-9]/.test(password),
     });
   }
 
   if (policy.history_count > 0) {
     rules.push({
-      label: `Cannot reuse your last ${policy.history_count} ${policy.history_count === 1 ? "password" : "passwords"}`,
+      label: `不能重复使用最近 ${policy.history_count} 次的密码`,
       // History check is server-side only; always show as neutral
       met: false,
     });
@@ -88,14 +88,14 @@ export function PasswordPolicyHint({
     <div
       className={cn("space-y-1.5", className)}
       role="list"
-      aria-label="Password requirements"
+      aria-label="密码要求"
     >
       <p className="text-xs font-medium text-muted-foreground">
-        Password requirements
+        密码要求
       </p>
       {rules.map((rule) => {
         // For history rules, never show a check since we can't validate client-side
-        const isHistoryRule = rule.label.startsWith("Cannot reuse");
+        const isHistoryRule = rule.label.startsWith("不能重复使用");
         const showStatus = hasInput && !isHistoryRule;
 
         return (

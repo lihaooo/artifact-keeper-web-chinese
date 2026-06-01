@@ -38,9 +38,9 @@ export function TokenCreatedAlert({
         className="border-amber-300 bg-amber-50 text-amber-900 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800"
       >
         <AlertTriangle className="size-4" />
-        <AlertTitle>Store it safely</AlertTitle>
+        <AlertTitle>请妥善保管</AlertTitle>
         <AlertDescription>
-          This will only be shown once. Store it in a secure location.
+          此内容仅显示一次。请将其保存在安全的位置。
         </AlertDescription>
       </Alert>
       <div className="flex items-center gap-2 rounded-md border bg-muted p-3">
@@ -48,7 +48,7 @@ export function TokenCreatedAlert({
         <CopyButton value={token} />
       </div>
       <DialogFooter>
-        <Button onClick={onDone}>Done</Button>
+        <Button onClick={onDone}>完成</Button>
       </DialogFooter>
     </>
   );

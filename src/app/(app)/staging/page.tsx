@@ -115,7 +115,7 @@ export default function StagingPage() {
         <div className="relative">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
           <Input
-            placeholder="Search staging repos..."
+            placeholder="搜索暂存仓库..."
             className="pl-8 h-8 text-sm"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -130,10 +130,10 @@ export default function StagingPage() {
             }}
           >
             <SelectTrigger className="h-7 text-xs flex-1">
-              <SelectValue placeholder="Format" />
+              <SelectValue placeholder="格式" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="__all__">All formats</SelectItem>
+              <SelectItem value="__all__">所有格式</SelectItem>
               {FORMAT_OPTIONS.map((o) => (
                 <SelectItem key={o.value} value={o.value}>
                   {o.label}
@@ -158,9 +158,9 @@ export default function StagingPage() {
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
             <Package className="size-8 mb-2 opacity-50" />
-            <p className="text-sm">No staging repositories found.</p>
+            <p className="text-sm">未找到暂存仓库。</p>
             <p className="text-xs mt-1">
-              Create a staging repository to begin the promotion workflow.
+              创建一个暂存仓库以开始提升工作流。
             </p>
           </div>
         ) : (
@@ -211,9 +211,9 @@ export default function StagingPage() {
       {/* Page header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Staging</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">暂存</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Review and promote artifacts from staging to release repositories.
+            审查并将制品从暂存提升到发布仓库.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -233,7 +233,7 @@ export default function StagingPage() {
                 />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Refresh</TooltipContent>
+            <TooltipContent>刷新</TooltipContent>
           </Tooltip>
         </div>
       </div>
@@ -258,9 +258,9 @@ export default function StagingPage() {
             ) : (
               <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
                 <ArrowUpRight className="size-12 mb-3 opacity-30" />
-                <p className="text-sm font-medium">Select a staging repository</p>
+                <p className="text-sm font-medium">选择一个暂存仓库</p>
                 <p className="text-xs mt-1">
-                  Choose a repository to view artifacts and promote to release.
+                  选择一个仓库以查看制品并提升到发布。
                 </p>
               </div>
             )}

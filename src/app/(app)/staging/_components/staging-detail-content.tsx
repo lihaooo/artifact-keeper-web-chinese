@@ -270,7 +270,7 @@ export function StagingDetailContent({
                   </a>
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Open in new tab</TooltipContent>
+              <TooltipContent>在新标签页中打开</TooltipContent>
             </Tooltip>
           </div>
           {repoMetaBadges}
@@ -280,8 +280,8 @@ export function StagingDetailContent({
       {/* Tabs */}
       <Tabs defaultValue="artifacts">
         <TabsList variant="line">
-          <TabsTrigger value="artifacts">Artifacts</TabsTrigger>
-          <TabsTrigger value="history">Promotion History</TabsTrigger>
+          <TabsTrigger value="artifacts">制品</TabsTrigger>
+          <TabsTrigger value="history">提升历史</TabsTrigger>
         </TabsList>
 
         {/* --- Artifacts Tab --- */}
@@ -291,7 +291,7 @@ export function StagingDetailContent({
             <div className="relative max-w-sm flex-1">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
               <Input
-                placeholder="Search artifacts..."
+                placeholder="搜索制品..."
                 className="pl-8"
                 value={searchQuery}
                 onChange={(e) => {
@@ -332,7 +332,7 @@ export function StagingDetailContent({
           ) : artifacts.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-muted-foreground border rounded-md">
               <Package className="size-8 mb-2 opacity-50" />
-              <p className="text-sm">No artifacts in this staging repository.</p>
+              <p className="text-sm">此暂存仓库中没有制品。</p>
             </div>
           ) : (
             <div className="rounded-md border">
@@ -348,7 +348,7 @@ export function StagingDetailContent({
                           }
                         }}
                         onCheckedChange={handleSelectAll}
-                        aria-label="Select all"
+                        aria-label="全选"
                       />
                     </TableHead>
                     <TableHead className="w-[30px]" />
@@ -511,7 +511,7 @@ function ArtifactRow({
           </TableCell>
           <TableCell>
             <span className="text-sm text-muted-foreground">
-              {new Date(artifact.created_at).toLocaleDateString()}
+              {new Date(artifact.created_at).toLocaleDateString("zh-CN")}
             </span>
           </TableCell>
         </TableRow>
@@ -523,7 +523,7 @@ function ArtifactRow({
               <TableCell colSpan={7} className="p-0">
                 <div className="px-4 py-3 ml-[70px] space-y-2">
                   <p className="text-xs font-medium text-muted-foreground">
-                    Policy Violations ({artifact.policy_result?.violations.length})
+                    策略违规 ({artifact.policy_result?.violations.length})
                   </p>
                   <div className="space-y-1">
                     {artifact.policy_result?.violations.map(

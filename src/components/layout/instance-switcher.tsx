@@ -37,7 +37,7 @@ export function InstanceSwitcher() {
     if (!name.trim() || !url.trim()) return;
     const trimmedUrl = url.trim().replace(/\/$/, "");
     if (!isValidInstanceUrl(trimmedUrl)) {
-      toast.error("Invalid instance URL. Private IPs, localhost, and non-HTTP protocols are not allowed.");
+      toast.error("无效的实例 URL。不允许使用私有 IP、localhost 和非 HTTP 协议。");
       return;
     }
     setAdding(true);
@@ -52,7 +52,7 @@ export function InstanceSwitcher() {
       setUrl("");
       setApiKey("");
     } catch {
-      toast.error("Failed to add instance. Check the URL and try again.");
+      toast.error("添加实例失败，请检查 URL 后重试。");
     } finally {
       setAdding(false);
     }
@@ -103,7 +103,7 @@ export function InstanceSwitcher() {
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => setAddOpen(true)}>
             <Plus className="size-4 mr-2" />
-            Add Instance
+            添加实例
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -111,14 +111,14 @@ export function InstanceSwitcher() {
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Add Artifact Keeper Instance</DialogTitle>
+            <DialogTitle>添加 Artifact Keeper 实例</DialogTitle>
             <DialogDescription>
-              Connect to a remote Artifact Keeper instance to browse its repositories and artifacts.
+              连接到远程 Artifact Keeper 实例以浏览其仓库和制品。
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-2">
-              <Label htmlFor="inst-name">Name</Label>
+              <Label htmlFor="inst-name">名称</Label>
               <Input
                 id="inst-name"
                 placeholder="Production"
@@ -137,10 +137,10 @@ export function InstanceSwitcher() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="inst-key">API Key</Label>
+              <Label htmlFor="inst-key">API 密钥</Label>
               <Input
                 id="inst-key"
-                placeholder="Optional -- stored encrypted on server"
+                placeholder="可选 -- 在服务器上加密存储"
                 type="password"
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
@@ -149,10 +149,10 @@ export function InstanceSwitcher() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setAddOpen(false)}>
-              Cancel
+              取消
             </Button>
             <Button onClick={handleAdd} disabled={!name.trim() || !url.trim() || adding}>
-              {adding ? "Adding..." : "Add Instance"}
+              {adding ? "添加中..." : "添加实例"}
             </Button>
           </DialogFooter>
         </DialogContent>

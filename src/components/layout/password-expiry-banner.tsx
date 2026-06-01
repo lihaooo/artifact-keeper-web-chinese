@@ -35,10 +35,10 @@ export function PasswordExpiryBanner() {
 
   const message =
     daysRemaining === 0
-      ? "Your password expires today."
+      ? "您的密码今天过期。"
       : daysRemaining === 1
-        ? "Your password expires tomorrow."
-        : `Your password expires in ${daysRemaining} days.`;
+        ? "您的密码明天过期。"
+        : `您的密码${daysRemaining}天后过期。`;
 
   return (
     <div
@@ -52,7 +52,7 @@ export function PasswordExpiryBanner() {
           href="/change-password"
           className="font-semibold underline underline-offset-2"
         >
-          Change it now
+          立即修改
         </Link>
       </span>
     </div>

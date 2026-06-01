@@ -14,11 +14,10 @@ export default function NotFound() {
           404
         </h1>
         <h2 className="mt-4 text-xl font-semibold tracking-tight">
-          Page Not Found
+          页面未找到
         </h2>
         <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-          The page you are looking for does not exist or has been moved to a
-          different location.
+          您要查找的页面不存在或已被移动到其他位置。
         </p>
         <div className="mt-8 flex items-center gap-3">
           <Link
@@ -26,7 +25,7 @@ export default function NotFound() {
             className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
           >
             <Home className="size-4" />
-            Go to Dashboard
+            前往仪表盘
           </Link>
           <button
             onClick={() => {
@@ -35,7 +34,7 @@ export default function NotFound() {
             className="inline-flex items-center justify-center gap-2 rounded-md border border-input bg-background px-4 py-2.5 text-sm font-medium shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors"
           >
             <ArrowLeft className="size-4" />
-            Go Back
+            返回
           </button>
         </div>
       </div>

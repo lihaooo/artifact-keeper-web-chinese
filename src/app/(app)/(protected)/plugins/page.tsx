@@ -186,9 +186,9 @@ export default function PluginsPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["plugins"] });
-      toast.success("Plugin enabled");
+      toast.success("插件已启用");
     },
-    onError: mutationErrorToast("Failed to enable plugin"),
+    onError: mutationErrorToast("启用插件失败"),
   });
 
   const disableMutation = useMutation({
@@ -198,9 +198,9 @@ export default function PluginsPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["plugins"] });
-      toast.success("Plugin disabled");
+      toast.success("插件已禁用");
     },
-    onError: mutationErrorToast("Failed to disable plugin"),
+    onError: mutationErrorToast("禁用插件失败"),
   });
 
   const uninstallMutation = useMutation({
@@ -211,9 +211,9 @@ export default function PluginsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["plugins"] });
       setUninstallId(null);
-      toast.success("Plugin uninstalled");
+      toast.success("插件已卸载");
     },
-    onError: mutationErrorToast("Failed to uninstall plugin"),
+    onError: mutationErrorToast("卸载插件失败"),
   });
 
   const [configValues, setConfigValues] = useState<Record<string, string>>({});
@@ -234,9 +234,9 @@ export default function PluginsPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["plugin-config"] });
-      toast.success("Configuration saved");
+      toast.success("配置已保存");
     },
-    onError: mutationErrorToast("Failed to save configuration"),
+    onError: mutationErrorToast("保存配置失败"),
   });
 
   const resetInstallForm = () => {
@@ -259,10 +259,10 @@ export default function PluginsPage() {
       setInstallOpen(false);
       resetInstallForm();
       toast.success(
-        `Plugin "${data?.name ?? "unknown"}" installed successfully`,
+        `插件 "${data?.name ?? "未知"}" 安装成功`,
       );
     },
-    onError: mutationErrorToast("Failed to install plugin from Git"),
+    onError: mutationErrorToast("从 Git 安装插件失败"),
   });
 
   const installZipMutation = useMutation({
@@ -280,10 +280,10 @@ export default function PluginsPage() {
       setInstallOpen(false);
       resetInstallForm();
       toast.success(
-        `Plugin "${data?.name ?? "unknown"}" installed successfully`,
+        `插件 "${data?.name ?? "未知"}" 安装成功`,
       );
     },
-    onError: mutationErrorToast("Failed to install plugin from ZIP"),
+    onError: mutationErrorToast("从 ZIP 安装插件失败"),
   });
 
   const isInstalling =
@@ -293,7 +293,7 @@ export default function PluginsPage() {
   const columns: DataTableColumn<Plugin>[] = [
     {
       id: "name",
-      header: "Name",
+      header: "名称",
       accessor: (p) => p.name,
       sortable: true,
       cell: (p) => (
@@ -308,7 +308,7 @@ export default function PluginsPage() {
     },
     {
       id: "type",
-      header: "Type",
+      header: "类型",
       cell: (p) => (
         <span
           className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${TYPE_COLORS[p.plugin_type] ?? ""}`}
@@ -319,7 +319,7 @@ export default function PluginsPage() {
     },
     {
       id: "status",
-      header: "Status",
+      header: "状态",
       cell: (p) => (
         <StatusBadge
           status={p.status}
@@ -329,7 +329,7 @@ export default function PluginsPage() {
     },
     {
       id: "description",
-      header: "Description",
+      header: "描述",
       cell: (p) => (
         <span className="text-sm text-muted-foreground truncate block max-w-[200px]">
           {p.description || "-"}
@@ -338,7 +338,7 @@ export default function PluginsPage() {
     },
     {
       id: "author",
-      header: "Author",
+      header: "作者",
       cell: (p) => (
         <span className="text-sm text-muted-foreground">
           {p.author || "-"}
@@ -347,11 +347,11 @@ export default function PluginsPage() {
     },
     {
       id: "installed",
-      header: "Installed",
+      header: "安装时间",
       accessor: (p) => p.installed_at,
       cell: (p) => (
         <span className="text-sm text-muted-foreground">
-          {new Date(p.installed_at).toLocaleDateString()}
+          {new Date(p.installed_at).toLocaleDateString("zh-CN")}
         </span>
       ),
     },
@@ -376,7 +376,7 @@ export default function PluginsPage() {
                 <Settings className="size-3.5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Configure</TooltipContent>
+            <TooltipContent>配置</TooltipContent>
           </Tooltip>
           {p.status === "disabled" ? (
             <Tooltip>
@@ -389,7 +389,7 @@ export default function PluginsPage() {
                   <Play className="size-3.5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Enable</TooltipContent>
+              <TooltipContent>启用</TooltipContent>
             </Tooltip>
           ) : (
             <Tooltip>
@@ -402,7 +402,7 @@ export default function PluginsPage() {
                   <Pause className="size-3.5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Disable</TooltipContent>
+              <TooltipContent>禁用</TooltipContent>
             </Tooltip>
           )}
           <Tooltip>
@@ -416,7 +416,7 @@ export default function PluginsPage() {
                 <Trash2 className="size-3.5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Uninstall</TooltipContent>
+            <TooltipContent>卸载</TooltipContent>
           </Tooltip>
         </div>
       ),
@@ -426,8 +426,8 @@ export default function PluginsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Plugins"
-        description="Manage WASM format handler plugins."
+        title="插件"
+        description="管理 WASM 格式处理程序插件。"
         actions={
           <div className="flex items-center gap-2">
             <Tooltip>
@@ -444,11 +444,11 @@ export default function PluginsPage() {
                   />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Refresh</TooltipContent>
+              <TooltipContent>刷新</TooltipContent>
             </Tooltip>
             <Button onClick={() => setInstallOpen(true)}>
               <Plus className="size-4" />
-              Install Plugin
+              安装插件
             </Button>
           </div>
         }
@@ -459,7 +459,7 @@ export default function PluginsPage() {
         <Card className="py-4">
           <CardContent className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted-foreground">Total</p>
+              <p className="text-sm text-muted-foreground">总计</p>
               <p className="text-2xl font-semibold">{plugins.length}</p>
             </div>
             <Puzzle className="size-8 text-muted-foreground/30" />
@@ -468,7 +468,7 @@ export default function PluginsPage() {
         <Card className="py-4">
           <CardContent className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted-foreground">Active</p>
+              <p className="text-sm text-muted-foreground">活跃</p>
               <p className="text-2xl font-semibold text-emerald-600">
                 {activeCount}
               </p>
@@ -479,7 +479,7 @@ export default function PluginsPage() {
         <Card className="py-4">
           <CardContent className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted-foreground">Errors</p>
+              <p className="text-sm text-muted-foreground">错误</p>
               <p
                 className={`text-2xl font-semibold ${errorCount > 0 ? "text-red-600" : ""}`}
               >
@@ -493,7 +493,7 @@ export default function PluginsPage() {
         </Card>
         <Card className="py-4">
           <CardContent>
-            <p className="text-sm text-muted-foreground">Disabled</p>
+            <p className="text-sm text-muted-foreground">已禁用</p>
             <p className="text-2xl font-semibold">
               {plugins.length - activeCount - errorCount}
             </p>
@@ -505,13 +505,13 @@ export default function PluginsPage() {
       <div className="flex items-center gap-3">
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-[160px]">
-            <SelectValue placeholder="Filter by status" />
+            <SelectValue placeholder="按状态筛选" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="__all__">All statuses</SelectItem>
-            <SelectItem value="active">Active</SelectItem>
-            <SelectItem value="disabled">Disabled</SelectItem>
-            <SelectItem value="error">Error</SelectItem>
+            <SelectItem value="__all__">所有状态</SelectItem>
+            <SelectItem value="active">活跃</SelectItem>
+            <SelectItem value="disabled">已禁用</SelectItem>
+            <SelectItem value="error">错误</SelectItem>
           </SelectContent>
         </Select>
         {statusFilter !== "__all__" && (
@@ -520,7 +520,7 @@ export default function PluginsPage() {
             size="sm"
             onClick={() => setStatusFilter("__all__")}
           >
-            Clear filter
+            清除筛选
           </Button>
         )}
       </div>
@@ -529,12 +529,12 @@ export default function PluginsPage() {
       {plugins.length === 0 && !isLoading ? (
         <EmptyState
           icon={Puzzle}
-          title="No plugins installed"
-          description="Install a plugin to extend Artifact Keeper with custom functionality."
+          title="暂无已安装的插件"
+          description="安装插件以扩展 Artifact Keeper 的自定义功能。"
           action={
             <Button onClick={() => setInstallOpen(true)}>
               <Plus className="size-4" />
-              Install Plugin
+              安装插件
             </Button>
           }
         />
@@ -544,7 +544,7 @@ export default function PluginsPage() {
           data={plugins}
           loading={isLoading}
           rowKey={(p) => p.id}
-          emptyMessage="No plugins found."
+          emptyMessage="未找到插件。"
         />
       )}
 
@@ -558,9 +558,9 @@ export default function PluginsPage() {
       >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Install Plugin</DialogTitle>
+            <DialogTitle>安装插件</DialogTitle>
             <DialogDescription>
-              Install a format handler plugin from a Git repository or ZIP file.
+              从 Git 仓库或 ZIP 文件安装格式处理程序插件。
             </DialogDescription>
           </DialogHeader>
           <Tabs
@@ -570,11 +570,11 @@ export default function PluginsPage() {
             <TabsList className="w-full">
               <TabsTrigger value="git" className="flex-1 gap-1.5">
                 <GitBranch className="size-3.5" />
-                Git Repository
+                Git 仓库
               </TabsTrigger>
               <TabsTrigger value="zip" className="flex-1 gap-1.5">
                 <Upload className="size-3.5" />
-                ZIP Upload
+                ZIP 上传
               </TabsTrigger>
             </TabsList>
             <TabsContent value="git" className="mt-4">
@@ -590,7 +590,7 @@ export default function PluginsPage() {
                 }}
               >
                 <div className="space-y-2">
-                  <Label htmlFor="git-url">Repository URL</Label>
+                  <Label htmlFor="git-url">仓库 URL</Label>
                   <Input
                     id="git-url"
                     value={gitUrl}
@@ -602,9 +602,9 @@ export default function PluginsPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="git-ref">
-                    Git Ref{" "}
+                    Git 引用{" "}
                     <span className="text-muted-foreground font-normal">
-                      (optional)
+                      (可选)
                     </span>
                   </Label>
                   <Input
@@ -622,10 +622,10 @@ export default function PluginsPage() {
                     onClick={() => setInstallOpen(false)}
                     disabled={isInstalling}
                   >
-                    Cancel
+                    取消
                   </Button>
                   <Button type="submit" disabled={isInstalling || !gitUrl.trim()}>
-                    {installGitMutation.isPending ? "Installing..." : "Install"}
+                    {installGitMutation.isPending ? "安装中..." : "安装"}
                   </Button>
                 </DialogFooter>
               </form>
@@ -640,7 +640,7 @@ export default function PluginsPage() {
                 }}
               >
                 <div className="space-y-2">
-                  <Label htmlFor="zip-file">Plugin ZIP File</Label>
+                  <Label htmlFor="zip-file">插件 ZIP 文件</Label>
                   <Input
                     id="zip-file"
                     type="file"
@@ -661,10 +661,10 @@ export default function PluginsPage() {
                     onClick={() => setInstallOpen(false)}
                     disabled={isInstalling}
                   >
-                    Cancel
+                    取消
                   </Button>
                   <Button type="submit" disabled={isInstalling || !zipFile}>
-                    {installZipMutation.isPending ? "Uploading..." : "Upload & Install"}
+                    {installZipMutation.isPending ? "上传中..." : "上传并安装"}
                   </Button>
                 </DialogFooter>
               </form>
@@ -687,28 +687,28 @@ export default function PluginsPage() {
           {configPlugin && (
             <>
               <DialogHeader>
-                <DialogTitle>Configure: {configPlugin.name}</DialogTitle>
+                <DialogTitle>配置: {configPlugin.name}</DialogTitle>
                 <DialogDescription>
-                  View plugin information and edit configuration.
+                  查看插件信息并编辑配置。
                 </DialogDescription>
               </DialogHeader>
               <Tabs defaultValue="info">
                 <TabsList>
-                  <TabsTrigger value="info">Information</TabsTrigger>
-                  <TabsTrigger value="config">Configuration</TabsTrigger>
+                  <TabsTrigger value="info">信息</TabsTrigger>
+                  <TabsTrigger value="config">配置</TabsTrigger>
                 </TabsList>
                 <TabsContent value="info" className="mt-4 space-y-3">
                   <div className="grid grid-cols-2 gap-3 text-sm">
                     <div>
-                      <p className="text-muted-foreground">Name</p>
+                      <p className="text-muted-foreground">名称</p>
                       <p className="font-medium">{configPlugin.name}</p>
                     </div>
                     <div>
-                      <p className="text-muted-foreground">Version</p>
+                      <p className="text-muted-foreground">版本</p>
                       <p className="font-medium">{configPlugin.version}</p>
                     </div>
                     <div>
-                      <p className="text-muted-foreground">Type</p>
+                      <p className="text-muted-foreground">类型</p>
                       <span
                         className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${TYPE_COLORS[configPlugin.plugin_type] ?? ""}`}
                       >
@@ -716,7 +716,7 @@ export default function PluginsPage() {
                       </span>
                     </div>
                     <div>
-                      <p className="text-muted-foreground">Status</p>
+                      <p className="text-muted-foreground">状态</p>
                       <StatusBadge
                         status={configPlugin.status}
                         color={STATUS_COLORS[configPlugin.status] ?? "default"}
@@ -724,19 +724,19 @@ export default function PluginsPage() {
                     </div>
                     {configPlugin.description && (
                       <div className="col-span-2">
-                        <p className="text-muted-foreground">Description</p>
+                        <p className="text-muted-foreground">描述</p>
                         <p>{configPlugin.description}</p>
                       </div>
                     )}
                     {configPlugin.author && (
                       <div>
-                        <p className="text-muted-foreground">Author</p>
+                        <p className="text-muted-foreground">作者</p>
                         <p>{configPlugin.author}</p>
                       </div>
                     )}
                     {configPlugin.homepage && (
                       <div>
-                        <p className="text-muted-foreground">Homepage</p>
+                        <p className="text-muted-foreground">主页</p>
                         {isSafeUrl(configPlugin.homepage) ? (
                           <a
                             href={configPlugin.homepage}
@@ -756,7 +756,7 @@ export default function PluginsPage() {
                     )}
                     {configPlugin.error_message && (
                       <div className="col-span-2">
-                        <p className="text-muted-foreground">Error</p>
+                        <p className="text-muted-foreground">错误</p>
                         <p className="text-red-500">
                           {configPlugin.error_message}
                         </p>
@@ -813,13 +813,13 @@ export default function PluginsPage() {
                         disabled={saveConfigMutation.isPending}
                       >
                         {saveConfigMutation.isPending
-                          ? "Saving..."
-                          : "Save Configuration"}
+                          ? "保存中..."
+                          : "保存配置"}
                       </Button>
                     </form>
                   ) : (
                     <p className="text-sm text-muted-foreground py-8 text-center">
-                      No configuration options available for this plugin.
+                      此插件没有可用的配置选项。
                     </p>
                   )}
                 </TabsContent>
@@ -835,9 +835,9 @@ export default function PluginsPage() {
         onOpenChange={(o) => {
           if (!o) setUninstallId(null);
         }}
-        title="Uninstall Plugin"
-        description="This will permanently remove this plugin and its configuration. Any features provided by this plugin will stop working."
-        confirmText="Uninstall"
+        title="卸载插件"
+        description="这将永久移除此插件及其配置。此插件提供的所有功能将停止工作。"
+        confirmText="卸载"
         danger
         loading={uninstallMutation.isPending}
         onConfirm={() => {

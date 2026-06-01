@@ -92,9 +92,9 @@ export function SbomTabContent({ artifact }: SbomTabContentProps) {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sboms", artifact.id] });
-      toast.success("SBOM generated successfully");
+      toast.success("SBOM 生成成功");
     },
-    onError: mutationErrorToast("Failed to generate SBOM"),
+    onError: mutationErrorToast("生成 SBOM 失败"),
   });
 
   // Download SBOM as JSON
@@ -118,7 +118,7 @@ export function SbomTabContent({ artifact }: SbomTabContentProps) {
   const componentColumns: DataTableColumn<SbomComponent>[] = [
     {
       id: "name",
-      header: "Name",
+      header: "名称",
       accessor: (c) => c.name,
       sortable: true,
       cell: (c) => (
@@ -130,7 +130,7 @@ export function SbomTabContent({ artifact }: SbomTabContentProps) {
     },
     {
       id: "version",
-      header: "Version",
+      header: "版本",
       accessor: (c) => c.version ?? "",
       cell: (c) =>
         c.version ? (
@@ -143,7 +143,7 @@ export function SbomTabContent({ artifact }: SbomTabContentProps) {
     },
     {
       id: "licenses",
-      header: "Licenses",
+      header: "许可证",
       accessor: (c) => c.licenses?.join(", ") ?? "",
       cell: (c) =>
         c.licenses?.length > 0 ? (
@@ -161,12 +161,12 @@ export function SbomTabContent({ artifact }: SbomTabContentProps) {
             )}
           </div>
         ) : (
-          <span className="text-xs text-muted-foreground">Unknown</span>
+          <span className="text-xs text-muted-foreground">未知</span>
         ),
     },
     {
       id: "purl",
-      header: "Package URL",
+      header: "包 URL",
       accessor: (c) => c.purl ?? "",
       cell: (c) =>
         c.purl ? (
@@ -197,7 +197,7 @@ export function SbomTabContent({ artifact }: SbomTabContentProps) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <FileText className="size-5 text-muted-foreground" />
-          <h3 className="text-sm font-medium">Software Bill of Materials</h3>
+          <h3 className="text-sm font-medium">软件物料清单</h3>
         </div>
         <div className="flex items-center gap-2">
           <Select
@@ -221,12 +221,12 @@ export function SbomTabContent({ artifact }: SbomTabContentProps) {
             <RefreshCw
               className={`size-4 ${generateMutation.isPending ? "animate-spin" : ""}`}
             />
-            {currentSbom ? "Regenerate" : "Generate"}
+            {currentSbom ? "重新生成" : "生成"}
           </Button>
           {currentSbom && (
             <Button variant="outline" size="sm" onClick={handleDownload}>
               <Download className="size-4" />
-              Download
+              下载
             </Button>
           )}
         </div>
@@ -243,15 +243,15 @@ export function SbomTabContent({ artifact }: SbomTabContentProps) {
               subvalue={`v${currentSbom.format_version}`}
             />
             <StatCard
-              label="Components"
+              label="组件"
               value={currentSbom.component_count.toString()}
             />
             <StatCard
-              label="Dependencies"
+              label="依赖"
               value={currentSbom.dependency_count.toString()}
             />
             <StatCard
-              label="Licenses"
+              label="许可证"
               value={currentSbom.license_count.toString()}
             />
           </div>
@@ -260,7 +260,7 @@ export function SbomTabContent({ artifact }: SbomTabContentProps) {
           {currentSbom.licenses?.length > 0 && (
             <div className="space-y-2">
               <p className="text-xs font-medium text-muted-foreground">
-                Detected Licenses
+                检测到的许可证
               </p>
               <div className="flex flex-wrap gap-1">
                 {currentSbom.licenses.map((lic) => (
@@ -276,7 +276,7 @@ export function SbomTabContent({ artifact }: SbomTabContentProps) {
           {(components?.length ?? 0) > 0 && (
             <div className="space-y-2">
               <p className="text-xs font-medium text-muted-foreground">
-                Components ({components?.length ?? 0})
+                组件 ({components?.length ?? 0})
               </p>
               <DataTable
                 columns={componentColumns}
@@ -286,7 +286,7 @@ export function SbomTabContent({ artifact }: SbomTabContentProps) {
                 total={components?.length}
                 onPageChange={setComponentsPage}
                 loading={componentsLoading}
-                emptyMessage="No components found"
+                emptyMessage="未找到组件"
                 rowKey={(c) => c.id}
               />
             </div>
@@ -296,7 +296,7 @@ export function SbomTabContent({ artifact }: SbomTabContentProps) {
           {!cveLoading && (cveHistory?.length ?? 0) > 0 && (
             <div className="space-y-2">
               <p className="text-xs font-medium text-muted-foreground">
-                CVE History ({cveHistory?.length ?? 0})
+                CVE 历史 ({cveHistory?.length ?? 0})
               </p>
               <div className="rounded-lg border divide-y">
                 {cveHistory?.slice(0, 5).map((cve) => (
@@ -304,7 +304,7 @@ export function SbomTabContent({ artifact }: SbomTabContentProps) {
                 ))}
                 {(cveHistory?.length ?? 0) > 5 && (
                   <div className="px-4 py-2 text-xs text-muted-foreground text-center">
-                    +{cveHistory!.length - 5} more CVEs
+                    +{cveHistory!.length - 5} 个更多 CVE
                   </div>
                 )}
               </div>
@@ -322,14 +322,14 @@ export function SbomTabContent({ artifact }: SbomTabContentProps) {
                     <ChevronRight className="size-4" />
                   )}
                   <span className="text-xs font-medium text-muted-foreground">
-                    View Raw JSON
+                    查看原始 JSON
                   </span>
                 </Button>
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <pre className="mt-2 rounded-md bg-muted p-4 text-xs overflow-auto max-h-64 font-mono">
                   {contentLoading
-                    ? "Loading..."
+                    ? "加载中..."
                     : JSON.stringify(sbomContent.content, null, 2)}
                 </pre>
               </CollapsibleContent>
@@ -338,22 +338,22 @@ export function SbomTabContent({ artifact }: SbomTabContentProps) {
 
           {/* Generation info */}
           <p className="text-xs text-muted-foreground">
-            Generated {new Date(currentSbom.generated_at).toLocaleString()}
-            {currentSbom.generator && ` by ${currentSbom.generator}`}
+            生成于 {new Date(currentSbom.generated_at).toLocaleString("zh-CN")}
+            {currentSbom.generator && ` 由 ${currentSbom.generator} 生成`}
           </p>
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center py-12 text-center">
           <FileText className="size-12 text-muted-foreground/50 mb-4" />
           <p className="text-sm text-muted-foreground mb-4">
-            No SBOM generated for this artifact yet.
+            此制品尚未生成 SBOM。
           </p>
           <Button
             onClick={() => generateMutation.mutate(selectedFormat)}
             disabled={generateMutation.isPending}
           >
             <FileText className="size-4" />
-            Generate {selectedFormat.toUpperCase()} SBOM
+            生成 {selectedFormat.toUpperCase()} SBOM
           </Button>
         </div>
       )}
@@ -438,7 +438,7 @@ function CveHistoryRow({ cve }: { cve: CveHistoryEntry }) {
       </div>
       <div className="flex items-center gap-1 text-xs text-muted-foreground">
         <Clock className="size-3" />
-        {new Date(cve.first_detected_at).toLocaleDateString()}
+        {new Date(cve.first_detected_at).toLocaleDateString("zh-CN")}
       </div>
     </div>
   );

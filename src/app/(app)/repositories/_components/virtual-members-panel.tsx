@@ -79,9 +79,9 @@ export function VirtualMembersPanel({ repository }: VirtualMembersPanelProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["virtual-members", repository.key] });
       queryClient.invalidateQueries({ queryKey: ["repository", repository.key] });
-      toast.success("Member added");
+      toast.success("成员已添加");
     },
-    onError: mutationErrorToast("Failed to add member"),
+    onError: mutationErrorToast("添加成员失败"),
   });
 
   const removeMemberMutation = useMutation({
@@ -92,9 +92,9 @@ export function VirtualMembersPanel({ repository }: VirtualMembersPanelProps) {
       queryClient.invalidateQueries({ queryKey: ["repository", repository.key] });
       setRemoveDialogOpen(false);
       setMemberToRemove(null);
-      toast.success("Member removed");
+      toast.success("成员已移除");
     },
-    onError: mutationErrorToast("Failed to remove member"),
+    onError: mutationErrorToast("移除成员失败"),
   });
 
   const reorderMutation = useMutation({
@@ -104,7 +104,7 @@ export function VirtualMembersPanel({ repository }: VirtualMembersPanelProps) {
       queryClient.invalidateQueries({ queryKey: ["virtual-members", repository.key] });
       queryClient.invalidateQueries({ queryKey: ["repository", repository.key] });
     },
-    onError: mutationErrorToast("Failed to reorder members"),
+    onError: mutationErrorToast("重新排序成员失败"),
   });
 
   const handleMoveUp = (index: number) => {
@@ -149,9 +149,9 @@ export function VirtualMembersPanel({ repository }: VirtualMembersPanelProps) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-sm font-medium">Member Repositories</h3>
+          <h3 className="text-sm font-medium">成员仓库</h3>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Members are resolved in priority order (lower number = higher priority)
+            成员按优先级顺序解析（数字越小 = 优先级越高）
           </p>
         </div>
         <Button size="sm" onClick={() => setAddDialogOpen(true)}>
@@ -162,9 +162,9 @@ export function VirtualMembersPanel({ repository }: VirtualMembersPanelProps) {
 
       {sortedMembers.length === 0 ? (
         <div className="border rounded-lg p-6 text-center text-muted-foreground">
-          <p className="text-sm">No member repositories configured.</p>
+          <p className="text-sm">未配置成员仓库。</p>
           <p className="text-xs mt-1">
-            Add local or remote repositories to aggregate their artifacts.
+            添加本地或远程仓库以聚合其制品。
           </p>
         </div>
       ) : (
@@ -186,7 +186,7 @@ export function VirtualMembersPanel({ repository }: VirtualMembersPanelProps) {
                       <ChevronUp className="size-4" />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>Move up (higher priority)</TooltipContent>
+                  <TooltipContent>上移（更高优先级）</TooltipContent>
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -199,7 +199,7 @@ export function VirtualMembersPanel({ repository }: VirtualMembersPanelProps) {
                       <ChevronDown className="size-4" />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>Move down (lower priority)</TooltipContent>
+                  <TooltipContent>下移（更低优先级）</TooltipContent>
                 </Tooltip>
               </div>
 
@@ -226,7 +226,7 @@ export function VirtualMembersPanel({ repository }: VirtualMembersPanelProps) {
                     <Trash2 className="size-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>Remove member</TooltipContent>
+                <TooltipContent>移除成员</TooltipContent>
               </Tooltip>
             </div>
           ))}
@@ -237,10 +237,10 @@ export function VirtualMembersPanel({ repository }: VirtualMembersPanelProps) {
       <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Add Member Repository</DialogTitle>
+            <DialogTitle>添加成员仓库</DialogTitle>
             <DialogDescription>
               Select a {repository.format.toUpperCase()} repository to add as a member.
-              Only local and remote repositories are eligible.
+              仅本地和远程仓库可用。
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
@@ -250,7 +250,7 @@ export function VirtualMembersPanel({ repository }: VirtualMembersPanelProps) {
               </div>
             ) : eligibleRepos.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
-                <p className="text-sm">No eligible repositories available.</p>
+                <p className="text-sm">没有可用的合格仓库。</p>
                 <p className="text-xs mt-1">
                   Create a local or remote {repository.format.toUpperCase()} repository first.
                 </p>
@@ -294,9 +294,9 @@ export function VirtualMembersPanel({ repository }: VirtualMembersPanelProps) {
       <ConfirmDialog
         open={removeDialogOpen}
         onOpenChange={setRemoveDialogOpen}
-        title="Remove Member"
-        description={`Are you sure you want to remove "${memberToRemove?.member_repo_key}" from this virtual repository? Artifacts from this repository will no longer be resolved through the virtual repository.`}
-        confirmText="Remove"
+        title="移除成员"
+        description={`确定要从虚拟仓库中移除 "${memberToRemove?.member_repo_key}" 吗？ 来自此仓库的制品将不再通过虚拟仓库解析。`}
+        confirmText="移除"
         danger
         loading={removeMemberMutation.isPending}
         onConfirm={() => {

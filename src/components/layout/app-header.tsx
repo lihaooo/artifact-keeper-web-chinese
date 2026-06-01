@@ -76,7 +76,7 @@ export function AppHeader() {
             onClick={() => setSearchOpen(true)}
           >
             <SearchIcon className="size-4" />
-            <span>Search...</span>
+            <span>搜索...</span>
             <kbd className="pointer-events-none ml-auto inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
               <span className="text-xs">&#8984;</span>K
             </kbd>
@@ -86,7 +86,7 @@ export function AppHeader() {
             size="icon"
             className="sm:hidden"
             onClick={() => setSearchOpen(true)}
-            aria-label="Search"
+            aria-label="搜索"
           >
             <SearchIcon className="size-4" />
           </Button>
@@ -102,14 +102,14 @@ export function AppHeader() {
           >
             <Sun className="size-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
             <Moon className="absolute size-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-            <span className="sr-only">Toggle theme</span>
+            <span className="sr-only">切换主题</span>
           </Button>
 
           {/* User menu or sign in */}
           {isAuthenticated ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full" aria-label="User menu">
+                <Button variant="ghost" size="icon" className="rounded-full" aria-label="用户菜单">
                   <Avatar className="size-7">
                     <AvatarFallback className="text-xs">
                       {userInitials}
@@ -127,18 +127,18 @@ export function AppHeader() {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => router.push("/profile")}>
                   <User className="mr-2 size-4" />
-                  Profile
+                  个人资料
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout} className="text-destructive">
                   <LogOut className="mr-2 size-4" />
-                  Logout
+                  退出登录
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
             <Button size="sm" onClick={() => router.push("/login")}>
-              Sign In
+              登录
             </Button>
           )}
         </div>

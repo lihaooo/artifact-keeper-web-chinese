@@ -24,7 +24,7 @@ export function formatQuarantineExpiry(quarantineUntil: string | null | undefine
   const diffMs = expiry.getTime() - now;
 
   if (diffMs <= 0) {
-    return "Expired";
+    return "已过期";
   }
 
   const diffMinutes = Math.floor(diffMs / 60_000);
@@ -32,18 +32,18 @@ export function formatQuarantineExpiry(quarantineUntil: string | null | undefine
   const diffDays = Math.floor(diffMs / 86_400_000);
 
   if (diffMinutes < 60) {
-    return `Expires in ${diffMinutes} minute${diffMinutes !== 1 ? "s" : ""}`;
+    return `${diffMinutes}分钟后过期`;
   }
   if (diffHours < 24) {
-    return `Expires in ${diffHours} hour${diffHours !== 1 ? "s" : ""}`;
+    return `${diffHours}小时后过期`;
   }
   if (diffDays < 14) {
-    return `Expires in ${diffDays} day${diffDays !== 1 ? "s" : ""}`;
+    return `${diffDays}天后过期`;
   }
 
-  return `Expires on ${expiry.toLocaleDateString("en-US", {
+  return `过期于${expiry.toLocaleDateString("zh-CN", {
     year: "numeric",
-    month: "short",
+    month: "long",
     day: "numeric",
   })}`;
 }

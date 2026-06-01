@@ -14,7 +14,7 @@ export default function GlobalError({
   }, [error]);
 
   return (
-    <html lang="en">
+    <html lang="zh-CN">
       <body
         style={{
           margin: 0,
@@ -54,7 +54,7 @@ export default function GlobalError({
               margin: 0,
             }}
           >
-            Something went wrong
+            出现了问题
           </h1>
           <p
             style={{
@@ -64,8 +64,7 @@ export default function GlobalError({
               color: "#9a918a",
             }}
           >
-            A critical error prevented this page from loading. You can try again,
-            or go back to the home page.
+            发生严重错误导致页面无法加载。您可以重试，或返回首页。
           </p>
           {error.digest && (
             <p
@@ -76,7 +75,7 @@ export default function GlobalError({
                 fontFamily: "ui-monospace, monospace",
               }}
             >
-              Error ID: {error.digest}
+              错误 ID: {error.digest}
             </p>
           )}
           <div
@@ -103,7 +102,7 @@ export default function GlobalError({
                 cursor: "pointer",
               }}
             >
-              Try again
+              重试
             </button>
             {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
             <a
@@ -123,7 +122,7 @@ export default function GlobalError({
                 cursor: "pointer",
               }}
             >
-              Go to home page
+              返回首页
             </a>
           </div>
         </div>

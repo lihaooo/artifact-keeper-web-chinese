@@ -83,7 +83,7 @@ function OidcTab() {
   const [issuerUrl, setIssuerUrl] = useState("");
   const [clientId, setClientId] = useState("");
   const [clientSecret, setClientSecret] = useState("");
-  const [scopes, setScopes] = useState("openid profile email");
+  const [scopes, set范围] = useState("openid profile email");
   const [autoCreateUsers, setAutoCreateUsers] = useState(true);
   const [usernameClaim, setUsernameClaim] = useState("preferred_username");
   const [emailClaim, setEmailClaim] = useState("email");
@@ -100,10 +100,10 @@ function OidcTab() {
     mutationFn: ssoApi.createOidc,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sso"] });
-      toast.success("OIDC provider created successfully");
+      toast.success("OIDC 提供商创建成功");
       closeDialog();
     },
-    onError: mutationErrorToast("Failed to create OIDC provider"),
+    onError: mutationErrorToast("创建 OIDC 提供商失败"),
   });
 
   const updateMutation = useMutation({
@@ -111,20 +111,20 @@ function OidcTab() {
       ssoApi.updateOidc(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sso"] });
-      toast.success("OIDC provider updated successfully");
+      toast.success("OIDC 提供商更新成功");
       closeDialog();
     },
-    onError: mutationErrorToast("Failed to update OIDC provider"),
+    onError: mutationErrorToast("更新 OIDC 提供商失败"),
   });
 
   const deleteMutation = useMutation({
     mutationFn: ssoApi.deleteOidc,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sso"] });
-      toast.success("OIDC provider deleted");
+      toast.success("OIDC 提供商已删除");
       setDeleteTarget(null);
     },
-    onError: mutationErrorToast("Failed to delete OIDC provider"),
+    onError: mutationErrorToast("删除 OIDC 提供商失败"),
   });
 
   const toggleMutation = useMutation({
@@ -132,9 +132,9 @@ function OidcTab() {
       enabled ? ssoApi.disableOidc(id) : ssoApi.enableOidc(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sso"] });
-      toast.success("OIDC provider status updated");
+      toast.success("OIDC 提供商状态已更新");
     },
-    onError: mutationErrorToast("Failed to toggle OIDC provider"),
+    onError: mutationErrorToast("切换 OIDC 提供商失败"),
   });
 
   function resetForm() {
@@ -142,7 +142,7 @@ function OidcTab() {
     setIssuerUrl("");
     setClientId("");
     setClientSecret("");
-    setScopes("openid profile email");
+    set范围("openid profile email");
     setAutoCreateUsers(true);
     setUsernameClaim("preferred_username");
     setEmailClaim("email");
@@ -169,7 +169,7 @@ function OidcTab() {
     setIssuerUrl(config.issuer_url);
     setClientId(config.client_id);
     setClientSecret("");
-    setScopes(config.scopes.join(" "));
+    set范围(config.scopes.join(" "));
     setAutoCreateUsers(config.auto_create_users);
     setUsernameClaim(config.attribute_mapping?.username || "preferred_username");
     setEmailClaim(config.attribute_mapping?.email || "email");
@@ -250,14 +250,14 @@ function OidcTab() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0">
           <div>
-            <CardTitle className="text-base">OIDC Providers</CardTitle>
+            <CardTitle className="text-base">OIDC 提供商</CardTitle>
             <CardDescription>
-              OpenID Connect providers for federated authentication.
+              用于联合认证的 OpenID Connect 提供商。
             </CardDescription>
           </div>
           <Button size="sm" onClick={openCreate}>
             <Plus className="size-4 mr-1.5" />
-            Add Provider
+            添加提供商
           </Button>
         </CardHeader>
         <CardContent>
@@ -265,11 +265,11 @@ function OidcTab() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
+                  <TableHead>名称</TableHead>
                   <TableHead>Issuer URL</TableHead>
                   <TableHead>Client ID</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead>状态</TableHead>
+                  <TableHead className="text-right">操作</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -284,7 +284,7 @@ function OidcTab() {
                     </TableCell>
                     <TableCell>
                       <StatusBadge
-                        status={config.is_enabled ? "Active" : "Disabled"}
+                        status={config.is_enabled ? "活跃" : "已禁用"}
                         color={config.is_enabled ? "green" : "default"}
                       />
                     </TableCell>
@@ -294,7 +294,7 @@ function OidcTab() {
                           variant="ghost"
                           size="icon"
                           className="size-8"
-                          aria-label={`${config.is_enabled ? "Disable" : "Enable"} OIDC provider ${config.name}`}
+                          aria-label={`${config.is_enabled ? "禁用" : "启用"} OIDC 提供商 ${config.name}`}
                           onClick={() =>
                             toggleMutation.mutate({
                               id: config.id,
@@ -312,7 +312,7 @@ function OidcTab() {
                           variant="ghost"
                           size="icon"
                           className="size-8"
-                          aria-label={`Edit OIDC provider ${config.name}`}
+                          aria-label={`编辑 OIDC 提供商 ${config.name}`}
                           onClick={() => openEdit(config)}
                         >
                           <Pencil className="size-4" />
@@ -321,7 +321,7 @@ function OidcTab() {
                           variant="ghost"
                           size="icon"
                           className="size-8 text-destructive hover:text-destructive"
-                          aria-label={`Delete OIDC provider ${config.name}`}
+                          aria-label={`删除 OIDC 提供商 ${config.name}`}
                           onClick={() => setDeleteTarget(config)}
                         >
                           <Trash2 className="size-4" />
@@ -336,11 +336,11 @@ function OidcTab() {
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <Globe className="size-10 text-muted-foreground/50 mb-3" />
               <p className="text-sm text-muted-foreground">
-                No OIDC providers configured.
+                尚未配置 OIDC 提供商。
               </p>
               <Button variant="outline" size="sm" className="mt-4" onClick={openCreate}>
                 <Plus className="size-4 mr-1.5" />
-                Add OIDC Provider
+                添加 OIDC 提供商
               </Button>
             </div>
           )}
@@ -352,18 +352,18 @@ function OidcTab() {
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editTarget ? "Edit OIDC Provider" : "Add OIDC Provider"}
+              {editTarget ? "编辑 OIDC 提供商" : "添加 OIDC 提供商"}
             </DialogTitle>
             <DialogDescription>
               {editTarget
-                ? "Update the OpenID Connect provider configuration."
-                : "Configure a new OpenID Connect provider for SSO."}
+                ? "更新 OpenID Connect 提供商配置。"
+                : "配置新的 OpenID Connect 提供商用于 SSO。"}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-2">
             <div className="space-y-2">
-              <Label htmlFor="oidc-name">Name</Label>
+              <Label htmlFor="oidc-name">名称</Label>
               <Input
                 id="oidc-name"
                 value={name}
@@ -393,36 +393,36 @@ function OidcTab() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="oidc-client-secret">Client Secret</Label>
+              <Label htmlFor="oidc-client-secret">客户端密钥</Label>
               <Input
                 id="oidc-client-secret"
                 type="password"
                 value={clientSecret}
                 onChange={(e) => setClientSecret(e.target.value)}
                 placeholder={
-                  editTarget ? "Leave blank to keep existing" : "your-client-secret"
+                  editTarget ? "留空以保留现有值" : "your-client-secret"
                 }
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="oidc-scopes">Scopes</Label>
+              <Label htmlFor="oidc-scopes">范围</Label>
               <Input
                 id="oidc-scopes"
                 value={scopes}
-                onChange={(e) => setScopes(e.target.value)}
+                onChange={(e) => set范围(e.target.value)}
                 placeholder="openid profile email"
               />
               <p className="text-xs text-muted-foreground">
-                Space-separated list of OAuth scopes to request.
+                以空格分隔的 OAuth 范围列表。
               </p>
             </div>
 
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label htmlFor="oidc-auto-create-users">Auto Create Users</Label>
+                <Label htmlFor="oidc-auto-create-users">自动创建用户</Label>
                 <p className="text-xs text-muted-foreground">
-                  Automatically create user accounts on first login.
+                  首次登录时自动创建用户账号。
                 </p>
               </div>
               <Switch
@@ -435,10 +435,10 @@ function OidcTab() {
             <Separator />
 
             <div>
-              <p className="text-sm font-medium mb-3">Attribute Mapping</p>
+              <p className="text-sm font-medium mb-3">属性映射</p>
               <div className="space-y-3">
                 <div className="space-y-2">
-                  <Label htmlFor="oidc-claim-username">Username Claim</Label>
+                  <Label htmlFor="oidc-claim-username">用户名声明</Label>
                   <Input
                     id="oidc-claim-username"
                     value={usernameClaim}
@@ -447,7 +447,7 @@ function OidcTab() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="oidc-claim-email">Email Claim</Label>
+                  <Label htmlFor="oidc-claim-email">邮箱声明</Label>
                   <Input
                     id="oidc-claim-email"
                     value={emailClaim}
@@ -456,7 +456,7 @@ function OidcTab() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="oidc-claim-display">Display Name Claim</Label>
+                  <Label htmlFor="oidc-claim-display">显示名称声明</Label>
                   <Input
                     id="oidc-claim-display"
                     value={displayNameClaim}
@@ -465,7 +465,7 @@ function OidcTab() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="oidc-claim-groups">Groups Claim</Label>
+                  <Label htmlFor="oidc-claim-groups">组声明</Label>
                   <Input
                     id="oidc-claim-groups"
                     value={groupsClaim}
@@ -474,7 +474,7 @@ function OidcTab() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="oidc-admin-group">Admin Group</Label>
+                  <Label htmlFor="oidc-admin-group">管理员组</Label>
                   <Input
                     id="oidc-admin-group"
                     value={adminGroup}
@@ -482,7 +482,7 @@ function OidcTab() {
                     placeholder="artifact-keeper-admins"
                   />
                   <p className="text-xs text-muted-foreground">
-                    Users in this group will be granted admin privileges.
+                    此组中的用户将被授予管理员权限。
                   </p>
                 </div>
               </div>
@@ -498,7 +498,7 @@ function OidcTab() {
               disabled={!name || !issuerUrl || !clientId || (!editTarget && !clientSecret) || isSaving}
             >
               {isSaving && <Loader2 className="size-4 animate-spin mr-1.5" />}
-              {editTarget ? "Save Changes" : "Create Provider"}
+              {editTarget ? "保存更改" : "创建提供商"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -508,9 +508,9 @@ function OidcTab() {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(null)}
-        title="Delete OIDC Provider"
-        description={`Are you sure you want to delete "${deleteTarget?.name}"? Users will no longer be able to sign in with this provider.`}
-        confirmText="Delete"
+        title="删除 OIDC 提供商"
+        description={`确定要删除 "${deleteTarget?.name}"? 用户将无法再使用此提供商登录。`}
+        confirmText="删除"
         danger
         loading={deleteMutation.isPending}
         onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
@@ -555,10 +555,10 @@ function LdapTab() {
     mutationFn: ssoApi.createLdap,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sso"] });
-      toast.success("LDAP provider created successfully");
+      toast.success("LDAP 提供商创建成功");
       closeDialog();
     },
-    onError: mutationErrorToast("Failed to create LDAP provider"),
+    onError: mutationErrorToast("创建 LDAP 提供商失败"),
   });
 
   const updateMutation = useMutation({
@@ -566,20 +566,20 @@ function LdapTab() {
       ssoApi.updateLdap(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sso"] });
-      toast.success("LDAP provider updated successfully");
+      toast.success("LDAP 提供商更新成功");
       closeDialog();
     },
-    onError: mutationErrorToast("Failed to update LDAP provider"),
+    onError: mutationErrorToast("更新 LDAP 提供商失败"),
   });
 
   const deleteMutation = useMutation({
     mutationFn: ssoApi.deleteLdap,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sso"] });
-      toast.success("LDAP provider deleted");
+      toast.success("LDAP 提供商已删除");
       setDeleteTarget(null);
     },
-    onError: mutationErrorToast("Failed to delete LDAP provider"),
+    onError: mutationErrorToast("删除 LDAP 提供商失败"),
   });
 
   const toggleMutation = useMutation({
@@ -587,9 +587,9 @@ function LdapTab() {
       enabled ? ssoApi.disableLdap(id) : ssoApi.enableLdap(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sso"] });
-      toast.success("LDAP provider status updated");
+      toast.success("LDAP 提供商状态已更新");
     },
-    onError: mutationErrorToast("Failed to toggle LDAP provider"),
+    onError: mutationErrorToast("切换 LDAP 提供商失败"),
   });
 
   const testMutation = useMutation({
@@ -598,15 +598,15 @@ function LdapTab() {
     onSuccess: (result) => {
       if (result.success) {
         toast.success(
-          `Connection successful${result.response_time_ms ? ` (${result.response_time_ms}ms)` : ""}`
+          `连接成功${result.response_time_ms ? ` (${result.response_time_ms}ms)` : ""}`
         );
       } else {
-        toast.error(`Connection failed: ${result.message}`);
+        toast.error(`连接失败：${result.message}`);
       }
       setTestingId(null);
     },
     onError: (err: unknown) => {
-      toast.error(toUserMessage(err, "Failed to test LDAP connection"));
+      toast.error(toUserMessage(err, "测试 LDAP 连接失败"));
       setTestingId(null);
     },
   });
@@ -723,14 +723,14 @@ function LdapTab() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0">
           <div>
-            <CardTitle className="text-base">LDAP Providers</CardTitle>
+            <CardTitle className="text-base">LDAP 提供商</CardTitle>
             <CardDescription>
-              LDAP / Active Directory servers for directory-based authentication.
+              用于基于目录认证的 LDAP / Active Directory 服务器。
             </CardDescription>
           </div>
           <Button size="sm" onClick={openCreate}>
             <Plus className="size-4 mr-1.5" />
-            Add Provider
+            添加提供商
           </Button>
         </CardHeader>
         <CardContent>
@@ -738,11 +738,11 @@ function LdapTab() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
+                  <TableHead>名称</TableHead>
                   <TableHead>Server URL</TableHead>
-                  <TableHead>User Base DN</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead>用户基础 DN</TableHead>
+                  <TableHead>状态</TableHead>
+                  <TableHead className="text-right">操作</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -757,7 +757,7 @@ function LdapTab() {
                     </TableCell>
                     <TableCell>
                       <StatusBadge
-                        status={config.is_enabled ? "Active" : "Disabled"}
+                        status={config.is_enabled ? "活跃" : "已禁用"}
                         color={config.is_enabled ? "green" : "default"}
                       />
                     </TableCell>
@@ -767,7 +767,7 @@ function LdapTab() {
                           variant="ghost"
                           size="icon"
                           className="size-8"
-                          aria-label={`Test LDAP connection ${config.name}`}
+                          aria-label={`测试 LDAP 连接 ${config.name}`}
                           disabled={testingId === config.id}
                           onClick={() => testMutation.mutate(config.id)}
                         >
@@ -781,7 +781,7 @@ function LdapTab() {
                           variant="ghost"
                           size="icon"
                           className="size-8"
-                          aria-label={`${config.is_enabled ? "Disable" : "Enable"} LDAP provider ${config.name}`}
+                          aria-label={`${config.is_enabled ? "禁用" : "启用"} LDAP 提供商 ${config.name}`}
                           onClick={() =>
                             toggleMutation.mutate({
                               id: config.id,
@@ -799,7 +799,7 @@ function LdapTab() {
                           variant="ghost"
                           size="icon"
                           className="size-8"
-                          aria-label={`Edit LDAP provider ${config.name}`}
+                          aria-label={`编辑 LDAP 提供商 ${config.name}`}
                           onClick={() => openEdit(config)}
                         >
                           <Pencil className="size-4" />
@@ -808,7 +808,7 @@ function LdapTab() {
                           variant="ghost"
                           size="icon"
                           className="size-8 text-destructive hover:text-destructive"
-                          aria-label={`Delete LDAP provider ${config.name}`}
+                          aria-label={`删除 LDAP 提供商 ${config.name}`}
                           onClick={() => setDeleteTarget(config)}
                         >
                           <Trash2 className="size-4" />
@@ -823,11 +823,11 @@ function LdapTab() {
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <Server className="size-10 text-muted-foreground/50 mb-3" />
               <p className="text-sm text-muted-foreground">
-                No LDAP providers configured.
+                尚未配置 LDAP 提供商。
               </p>
               <Button variant="outline" size="sm" className="mt-4" onClick={openCreate}>
                 <Plus className="size-4 mr-1.5" />
-                Add LDAP Provider
+                添加 LDAP 提供商
               </Button>
             </div>
           )}
@@ -839,18 +839,18 @@ function LdapTab() {
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editTarget ? "Edit LDAP Provider" : "Add LDAP Provider"}
+              {editTarget ? "编辑 LDAP 提供商" : "添加 LDAP 提供商"}
             </DialogTitle>
             <DialogDescription>
               {editTarget
-                ? "Update the LDAP directory server configuration."
-                : "Configure a new LDAP directory server for SSO."}
+                ? "更新 LDAP 目录服务器配置。"
+                : "配置新的 LDAP 目录服务器用于 SSO。"}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-2">
             <div className="space-y-2">
-              <Label htmlFor="ldap-name">Name</Label>
+              <Label htmlFor="ldap-name">名称</Label>
               <Input
                 id="ldap-name"
                 value={name}
@@ -870,7 +870,7 @@ function LdapTab() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="ldap-bind-dn">Bind DN</Label>
+              <Label htmlFor="ldap-bind-dn">绑定 DN</Label>
               <Input
                 id="ldap-bind-dn"
                 value={bindDn}
@@ -880,20 +880,20 @@ function LdapTab() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="ldap-bind-password">Bind Password</Label>
+              <Label htmlFor="ldap-bind-password">绑定密码</Label>
               <Input
                 id="ldap-bind-password"
                 type="password"
                 value={bindPassword}
                 onChange={(e) => setBindPassword(e.target.value)}
                 placeholder={
-                  editTarget ? "Leave blank to keep existing" : "bind-password"
+                  editTarget ? "留空以保留现有值" : "绑定密码"
                 }
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="ldap-user-base-dn">User Base DN</Label>
+              <Label htmlFor="ldap-user-base-dn">用户基础 DN</Label>
               <Input
                 id="ldap-user-base-dn"
                 value={userBaseDn}
@@ -903,7 +903,7 @@ function LdapTab() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="ldap-user-filter">User Filter</Label>
+              <Label htmlFor="ldap-user-filter">用户过滤器</Label>
               <Input
                 id="ldap-user-filter"
                 value={userFilter}
@@ -911,15 +911,15 @@ function LdapTab() {
                 placeholder="(uid={0})"
               />
               <p className="text-xs text-muted-foreground">
-                Use {"{0}"} as a placeholder for the username.
+                使用 {"{0}"} 作为用户名的占位符。
               </p>
             </div>
 
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label htmlFor="ldap-use-starttls">Use STARTTLS</Label>
+                <Label htmlFor="ldap-use-starttls">使用 STARTTLS</Label>
                 <p className="text-xs text-muted-foreground">
-                  Upgrade the connection to TLS after connecting.
+                  连接后升级到 TLS。
                 </p>
               </div>
               <Switch id="ldap-use-starttls" checked={useStarttls} onCheckedChange={setUseStarttls} />
@@ -928,10 +928,10 @@ function LdapTab() {
             <Separator />
 
             <div>
-              <p className="text-sm font-medium mb-3">Attribute Mapping</p>
+              <p className="text-sm font-medium mb-3">属性映射</p>
               <div className="space-y-3">
                 <div className="space-y-2">
-                  <Label htmlFor="ldap-attr-username">Username Attribute</Label>
+                  <Label htmlFor="ldap-attr-username">用户名属性</Label>
                   <Input
                     id="ldap-attr-username"
                     value={usernameAttribute}
@@ -940,7 +940,7 @@ function LdapTab() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="ldap-attr-email">Email Attribute</Label>
+                  <Label htmlFor="ldap-attr-email">邮箱属性</Label>
                   <Input
                     id="ldap-attr-email"
                     value={emailAttribute}
@@ -949,7 +949,7 @@ function LdapTab() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="ldap-attr-display">Display Name Attribute</Label>
+                  <Label htmlFor="ldap-attr-display">显示名称属性</Label>
                   <Input
                     id="ldap-attr-display"
                     value={displayNameAttribute}
@@ -958,7 +958,7 @@ function LdapTab() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="ldap-attr-groups">Groups Attribute</Label>
+                  <Label htmlFor="ldap-attr-groups">组属性</Label>
                   <Input
                     id="ldap-attr-groups"
                     value={groupsAttribute}
@@ -972,10 +972,10 @@ function LdapTab() {
             <Separator />
 
             <div>
-              <p className="text-sm font-medium mb-3">Group Settings</p>
+              <p className="text-sm font-medium mb-3">组设置</p>
               <div className="space-y-3">
                 <div className="space-y-2">
-                  <Label htmlFor="ldap-group-base-dn">Group Base DN</Label>
+                  <Label htmlFor="ldap-group-base-dn">组基础 DN</Label>
                   <Input
                     id="ldap-group-base-dn"
                     value={groupBaseDn}
@@ -984,7 +984,7 @@ function LdapTab() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="ldap-group-filter">Group Filter</Label>
+                  <Label htmlFor="ldap-group-filter">组过滤器</Label>
                   <Input
                     id="ldap-group-filter"
                     value={groupFilter}
@@ -993,7 +993,7 @@ function LdapTab() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="ldap-admin-group-dn">Admin Group DN</Label>
+                  <Label htmlFor="ldap-admin-group-dn">管理员组 DN</Label>
                   <Input
                     id="ldap-admin-group-dn"
                     value={adminGroupDn}
@@ -1001,7 +1001,7 @@ function LdapTab() {
                     placeholder="cn=admins,ou=groups,dc=example,dc=com"
                   />
                   <p className="text-xs text-muted-foreground">
-                    Users in this group will be granted admin privileges.
+                    此组中的用户将被授予管理员权限。
                   </p>
                 </div>
               </div>
@@ -1010,7 +1010,7 @@ function LdapTab() {
             <Separator />
 
             <div className="space-y-2">
-              <Label htmlFor="ldap-priority">Priority</Label>
+              <Label htmlFor="ldap-priority">优先级</Label>
               <Input
                 id="ldap-priority"
                 type="number"
@@ -1019,7 +1019,7 @@ function LdapTab() {
                 placeholder="0"
               />
               <p className="text-xs text-muted-foreground">
-                Lower values are tried first when multiple LDAP servers are configured.
+                当配置多个 LDAP 服务器时，优先尝试较低的值。
               </p>
             </div>
           </div>
@@ -1033,7 +1033,7 @@ function LdapTab() {
               disabled={!name || !serverUrl || !userBaseDn || isSaving}
             >
               {isSaving && <Loader2 className="size-4 animate-spin mr-1.5" />}
-              {editTarget ? "Save Changes" : "Create Provider"}
+              {editTarget ? "保存更改" : "创建提供商"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -1043,9 +1043,9 @@ function LdapTab() {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(null)}
-        title="Delete LDAP Provider"
-        description={`Are you sure you want to delete "${deleteTarget?.name}"? Users will no longer be able to sign in with this provider.`}
-        confirmText="Delete"
+        title="删除 LDAP 提供商"
+        description={`确定要删除 "${deleteTarget?.name}"? 用户将无法再使用此提供商登录。`}
+        confirmText="删除"
         danger
         loading={deleteMutation.isPending}
         onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
@@ -1068,7 +1068,7 @@ function SamlTab() {
   const [entityId, setEntityId] = useState("");
   const [ssoUrl, setSsoUrl] = useState("");
   const [sloUrl, setSloUrl] = useState("");
-  const [certificate, setCertificate] = useState("");
+  const [certificate, set证书] = useState("");
   const [spEntityId, setSpEntityId] = useState("artifact-keeper");
   const [nameIdFormat, setNameIdFormat] = useState("urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress");
   const [signRequests, setSignRequests] = useState(false);
@@ -1088,10 +1088,10 @@ function SamlTab() {
     mutationFn: ssoApi.createSaml,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sso"] });
-      toast.success("SAML provider created successfully");
+      toast.success("SAML 提供商创建成功");
       closeDialog();
     },
-    onError: mutationErrorToast("Failed to create SAML provider"),
+    onError: mutationErrorToast("创建 SAML 提供商失败"),
   });
 
   const updateMutation = useMutation({
@@ -1099,20 +1099,20 @@ function SamlTab() {
       ssoApi.updateSaml(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sso"] });
-      toast.success("SAML provider updated successfully");
+      toast.success("SAML 提供商更新成功");
       closeDialog();
     },
-    onError: mutationErrorToast("Failed to update SAML provider"),
+    onError: mutationErrorToast("更新 SAML 提供商失败"),
   });
 
   const deleteMutation = useMutation({
     mutationFn: ssoApi.deleteSaml,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sso"] });
-      toast.success("SAML provider deleted");
+      toast.success("SAML 提供商已删除");
       setDeleteTarget(null);
     },
-    onError: mutationErrorToast("Failed to delete SAML provider"),
+    onError: mutationErrorToast("删除 SAML 提供商失败"),
   });
 
   const toggleMutation = useMutation({
@@ -1120,9 +1120,9 @@ function SamlTab() {
       enabled ? ssoApi.disableSaml(id) : ssoApi.enableSaml(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sso"] });
-      toast.success("SAML provider status updated");
+      toast.success("SAML 提供商状态已更新");
     },
-    onError: mutationErrorToast("Failed to toggle SAML provider"),
+    onError: mutationErrorToast("切换 SAML 提供商失败"),
   });
 
   function resetForm() {
@@ -1130,7 +1130,7 @@ function SamlTab() {
     setEntityId("");
     setSsoUrl("");
     setSloUrl("");
-    setCertificate("");
+    set证书("");
     setSpEntityId("artifact-keeper");
     setNameIdFormat("urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress");
     setSignRequests(false);
@@ -1160,7 +1160,7 @@ function SamlTab() {
     setEntityId(config.entity_id);
     setSsoUrl(config.sso_url);
     setSloUrl(config.slo_url || "");
-    setCertificate("");
+    set证书("");
     setSpEntityId(config.sp_entity_id);
     setNameIdFormat(config.name_id_format);
     setSignRequests(config.sign_requests);
@@ -1239,14 +1239,14 @@ function SamlTab() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0">
           <div>
-            <CardTitle className="text-base">SAML Providers</CardTitle>
+            <CardTitle className="text-base">SAML 提供商</CardTitle>
             <CardDescription>
-              SAML 2.0 identity providers for enterprise single sign-on.
+              用于企业单点登录的 SAML 2.0 身份提供商。
             </CardDescription>
           </div>
           <Button size="sm" onClick={openCreate}>
             <Plus className="size-4 mr-1.5" />
-            Add Provider
+            添加提供商
           </Button>
         </CardHeader>
         <CardContent>
@@ -1254,11 +1254,11 @@ function SamlTab() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Entity ID</TableHead>
+                  <TableHead>名称</TableHead>
+                  <TableHead>实体 ID</TableHead>
                   <TableHead>SSO URL</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead>状态</TableHead>
+                  <TableHead className="text-right">操作</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -1273,7 +1273,7 @@ function SamlTab() {
                     </TableCell>
                     <TableCell>
                       <StatusBadge
-                        status={config.is_enabled ? "Active" : "Disabled"}
+                        status={config.is_enabled ? "活跃" : "已禁用"}
                         color={config.is_enabled ? "green" : "default"}
                       />
                     </TableCell>
@@ -1283,7 +1283,7 @@ function SamlTab() {
                           variant="ghost"
                           size="icon"
                           className="size-8"
-                          aria-label={`${config.is_enabled ? "Disable" : "Enable"} SAML provider ${config.name}`}
+                          aria-label={`${config.is_enabled ? "禁用" : "启用"} SAML 提供商 ${config.name}`}
                           onClick={() =>
                             toggleMutation.mutate({
                               id: config.id,
@@ -1301,7 +1301,7 @@ function SamlTab() {
                           variant="ghost"
                           size="icon"
                           className="size-8"
-                          aria-label={`Edit SAML provider ${config.name}`}
+                          aria-label={`编辑 SAML 提供商 ${config.name}`}
                           onClick={() => openEdit(config)}
                         >
                           <Pencil className="size-4" />
@@ -1310,7 +1310,7 @@ function SamlTab() {
                           variant="ghost"
                           size="icon"
                           className="size-8 text-destructive hover:text-destructive"
-                          aria-label={`Delete SAML provider ${config.name}`}
+                          aria-label={`删除 SAML 提供商 ${config.name}`}
                           onClick={() => setDeleteTarget(config)}
                         >
                           <Trash2 className="size-4" />
@@ -1325,11 +1325,11 @@ function SamlTab() {
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <FileKey className="size-10 text-muted-foreground/50 mb-3" />
               <p className="text-sm text-muted-foreground">
-                No SAML providers configured.
+                尚未配置 SAML 提供商。
               </p>
               <Button variant="outline" size="sm" className="mt-4" onClick={openCreate}>
                 <Plus className="size-4 mr-1.5" />
-                Add SAML Provider
+                添加 SAML 提供商
               </Button>
             </div>
           )}
@@ -1341,18 +1341,18 @@ function SamlTab() {
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editTarget ? "Edit SAML Provider" : "Add SAML Provider"}
+              {editTarget ? "编辑 SAML 提供商" : "添加 SAML 提供商"}
             </DialogTitle>
             <DialogDescription>
               {editTarget
-                ? "Update the SAML 2.0 identity provider configuration."
-                : "Configure a new SAML 2.0 identity provider for SSO."}
+                ? "更新 SAML 2.0 身份提供商配置。"
+                : "配置新的 SAML 2.0 身份提供商用于 SSO。"}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-2">
             <div className="space-y-2">
-              <Label htmlFor="saml-name">Name</Label>
+              <Label htmlFor="saml-name">名称</Label>
               <Input
                 id="saml-name"
                 value={name}
@@ -1362,7 +1362,7 @@ function SamlTab() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="saml-entity-id">Entity ID</Label>
+              <Label htmlFor="saml-entity-id">实体 ID</Label>
               <Input
                 id="saml-entity-id"
                 value={entityId}
@@ -1382,7 +1382,7 @@ function SamlTab() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="saml-slo-url">SLO URL (optional)</Label>
+              <Label htmlFor="saml-slo-url">SLO URL（可选）</Label>
               <Input
                 id="saml-slo-url"
                 value={sloUrl}
@@ -1392,14 +1392,14 @@ function SamlTab() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="saml-certificate">Certificate</Label>
+              <Label htmlFor="saml-certificate">证书</Label>
               <Textarea
                 id="saml-certificate"
                 value={certificate}
-                onChange={(e) => setCertificate(e.target.value)}
+                onChange={(e) => set证书(e.target.value)}
                 placeholder={
                   editTarget
-                    ? "Leave blank to keep existing certificate"
+                    ? "留空以保留现有值 certificate"
                     : "-----BEGIN CERTIFICATE-----\n...\n-----END CERTIFICATE-----"
                 }
                 rows={5}
@@ -1408,7 +1408,7 @@ function SamlTab() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="saml-sp-entity-id">SP Entity ID</Label>
+              <Label htmlFor="saml-sp-entity-id">SP 实体 ID</Label>
               <Input
                 id="saml-sp-entity-id"
                 value={spEntityId}
@@ -1418,7 +1418,7 @@ function SamlTab() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="saml-name-id-format">NameID Format</Label>
+              <Label htmlFor="saml-name-id-format">NameID 格式</Label>
               <Select value={nameIdFormat} onValueChange={setNameIdFormat}>
                 <SelectTrigger id="saml-name-id-format">
                   <SelectValue />
@@ -1442,9 +1442,9 @@ function SamlTab() {
 
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label htmlFor="saml-sign-requests">Sign Requests</Label>
+                <Label htmlFor="saml-sign-requests">签名请求</Label>
                 <p className="text-xs text-muted-foreground">
-                  Sign authentication requests sent to the IdP.
+                  对发送到 IdP 的认证请求进行签名。
                 </p>
               </div>
               <Switch id="saml-sign-requests" checked={signRequests} onCheckedChange={setSignRequests} />
@@ -1452,9 +1452,9 @@ function SamlTab() {
 
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label htmlFor="saml-require-signed-assertions">Require Signed Assertions</Label>
+                <Label htmlFor="saml-require-signed-assertions">要求签名断言</Label>
                 <p className="text-xs text-muted-foreground">
-                  Require the IdP to sign SAML assertions.
+                  要求 IdP 签名 SAML 断言。
                 </p>
               </div>
               <Switch
@@ -1467,10 +1467,10 @@ function SamlTab() {
             <Separator />
 
             <div>
-              <p className="text-sm font-medium mb-3">Attribute Mapping</p>
+              <p className="text-sm font-medium mb-3">属性映射</p>
               <div className="space-y-3">
                 <div className="space-y-2">
-                  <Label htmlFor="saml-attr-username">Username Attribute</Label>
+                  <Label htmlFor="saml-attr-username">用户名属性</Label>
                   <Input
                     id="saml-attr-username"
                     value={usernameClaim}
@@ -1479,7 +1479,7 @@ function SamlTab() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="saml-attr-email">Email Attribute</Label>
+                  <Label htmlFor="saml-attr-email">邮箱属性</Label>
                   <Input
                     id="saml-attr-email"
                     value={emailClaim}
@@ -1488,7 +1488,7 @@ function SamlTab() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="saml-attr-display">Display Name Attribute</Label>
+                  <Label htmlFor="saml-attr-display">显示名称属性</Label>
                   <Input
                     id="saml-attr-display"
                     value={displayNameClaim}
@@ -1497,7 +1497,7 @@ function SamlTab() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="saml-attr-groups">Groups Attribute</Label>
+                  <Label htmlFor="saml-attr-groups">组属性</Label>
                   <Input
                     id="saml-attr-groups"
                     value={groupsClaim}
@@ -1511,7 +1511,7 @@ function SamlTab() {
             <Separator />
 
             <div className="space-y-2">
-              <Label htmlFor="saml-admin-group">Admin Group</Label>
+              <Label htmlFor="saml-admin-group">管理员组</Label>
               <Input
                 id="saml-admin-group"
                 value={adminGroup}
@@ -1519,7 +1519,7 @@ function SamlTab() {
                 placeholder="artifact-keeper-admins"
               />
               <p className="text-xs text-muted-foreground">
-                Users in this group will be granted admin privileges.
+                此组中的用户将被授予管理员权限。
               </p>
             </div>
           </div>
@@ -1539,7 +1539,7 @@ function SamlTab() {
               }
             >
               {isSaving && <Loader2 className="size-4 animate-spin mr-1.5" />}
-              {editTarget ? "Save Changes" : "Create Provider"}
+              {editTarget ? "保存更改" : "创建提供商"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -1549,9 +1549,9 @@ function SamlTab() {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(null)}
-        title="Delete SAML Provider"
-        description={`Are you sure you want to delete "${deleteTarget?.name}"? Users will no longer be able to sign in with this provider.`}
-        confirmText="Delete"
+        title="删除 SAML 提供商"
+        description={`确定要删除 "${deleteTarget?.name}"? 用户将无法再使用此提供商登录。`}
+        confirmText="删除"
         danger
         loading={deleteMutation.isPending}
         onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
@@ -1585,11 +1585,11 @@ export default function SsoSettingsPage() {
   if (!user?.is_admin) {
     return (
       <div className="space-y-6">
-        <PageHeader title="SSO Providers" />
+        <PageHeader title="SSO 提供商" />
         <Alert variant="destructive">
-          <AlertTitle>Access Denied</AlertTitle>
+          <AlertTitle>访问被拒绝</AlertTitle>
           <AlertDescription>
-            You must be an administrator to manage SSO providers.
+            您必须是管理员才能管理 SSO 提供商。
           </AlertDescription>
         </Alert>
       </div>
@@ -1609,20 +1609,20 @@ export default function SsoSettingsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="SSO Providers"
-        description="Configure single sign-on authentication providers."
+        title="SSO 提供商"
+        description="配置单点登录认证提供商。"
       />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <StatCard
           icon={Shield}
-          label="Total Providers"
+          label="提供商总数"
           value={totalCount}
           color="blue"
         />
         <StatCard
           icon={CheckCircle}
-          label="Enabled"
+          label="已启用"
           value={enabledCount}
           color="green"
         />

@@ -176,16 +176,16 @@ export default function SecurityScansPage() {
       setSelectedRepoId(undefined);
       setSelectedArtifactId(undefined);
       setScanMode("repo");
-      toast.success(`Scan queued for ${res.artifacts_queued} artifact(s).`);
+      toast.success(`已为 ${res.artifacts_queued} 个制品排队扫描。`);
     },
-    onError: mutationErrorToast("Failed to trigger scan"),
+    onError: mutationErrorToast("触发扫描失败"),
   });
 
   // -- table columns --
   const columns: DataTableColumn<ScanResult>[] = [
     {
       id: "status",
-      header: "Status",
+      header: "状态",
       accessor: (r) => r.status,
       cell: (r) => (
         <Badge
@@ -198,7 +198,7 @@ export default function SecurityScansPage() {
     },
     {
       id: "scan_type",
-      header: "Scanner",
+      header: "扫描器",
       accessor: (r) => r.scan_type,
       cell: (r) => (
         <Badge variant="secondary" className="text-xs font-normal">
@@ -208,7 +208,7 @@ export default function SecurityScansPage() {
     },
     {
       id: "artifact",
-      header: "Artifact",
+      header: "制品",
       cell: (r) =>
         r.artifact_name ? (
           <span className="text-sm">
@@ -225,7 +225,7 @@ export default function SecurityScansPage() {
     },
     {
       id: "findings",
-      header: "Findings",
+      header: "发现",
       accessor: (r) => r.findings_count,
       sortable: true,
       cell: (r) => {
@@ -235,7 +235,7 @@ export default function SecurityScansPage() {
               variant="outline"
               className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 border-red-200 dark:border-red-800 text-xs font-medium"
             >
-              Scan Failed
+              扫描失败
             </Badge>
           );
         }
@@ -250,7 +250,7 @@ export default function SecurityScansPage() {
               variant="outline"
               className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800 text-xs font-medium"
             >
-              Clean
+              无漏洞
             </Badge>
           );
         }
@@ -270,7 +270,7 @@ export default function SecurityScansPage() {
     },
     {
       id: "started_at",
-      header: "Started",
+      header: "开始时间",
       accessor: (r) => r.started_at ?? "",
       sortable: true,
       cell: (r) => (
@@ -281,7 +281,7 @@ export default function SecurityScansPage() {
     },
     {
       id: "duration",
-      header: "Duration",
+      header: "耗时",
       cell: (r) => (
         <span className="text-sm text-muted-foreground">
           {formatDuration(r.started_at, r.completed_at)}
@@ -300,7 +300,7 @@ export default function SecurityScansPage() {
             router.push(`/security/scans/${r.id}`);
           }}
         >
-          View
+          查看
         </Button>
       ),
     },
@@ -309,8 +309,8 @@ export default function SecurityScansPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Scan Results"
-        description="View and manage security scan results across all repositories."
+        title="扫描结果"
+        description="查看和管理所有仓库的安全扫描结果。"
         actions={
           <div className="flex items-center gap-2">
             <Button
@@ -328,7 +328,7 @@ export default function SecurityScansPage() {
             </Button>
             <Button onClick={() => setTriggerOpen(true)}>
               <Zap className="size-4" />
-              Trigger Scan
+              触发扫描
             </Button>
           </div>
         }
@@ -344,14 +344,14 @@ export default function SecurityScansPage() {
           }}
         >
           <SelectTrigger className="w-[160px]">
-            <SelectValue placeholder="Status" />
+            <SelectValue placeholder="状态" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="__all__">All statuses</SelectItem>
-            <SelectItem value="completed">Completed</SelectItem>
-            <SelectItem value="running">Running</SelectItem>
-            <SelectItem value="pending">Pending</SelectItem>
-            <SelectItem value="failed">Failed</SelectItem>
+            <SelectItem value="__all__">全部状态</SelectItem>
+            <SelectItem value="completed">已完成</SelectItem>
+            <SelectItem value="running">运行中</SelectItem>
+            <SelectItem value="pending">待处理</SelectItem>
+            <SelectItem value="failed">已失败</SelectItem>
           </SelectContent>
         </Select>
 
@@ -364,7 +364,7 @@ export default function SecurityScansPage() {
               setPage(1);
             }}
           >
-            Clear filters
+            清除筛选
           </Button>
         )}
       </div>
@@ -382,12 +382,12 @@ export default function SecurityScansPage() {
           setPage(1);
         }}
         loading={isLoading}
-        emptyMessage="No scan results found."
+        emptyMessage="未找到扫描结果。"
         rowKey={(r) => r.id}
         onRowClick={(r) => router.push(`/security/scans/${r.id}`)}
       />
 
-      {/* Trigger Scan Dialog */}
+      {/* 触发扫描 Dialog */}
       <Dialog
         open={triggerOpen}
         onOpenChange={(o) => {
@@ -401,17 +401,17 @@ export default function SecurityScansPage() {
       >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Trigger Security Scan</DialogTitle>
+            <DialogTitle>触发安全扫描</DialogTitle>
             <DialogDescription>
               {scanMode === "repo"
-                ? "Select a repository to scan all its artifacts for vulnerabilities."
-                : "Select a specific artifact to scan for vulnerabilities."}
+                ? "选择一个仓库以扫描其所有制品的漏洞。"
+                : "选择一个特定制品以扫描漏洞。"}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
-            {/* Scan Mode Toggle */}
+            {/* 扫描模式 Toggle */}
             <div className="space-y-2">
-              <Label>Scan Mode</Label>
+              <Label>扫描模式</Label>
               <div className="flex rounded-lg border p-1 gap-1">
                 <button
                   type="button"
@@ -425,7 +425,7 @@ export default function SecurityScansPage() {
                     setSelectedArtifactId(undefined);
                   }}
                 >
-                  Entire Repository
+                  整个仓库
                 </button>
                 <button
                   type="button"
@@ -438,13 +438,13 @@ export default function SecurityScansPage() {
                     setScanMode("artifact");
                   }}
                 >
-                  Specific Artifact
+                  指定制品
                 </button>
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label>Repository</Label>
+              <Label>仓库</Label>
               <Select
                 value={selectedRepoId ?? ""}
                 onValueChange={(v) => {
@@ -453,7 +453,7 @@ export default function SecurityScansPage() {
                 }}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select a repository..." />
+                  <SelectValue placeholder="选择仓库..." />
                 </SelectTrigger>
                 <SelectContent>
                   {(
@@ -472,7 +472,7 @@ export default function SecurityScansPage() {
                         disabled={!enabled}
                       >
                         {r.name || r.key} ({r.format})
-                        {!enabled && " -- scanning disabled"}
+                        {!enabled && " -- 扫描已禁用"}
                       </SelectItem>
                     );
                   })}
@@ -480,10 +480,10 @@ export default function SecurityScansPage() {
               </Select>
             </div>
 
-            {/* Artifact selector (only in artifact mode) */}
+            {/* 制品 selector (only in artifact mode) */}
             {scanMode === "artifact" && selectedRepoId && (
               <div className="space-y-2">
-                <Label>Artifact</Label>
+                <Label>制品</Label>
                 <Select
                   value={selectedArtifactId ?? ""}
                   onValueChange={(v) => setSelectedArtifactId(v || undefined)}
@@ -492,8 +492,8 @@ export default function SecurityScansPage() {
                     <SelectValue
                       placeholder={
                         artifactsLoading
-                          ? "Loading artifacts..."
-                          : "Select an artifact..."
+                          ? "加载制品中..."
+                          : "选择制品..."
                       }
                     />
                   </SelectTrigger>
@@ -506,7 +506,7 @@ export default function SecurityScansPage() {
                     {!artifactsLoading &&
                       (artifactsList?.items ?? []).length === 0 && (
                         <SelectItem value="__none__" disabled>
-                          No artifacts found
+                          未找到制品
                         </SelectItem>
                       )}
                   </SelectContent>
@@ -524,7 +524,7 @@ export default function SecurityScansPage() {
                 setScanMode("repo");
               }}
             >
-              Cancel
+              取消
             </Button>
             <Button
               disabled={
@@ -543,7 +543,7 @@ export default function SecurityScansPage() {
                 }
               }}
             >
-              {triggerScanMutation.isPending ? "Starting..." : "Start Scan"}
+              {triggerScanMutation.isPending ? "启动中..." : "开始扫描"}
             </Button>
           </DialogFooter>
         </DialogContent>

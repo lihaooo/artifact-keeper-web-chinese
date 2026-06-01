@@ -80,10 +80,10 @@ const SEVERITY_ORDER: Record<string, number> = {
 };
 
 const ACK_REASONS = [
-  { value: "false_positive", label: "False Positive" },
-  { value: "risk_accepted", label: "Risk Accepted" },
-  { value: "mitigated", label: "Mitigated" },
-  { value: "other", label: "Other" },
+  { value: "false_positive", label: "误报" },
+  { value: "risk_accepted", label: "风险已接受" },
+  { value: "mitigated", label: "已缓解" },
+  { value: "other", label: "其他" },
 ];
 
 function formatDuration(start: string | null, end: string | null): string {
@@ -106,13 +106,13 @@ export default function SecurityScanDetailPage() {
   const [severityFilter, setSeverityFilter] = useState<string>("__all__");
 
   // -- acknowledge dialog --
-  const [ackOpen, setAckOpen] = useState(false);
+  const [ack待处理, setAck待处理] = useState(false);
   const [ackFindingId, setAckFindingId] = useState<string | null>(null);
-  const [ackReason, setAckReason] = useState("risk_accepted");
+  const [ack原因, setAck原因] = useState("risk_accepted");
   const [ackNotes, setAckNotes] = useState("");
 
   // -- revoke dialog --
-  const [revokeOpen, setRevokeOpen] = useState(false);
+  const [revoke待处理, set撤销待处理] = useState(false);
   const [revokeFindingId, setRevokeFindingId] = useState<string | null>(null);
 
   // -- queries --
@@ -143,13 +143,13 @@ export default function SecurityScanDetailPage() {
         queryKey: ["security", "findings", id],
       });
       queryClient.invalidateQueries({ queryKey: ["security", "scan", id] });
-      setAckOpen(false);
-      setAckReason("risk_accepted");
+      setAck待处理(false);
+      setAck原因("risk_accepted");
       setAckNotes("");
       setAckFindingId(null);
-      toast.success("Finding acknowledged.");
+      toast.success("发现已确认。");
     },
-    onError: mutationErrorToast("Failed to acknowledge finding"),
+    onError: mutationErrorToast("确认发现失败"),
   });
 
   const revokeMutation = useMutation({
@@ -159,11 +159,11 @@ export default function SecurityScanDetailPage() {
         queryKey: ["security", "findings", id],
       });
       queryClient.invalidateQueries({ queryKey: ["security", "scan", id] });
-      setRevokeOpen(false);
+      set撤销待处理(false);
       setRevokeFindingId(null);
-      toast.success("Acknowledgment revoked.");
+      toast.success("确认已撤销。");
     },
-    onError: mutationErrorToast("Failed to revoke acknowledgment"),
+    onError: mutationErrorToast("撤销确认失败"),
   });
 
   // -- filter findings by severity locally --
@@ -177,7 +177,7 @@ export default function SecurityScanDetailPage() {
   const columns: DataTableColumn<ScanFinding>[] = [
     {
       id: "severity",
-      header: "Severity",
+      header: "严重性",
       accessor: (r) => SEVERITY_ORDER[r.severity] ?? 5,
       sortable: true,
       cell: (r) => (
@@ -191,7 +191,7 @@ export default function SecurityScanDetailPage() {
     },
     {
       id: "title",
-      header: "Title",
+      header: "标题",
       accessor: (r) => r.title,
       sortable: true,
       cell: (r) => (
@@ -207,7 +207,7 @@ export default function SecurityScanDetailPage() {
     },
     {
       id: "component",
-      header: "Package",
+      header: "包名",
       accessor: (r) => r.affected_component ?? "",
       cell: (r) => (
         <span className="text-sm">
@@ -217,7 +217,7 @@ export default function SecurityScanDetailPage() {
     },
     {
       id: "installed_version",
-      header: "Installed",
+      header: "当前版本",
       cell: (r) =>
         r.affected_version ? (
           <code className="text-xs text-red-600 dark:text-red-400">
@@ -229,7 +229,7 @@ export default function SecurityScanDetailPage() {
     },
     {
       id: "fixed_version",
-      header: "Fixed",
+      header: "修复版本",
       cell: (r) =>
         r.fixed_version ? (
           <code className="text-xs text-emerald-600 dark:text-emerald-400">
@@ -241,7 +241,7 @@ export default function SecurityScanDetailPage() {
     },
     {
       id: "cve_id",
-      header: "Advisory",
+      header: "安全公告",
       accessor: (r) => r.cve_id ?? "",
       cell: (r) =>
         r.cve_id ? (
@@ -260,14 +260,14 @@ export default function SecurityScanDetailPage() {
             className="bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400 border-cyan-200 dark:border-cyan-800 text-xs font-medium"
           >
             <CheckCircle className="size-3 mr-1" />
-            Acknowledged
+            已确认
           </Badge>
         ) : (
           <Badge
             variant="outline"
             className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border-amber-200 dark:border-amber-800 text-xs font-medium"
           >
-            Open
+            待处理
           </Badge>
         ),
     },
@@ -282,11 +282,11 @@ export default function SecurityScanDetailPage() {
             onClick={(e) => {
               e.stopPropagation();
               setRevokeFindingId(r.id);
-              setRevokeOpen(true);
+              set撤销待处理(true);
             }}
           >
             <Undo2 className="size-3.5 mr-1" />
-            Revoke
+            撤销
           </Button>
         ) : (
           <Button
@@ -295,11 +295,11 @@ export default function SecurityScanDetailPage() {
             onClick={(e) => {
               e.stopPropagation();
               setAckFindingId(r.id);
-              setAckOpen(true);
+              setAck待处理(true);
             }}
           >
             <CheckCircle className="size-3.5 mr-1" />
-            Acknowledge
+            确认
           </Button>
         ),
     },
@@ -327,11 +327,11 @@ export default function SecurityScanDetailPage() {
           onClick={() => router.push("/security/scans")}
         >
           <ArrowLeft className="size-4 mr-1" />
-          Scans
+          扫描
         </Button>
         <span>/</span>
         <span className="font-medium text-foreground">
-          Scan #{id?.slice(0, 8)}
+          扫描 #{id?.slice(0, 8)}
         </span>
       </div>
 
@@ -341,7 +341,7 @@ export default function SecurityScanDetailPage() {
           <CardContent className="pt-6">
             <div className="grid grid-cols-2 gap-x-8 gap-y-4 sm:grid-cols-3 lg:grid-cols-4">
               <div>
-                <p className="text-xs text-muted-foreground mb-1">Status</p>
+                <p className="text-xs text-muted-foreground mb-1">状态</p>
                 <Badge
                   variant="outline"
                   className={`border font-medium capitalize text-xs ${STATUS_BADGE[scan.status] ?? ""}`}
@@ -350,14 +350,14 @@ export default function SecurityScanDetailPage() {
                 </Badge>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground mb-1">Scanner</p>
+                <p className="text-xs text-muted-foreground mb-1">扫描器</p>
                 <Badge variant="secondary" className="text-xs font-normal">
                   {scan.scan_type}
                 </Badge>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground mb-1">
-                  Artifact
+                  制品
                 </p>
                 <p className="text-sm font-medium">
                   {scan.artifact_name ?? scan.artifact_id.slice(0, 12)}
@@ -370,14 +370,14 @@ export default function SecurityScanDetailPage() {
               </div>
               <div>
                 <p className="text-xs text-muted-foreground mb-1">
-                  Duration
+                  耗时
                 </p>
                 <p className="text-sm">
                   {formatDuration(scan.started_at, scan.completed_at)}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground mb-1">Started</p>
+                <p className="text-xs text-muted-foreground mb-1">开始时间</p>
                 <p className="text-sm">
                   {scan.started_at
                     ? new Date(scan.started_at).toLocaleString()
@@ -386,7 +386,7 @@ export default function SecurityScanDetailPage() {
               </div>
               <div>
                 <p className="text-xs text-muted-foreground mb-1">
-                  Completed
+                  完成时间
                 </p>
                 <p className="text-sm">
                   {scan.completed_at
@@ -396,7 +396,7 @@ export default function SecurityScanDetailPage() {
               </div>
               {scan.error_message && (
                 <div className="col-span-full">
-                  <p className="text-xs text-muted-foreground mb-1">Error</p>
+                  <p className="text-xs text-muted-foreground mb-1">错误</p>
                   <p className="text-sm text-red-600 dark:text-red-400">
                     {scan.error_message}
                   </p>
@@ -413,12 +413,12 @@ export default function SecurityScanDetailPage() {
           <AlertCircle className="size-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
           <div>
             <p className="text-sm font-medium text-red-800 dark:text-red-400">
-              This scan failed to complete
+              此扫描未能完成
             </p>
             <p className="text-xs text-red-700 dark:text-red-500 mt-1">
               {scan.error_message
                 ? scan.error_message
-                : "The scanner encountered an error. Findings data below may be incomplete or missing. Try triggering a new scan."}
+                : "扫描器遇到错误。下方的发现数据可能不完整或缺失。请尝试触发新的扫描。"}
             </p>
           </div>
         </div>
@@ -429,31 +429,31 @@ export default function SecurityScanDetailPage() {
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
           <StatCard
             icon={Bug}
-            label="Total Findings"
+            label="发现总数"
             value={scan.findings_count}
             color={scan.findings_count > 0 ? "yellow" : "green"}
           />
           <StatCard
             icon={AlertCircle}
-            label="Critical"
+            label="严重"
             value={scan.critical_count}
             color={scan.critical_count > 0 ? "red" : "green"}
           />
           <StatCard
             icon={AlertTriangle}
-            label="High"
+            label="高危"
             value={scan.high_count}
             color={scan.high_count > 0 ? "red" : "green"}
           />
           <StatCard
             icon={ShieldAlert}
-            label="Medium"
+            label="中危"
             value={scan.medium_count}
             color={scan.medium_count > 0 ? "yellow" : "green"}
           />
           <StatCard
             icon={Info}
-            label="Low"
+            label="低危"
             value={scan.low_count}
             color="blue"
           />
@@ -462,16 +462,16 @@ export default function SecurityScanDetailPage() {
 
       {/* Findings filter */}
       <div className="flex items-center gap-3">
-        <h2 className="text-lg font-semibold tracking-tight">Findings</h2>
+        <h2 className="text-lg font-semibold tracking-tight">发现</h2>
         <Select
           value={severityFilter}
           onValueChange={setSeverityFilter}
         >
           <SelectTrigger className="w-[150px]">
-            <SelectValue placeholder="Severity" />
+            <SelectValue placeholder="严重性" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="__all__">All severities</SelectItem>
+            <SelectItem value="__all__">全部严重性</SelectItem>
             <SelectItem value="critical">Critical</SelectItem>
             <SelectItem value="high">High</SelectItem>
             <SelectItem value="medium">Medium</SelectItem>
@@ -485,7 +485,7 @@ export default function SecurityScanDetailPage() {
             size="sm"
             onClick={() => setSeverityFilter("__all__")}
           >
-            Clear
+            清除
           </Button>
         )}
       </div>
@@ -510,37 +510,36 @@ export default function SecurityScanDetailPage() {
         emptyMessage={
           scan && isScanIncomplete(scan.status)
             ? scan.status === "failed" || scan.status === "error"
-              ? "No findings available. The scan did not complete successfully."
-              : "Scan is still in progress."
-            : "No findings for this scan."
+              ? "暂无发现数据。扫描未成功完成。"
+              : "扫描仍在进行中。"
+            : "此扫描暂无发现。"
         }
         rowKey={(r) => r.id}
       />
 
-      {/* Acknowledge Finding Dialog */}
+      {/* 确认 Finding Dialog */}
       <Dialog
-        open={ackOpen}
+        open={ack待处理}
         onOpenChange={(o) => {
-          setAckOpen(o);
+          setAck待处理(o);
           if (!o) {
             setAckFindingId(null);
-            setAckReason("risk_accepted");
+            setAck原因("risk_accepted");
             setAckNotes("");
           }
         }}
       >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Acknowledge Finding</DialogTitle>
+            <DialogTitle>确认发现</DialogTitle>
             <DialogDescription>
-              Acknowledging a finding marks it as an accepted risk. It will no
-              longer count against the repository security score.
+              确认发现将其标记为已接受的风险。它将不再计入仓库安全评分。
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label>Reason</Label>
-              <Select value={ackReason} onValueChange={setAckReason}>
+              <Label>原因</Label>
+              <Select value={ack原因} onValueChange={setAck原因}>
                 <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
@@ -554,11 +553,11 @@ export default function SecurityScanDetailPage() {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="ack-notes">Notes (optional)</Label>
+              <Label htmlFor="ack-notes">备注（可选）</Label>
               <Textarea
                 id="ack-notes"
                 rows={3}
-                placeholder="Additional context for acknowledging this finding..."
+                placeholder="确认此发现的附加上下文..."
                 value={ackNotes}
                 onChange={(e) => setAckNotes(e.target.value)}
               />
@@ -568,21 +567,21 @@ export default function SecurityScanDetailPage() {
             <Button
               variant="outline"
               onClick={() => {
-                setAckOpen(false);
+                setAck待处理(false);
                 setAckFindingId(null);
-                setAckReason("risk_accepted");
+                setAck原因("risk_accepted");
                 setAckNotes("");
               }}
             >
-              Cancel
+              取消
             </Button>
             <Button
               disabled={acknowledgeMutation.isPending}
               onClick={() => {
                 if (ackFindingId) {
                   const reason = ackNotes.trim()
-                    ? `${ackReason}: ${ackNotes.trim()}`
-                    : ackReason;
+                    ? `${ack原因}: ${ackNotes.trim()}`
+                    : ack原因;
                   acknowledgeMutation.mutate({
                     findingId: ackFindingId,
                     reason,
@@ -591,23 +590,23 @@ export default function SecurityScanDetailPage() {
               }}
             >
               {acknowledgeMutation.isPending
-                ? "Acknowledging..."
-                : "Acknowledge"}
+                ? "确认中..."
+                : "确认"}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Revoke Acknowledgment Confirmation */}
+      {/* 撤销 Acknowledgment Confirmation */}
       <ConfirmDialog
-        open={revokeOpen}
+        open={revoke待处理}
         onOpenChange={(o) => {
-          setRevokeOpen(o);
+          set撤销待处理(o);
           if (!o) setRevokeFindingId(null);
         }}
-        title="Revoke Acknowledgment"
-        description="This finding will count against the repository security score again. Are you sure?"
-        confirmText="Revoke"
+        title="撤销确认"
+        description="此发现将再次计入仓库安全评分。确定要继续吗？"
+        confirmText="撤销"
         danger
         loading={revokeMutation.isPending}
         onConfirm={() => {

@@ -158,10 +158,10 @@ export default function UsersPage() {
         setPasswordUsername(data.user.username);
         setPasswordOpen(true);
       } else {
-        toast.success("User created successfully");
+        toast.success("用户创建成功");
       }
     },
-    onError: mutationErrorToast("Failed to create user"),
+    onError: mutationErrorToast("创建用户失败"),
   });
 
   const updateMutation = useMutation({
@@ -179,12 +179,12 @@ export default function UsersPage() {
       return data;
     },
     onSuccess: () => {
-      toast.success("User updated successfully");
+      toast.success("用户更新成功");
       invalidateGroup(queryClient, "users");
       setEditOpen(false);
       setSelectedUser(null);
     },
-    onError: mutationErrorToast("Failed to update user"),
+    onError: mutationErrorToast("更新用户失败"),
   });
 
   const toggleStatusMutation = useMutation({
@@ -196,10 +196,10 @@ export default function UsersPage() {
       if (error) throw error;
     },
     onSuccess: (_, vars) => {
-      toast.success(`User ${vars.is_active ? "enabled" : "disabled"} successfully`);
+      toast.success(`用户${vars.is_active ? "启用" : "禁用"}成功`);
       invalidateGroup(queryClient, "users");
     },
-    onError: mutationErrorToast("Failed to update user status"),
+    onError: mutationErrorToast("更新用户状态失败"),
   });
 
   const resetPasswordMutation = useMutation({
@@ -213,11 +213,11 @@ export default function UsersPage() {
     onSuccess: (data, userId) => {
       const u = users?.find((x) => x.id === userId);
       setGeneratedPassword(data.temporary_password);
-      setPasswordUsername(u?.username ?? "User");
+      setPasswordUsername(u?.username ?? "用户");
       setPasswordOpen(true);
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
     },
-    onError: mutationErrorToast("Failed to reset password"),
+    onError: mutationErrorToast("重置密码失败"),
   });
 
   const deleteMutation = useMutation({
@@ -226,12 +226,12 @@ export default function UsersPage() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("User deleted successfully");
+      toast.success("用户删除成功");
       invalidateGroup(queryClient, "users");
       setDeleteOpen(false);
       setSelectedUser(null);
     },
-    onError: mutationErrorToast("Failed to delete user"),
+    onError: mutationErrorToast("删除用户失败"),
   });
 
   // -- user tokens query (for the selected user) --
@@ -249,13 +249,13 @@ export default function UsersPage() {
       await adminApi.revokeUserToken(userId, tokenId);
     },
     onSuccess: () => {
-      toast.success("Token revoked");
+      toast.success("令牌已撤销");
       queryClient.invalidateQueries({
         queryKey: ["admin-user-tokens", selectedUser?.id],
       });
       setRevokeTokenId(null);
     },
-    onError: mutationErrorToast("Failed to revoke token"),
+    onError: mutationErrorToast("撤销令牌失败"),
   });
 
   // -- handlers --
@@ -278,7 +278,7 @@ export default function UsersPage() {
   const handleDelete = useCallback(
     (u: User) => {
       if (isSelf(u)) {
-        toast.error("You cannot delete your own account");
+        toast.error("无法删除自己的账号");
         return;
       }
       setSelectedUser(u);
@@ -290,7 +290,7 @@ export default function UsersPage() {
   const handleResetPassword = useCallback(
     (u: User) => {
       if (isSelf(u)) {
-        toast.error("You cannot reset your own password from here");
+        toast.error("无法在此处重置自己的密码");
         return;
       }
       resetPasswordMutation.mutate(u.id);
@@ -306,7 +306,7 @@ export default function UsersPage() {
   const handleToggleStatus = useCallback(
     (u: User) => {
       if (isSelf(u)) {
-        toast.error("You cannot disable your own account");
+        toast.error("无法禁用自己的账号");
         return;
       }
       toggleStatusMutation.mutate({
@@ -320,7 +320,7 @@ export default function UsersPage() {
   const copyPassword = useCallback(() => {
     if (generatedPassword) {
       navigator.clipboard.writeText(generatedPassword);
-      toast.success("Password copied to clipboard");
+      toast.success("密码已复制到剪贴板");
     }
   }, [generatedPassword]);
 
@@ -328,7 +328,7 @@ export default function UsersPage() {
   const columns: DataTableColumn<User>[] = [
     {
       id: "username",
-      header: "Username",
+      header: "用户名",
       accessor: (u) => u.username,
       sortable: true,
       cell: (u) => (
@@ -337,7 +337,7 @@ export default function UsersPage() {
           {u.is_admin && (
             <Badge variant="secondary" className="text-xs">
               <ShieldCheck className="size-3 mr-1" />
-              Admin
+              管理员
             </Badge>
           )}
         </div>
@@ -345,34 +345,34 @@ export default function UsersPage() {
     },
     {
       id: "email",
-      header: "Email",
+      header: "邮箱",
       accessor: (u) => u.email,
       sortable: true,
       cell: (u) => <span className="text-sm text-muted-foreground">{u.email}</span>,
     },
     {
       id: "display_name",
-      header: "Display Name",
+      header: "显示名称",
       accessor: (u) => u.display_name ?? "",
       sortable: true,
       cell: (u) => (
-        <span className="text-sm">{u.display_name || "\u2014"}</span>
+        <span className="text-sm">{u.display_name || "—"}</span>
       ),
     },
     {
       id: "status",
-      header: "Status",
-      accessor: (u) => (u.is_active !== false ? "Active" : "Inactive"),
+      header: "状态",
+      accessor: (u) => (u.is_active !== false ? "活跃" : "已禁用"),
       cell: (u) => (
         <StatusBadge
-          status={u.is_active !== false ? "Active" : "Inactive"}
+          status={u.is_active !== false ? "活跃" : "已禁用"}
           color={u.is_active !== false ? "green" : "red"}
         />
       ),
     },
     {
       id: "auth_source",
-      header: "Auth Source",
+      header: "认证来源",
       accessor: (u) => getAuthProviderLabel(u.auth_provider),
       sortable: true,
       cell: (u) => <AuthSourceBadge provider={u.auth_provider} />,
@@ -387,40 +387,40 @@ export default function UsersPage() {
         >
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon-xs" aria-label={`View tokens for ${u.username}`} onClick={() => handleViewTokens(u)}>
+              <Button variant="ghost" size="icon-xs" aria-label={`查看 ${u.username} 的令牌`} onClick={() => handleViewTokens(u)}>
                 <Key className="size-3.5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>View Tokens</TooltipContent>
+            <TooltipContent>查看令牌</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon-xs" aria-label={`Edit user ${u.username}`} onClick={() => handleEdit(u)}>
+              <Button variant="ghost" size="icon-xs" aria-label={`编辑用户 ${u.username}`} onClick={() => handleEdit(u)}>
                 <Pencil className="size-3.5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Edit</TooltipContent>
+            <TooltipContent>编辑</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 variant="ghost"
                 size="icon-xs"
-                aria-label={`Reset password for ${u.username}`}
+                aria-label={`重置 ${u.username} 的密码`}
                 onClick={() => handleResetPassword(u)}
                 disabled={isSelf(u)}
               >
                 <KeyRound className="size-3.5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Reset Password</TooltipContent>
+            <TooltipContent>重置密码</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 variant="ghost"
                 size="icon-xs"
-                aria-label={`${u.is_active !== false ? "Disable" : "Enable"} user ${u.username}`}
+                aria-label={`${u.is_active !== false ? "禁用" : "启用"}用户 ${u.username}`}
                 onClick={() => handleToggleStatus(u)}
                 disabled={isSelf(u)}
               >
@@ -432,7 +432,7 @@ export default function UsersPage() {
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              {u.is_active !== false ? "Disable" : "Enable"}
+              {u.is_active !== false ? "禁用" : "启用"}
             </TooltipContent>
           </Tooltip>
           <Tooltip>
@@ -440,7 +440,7 @@ export default function UsersPage() {
               <Button
                 variant="ghost"
                 size="icon-xs"
-                aria-label={`Delete user ${u.username}`}
+                aria-label={`删除用户 ${u.username}`}
                 className="text-destructive hover:text-destructive"
                 onClick={() => handleDelete(u)}
                 disabled={isSelf(u)}
@@ -448,7 +448,7 @@ export default function UsersPage() {
                 <Trash2 className="size-3.5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Delete</TooltipContent>
+            <TooltipContent>删除</TooltipContent>
           </Tooltip>
         </div>
       ),
@@ -459,11 +459,11 @@ export default function UsersPage() {
   if (!currentUser?.is_admin) {
     return (
       <div className="space-y-6">
-        <PageHeader title="Users" />
+        <PageHeader title="用户" />
         <Alert variant="destructive">
-          <AlertTitle>Access Denied</AlertTitle>
+          <AlertTitle>访问被拒绝</AlertTitle>
           <AlertDescription>
-            You must be an administrator to view this page.
+            您必须是管理员才能查看此页面。
           </AlertDescription>
         </Alert>
       </div>
@@ -473,12 +473,12 @@ export default function UsersPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Users"
-        description="Manage user accounts, roles, and access."
+        title="用户"
+        description="管理用户账号、角色和访问权限。"
         actions={
           <Button onClick={() => setCreateOpen(true)}>
             <Plus className="size-4" />
-            Create User
+            创建用户
           </Button>
         }
       />
@@ -486,12 +486,12 @@ export default function UsersPage() {
       {!isLoading && (users?.length ?? 0) === 0 ? (
         <EmptyState
           icon={Users}
-          title="No users yet"
-          description="Create your first user to get started."
+          title="暂无用户"
+          description="创建您的第一个用户以开始使用。"
           action={
             <Button onClick={() => setCreateOpen(true)}>
               <Plus className="size-4" />
-              Create User
+              创建用户
             </Button>
           }
         />
@@ -500,7 +500,7 @@ export default function UsersPage() {
           columns={columns}
           data={users ?? []}
           loading={isLoading}
-          emptyMessage="No users found."
+          emptyMessage="未找到用户。"
           rowKey={(u) => u.id}
         />
       )}
@@ -515,10 +515,9 @@ export default function UsersPage() {
       >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Create User</DialogTitle>
+            <DialogTitle>创建用户</DialogTitle>
             <DialogDescription>
-              Add a new user account. A temporary password will be generated if
-              auto-generate is enabled.
+              添加新用户账号。如果启用自动生成，将生成临时密码。
             </DialogDescription>
           </DialogHeader>
           <form
@@ -529,7 +528,7 @@ export default function UsersPage() {
             }}
           >
             <div className="space-y-2">
-              <Label htmlFor="create-username">Username</Label>
+              <Label htmlFor="create-username">用户名</Label>
               <Input
                 id="create-username"
                 placeholder="jdoe"
@@ -541,7 +540,7 @@ export default function UsersPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="create-email">Email</Label>
+              <Label htmlFor="create-email">邮箱</Label>
               <Input
                 id="create-email"
                 type="email"
@@ -554,10 +553,10 @@ export default function UsersPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="create-display">Display Name</Label>
+              <Label htmlFor="create-display">显示名称</Label>
               <Input
                 id="create-display"
-                placeholder="John Doe"
+                placeholder="张三"
                 value={createForm.display_name}
                 onChange={(e) =>
                   setCreateForm((f) => ({ ...f, display_name: e.target.value }))
@@ -566,13 +565,13 @@ export default function UsersPage() {
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="create-password">Password</Label>
+                <Label htmlFor="create-password">密码</Label>
                 <div className="flex items-center gap-2">
                   <Label
                     htmlFor="auto-generate"
                     className="text-xs text-muted-foreground"
                   >
-                    Auto-generate
+                    自动生成
                   </Label>
                   <Switch
                     id="auto-generate"
@@ -593,7 +592,7 @@ export default function UsersPage() {
                     <Input
                       id="create-password"
                       type="text"
-                      placeholder="Enter password"
+                      placeholder="输入密码"
                       value={createForm.password}
                       onChange={(e) =>
                         setCreateForm((f) => ({ ...f, password: e.target.value }))
@@ -611,7 +610,7 @@ export default function UsersPage() {
                         }))
                       }
                     >
-                      Generate
+                      生成
                     </Button>
                   </div>
                   <PasswordPolicyHint password={createForm.password} />
@@ -626,7 +625,7 @@ export default function UsersPage() {
                   setCreateForm((f) => ({ ...f, is_admin: v }))
                 }
               />
-              <Label htmlFor="create-admin">Administrator</Label>
+              <Label htmlFor="create-admin">管理员</Label>
             </div>
             <DialogFooter>
               <Button
@@ -637,10 +636,10 @@ export default function UsersPage() {
                   setCreateForm(EMPTY_CREATE);
                 }}
               >
-                Cancel
+                取消
               </Button>
               <Button type="submit" disabled={createMutation.isPending}>
-                {createMutation.isPending ? "Creating..." : "Create User"}
+                {createMutation.isPending ? "创建中..." : "创建用户"}
               </Button>
             </DialogFooter>
           </form>
@@ -657,9 +656,9 @@ export default function UsersPage() {
       >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Edit User: {selectedUser?.username}</DialogTitle>
+            <DialogTitle>编辑用户：{selectedUser?.username}</DialogTitle>
             <DialogDescription>
-              Update user details and access level.
+              更新用户详情和访问级别。
             </DialogDescription>
           </DialogHeader>
           <form
@@ -672,13 +671,13 @@ export default function UsersPage() {
             }}
           >
             <div className="space-y-2">
-              <Label>Auth Source</Label>
+              <Label>认证来源</Label>
               <div data-testid="edit-auth-source">
                 <AuthSourceBadge provider={selectedUser?.auth_provider} />
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="edit-email">Email</Label>
+              <Label htmlFor="edit-email">邮箱</Label>
               <Input
                 id="edit-email"
                 type="email"
@@ -690,7 +689,7 @@ export default function UsersPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="edit-display">Display Name</Label>
+              <Label htmlFor="edit-display">显示名称</Label>
               <Input
                 id="edit-display"
                 value={editForm.display_name}
@@ -708,7 +707,7 @@ export default function UsersPage() {
                 }
                 disabled={selectedUser ? isSelf(selectedUser) : false}
               />
-              <Label htmlFor="edit-admin">Administrator</Label>
+              <Label htmlFor="edit-admin">管理员</Label>
             </div>
             <div className="flex items-center gap-3">
               <Switch
@@ -719,7 +718,7 @@ export default function UsersPage() {
                 }
                 disabled={selectedUser ? isSelf(selectedUser) : false}
               />
-              <Label htmlFor="edit-active">Active</Label>
+              <Label htmlFor="edit-active">活跃</Label>
             </div>
             <DialogFooter>
               <Button
@@ -730,10 +729,10 @@ export default function UsersPage() {
                   setSelectedUser(null);
                 }}
               >
-                Cancel
+                取消
               </Button>
               <Button type="submit" disabled={updateMutation.isPending}>
-                {updateMutation.isPending ? "Saving..." : "Save Changes"}
+                {updateMutation.isPending ? "保存中..." : "保存更改"}
               </Button>
             </DialogFooter>
           </form>
@@ -753,33 +752,33 @@ export default function UsersPage() {
       >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Temporary Password</DialogTitle>
+            <DialogTitle>临时密码</DialogTitle>
             <DialogDescription>
-              This password will only be shown once. Save it and share it securely.
+              此密码仅显示一次。请妥善保存并安全分享。
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <Alert>
-              <AlertTitle>Save this password!</AlertTitle>
+              <AlertTitle>请保存此密码！</AlertTitle>
               <AlertDescription>
-                The user will be required to change this password on next login.
+                用户下次登录时将被要求更改此密码。
               </AlertDescription>
             </Alert>
             <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Username</p>
+              <p className="text-sm text-muted-foreground">用户名</p>
               <code className="block rounded bg-muted px-3 py-2 text-sm font-mono">
                 {passwordUsername}
               </code>
             </div>
             <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Temporary Password</p>
+              <p className="text-sm text-muted-foreground">临时密码</p>
               <div className="flex items-center gap-2">
                 <code className="flex-1 rounded bg-muted px-3 py-2 text-sm font-mono break-all">
                   {generatedPassword}
                 </code>
                 <Button variant="outline" size="sm" onClick={copyPassword}>
                   <Copy className="size-3.5 mr-1" />
-                  Copy
+                  复制
                 </Button>
               </div>
             </div>
@@ -792,7 +791,7 @@ export default function UsersPage() {
                 setPasswordUsername(null);
               }}
             >
-              Done
+              完成
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -805,10 +804,10 @@ export default function UsersPage() {
           setDeleteOpen(o);
           if (!o) setSelectedUser(null);
         }}
-        title="Delete User"
-        description={`Deleting "${selectedUser?.username}" will permanently remove their account and revoke all access. This cannot be undone.`}
+        title="删除用户"
+        description={`删除 "${selectedUser?.username}" 将永久移除其账号并撤销所有访问权限。此操作无法撤销。`}
         typeToConfirm={selectedUser?.username}
-        confirmText="Delete User"
+        confirmText="删除用户"
         danger
         loading={deleteMutation.isPending}
         onConfirm={() => {
@@ -830,22 +829,22 @@ export default function UsersPage() {
         <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle>
-              API Tokens: {selectedUser?.username}
+              API 令牌：{selectedUser?.username}
             </DialogTitle>
             <DialogDescription>
-              View and revoke API tokens for this user.
+              查看和撤销此用户的 API 令牌。
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3 max-h-96 overflow-y-auto">
             {tokensLoading ? (
               <p className="text-sm text-muted-foreground py-4 text-center">
-                Loading tokens...
+                加载令牌中...
               </p>
             ) : (userTokens ?? []).length === 0 ? (
               <EmptyState
                 icon={Key}
-                title="No tokens"
-                description="This user has no API tokens."
+                title="暂无令牌"
+                description="此用户没有 API 令牌。"
               />
             ) : (
               <div className="divide-y">
@@ -872,22 +871,22 @@ export default function UsersPage() {
                       </div>
                       <div className="flex gap-4 text-xs text-muted-foreground">
                         <span>
-                          Created{" "}
+                          创建于{" "}
                           {token.created_at
                             ? new Date(token.created_at).toLocaleDateString()
                             : "N/A"}
                         </span>
                         {token.expires_at && (
                           <span>
-                            Expires{" "}
+                            过期于{" "}
                             {new Date(token.expires_at).toLocaleDateString()}
                           </span>
                         )}
                         <span>
-                          Last used{" "}
+                          上次使用{" "}
                           {token.last_used_at
                             ? new Date(token.last_used_at).toLocaleDateString()
-                            : "Never"}
+                            : "从未"}
                         </span>
                       </div>
                     </div>
@@ -898,7 +897,7 @@ export default function UsersPage() {
                       onClick={() => setRevokeTokenId(token.id)}
                     >
                       <Trash2 className="size-3.5 mr-1" />
-                      Revoke
+                      撤销
                     </Button>
                   </div>
                 ))}
@@ -914,7 +913,7 @@ export default function UsersPage() {
                 setRevokeTokenId(null);
               }}
             >
-              Close
+              关闭
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -926,9 +925,9 @@ export default function UsersPage() {
         onOpenChange={(o) => {
           if (!o) setRevokeTokenId(null);
         }}
-        title="Revoke Token"
-        description="This will permanently invalidate this API token. Any applications using it will lose access immediately."
-        confirmText="Revoke Token"
+        title="撤销令牌"
+        description="此操作将永久使此 API 令牌失效。使用此令牌的应用将立即失去访问权限。"
+        confirmText="撤销令牌"
         danger
         loading={revokeTokenMutation.isPending}
         onConfirm={() => {

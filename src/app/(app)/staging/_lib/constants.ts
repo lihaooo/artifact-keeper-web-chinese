@@ -17,8 +17,8 @@ export const FORMAT_OPTIONS: { value: RepositoryFormat; label: string }[] = [
 ];
 
 export const POLICY_STATUS_LABELS = {
-  passing: "Passing",
-  failing: "Failing",
-  warning: "Warning",
-  pending: "Pending",
+  passing: "通过",
+  failing: "失败",
+  warning: "警告",
+  pending: "待定",
 } as const;

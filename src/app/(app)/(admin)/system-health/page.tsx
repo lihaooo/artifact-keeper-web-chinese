@@ -52,7 +52,7 @@ function GradeDistributionBar({
   if (total === 0) {
     return (
       <div className="text-sm text-muted-foreground text-center py-4">
-        No artifacts evaluated yet.
+        暂无已评估的制品。
       </div>
     );
   }
@@ -144,7 +144,7 @@ function OverallHealthScore({
       <div className="space-y-1">
         <HealthBadge grade={grade} score={score} size="lg" />
         <p className="text-sm text-muted-foreground mt-1">
-          Average health score across all repositories
+          所有仓库的平均健康评分
         </p>
       </div>
     </div>
@@ -184,9 +184,9 @@ export default function HealthDashboardPage() {
   if (!user?.is_admin) {
     return (
       <div className="space-y-6">
-        <PageHeader title="Health Dashboard" />
+        <PageHeader title="健康仪表板" />
         <Alert variant="destructive">
-          <AlertTitle>Access Denied</AlertTitle>
+          <AlertTitle>访问被拒绝</AlertTitle>
         </Alert>
       </div>
     );
@@ -224,7 +224,7 @@ export default function HealthDashboardPage() {
   const columns: DataTableColumn<RepoHealth>[] = [
     {
       id: "repository_key",
-      header: "Repository",
+      header: "仓库",
       accessor: (r) => r.repository_key,
       sortable: true,
       cell: (r) => (
@@ -233,7 +233,7 @@ export default function HealthDashboardPage() {
     },
     {
       id: "grade",
-      header: "Grade",
+      header: "等级",
       accessor: (r) => r.health_score,
       sortable: true,
       cell: (r) => (
@@ -242,7 +242,7 @@ export default function HealthDashboardPage() {
     },
     {
       id: "health_score",
-      header: "Score",
+      header: "评分",
       accessor: (r) => r.health_score,
       sortable: true,
       cell: (r) => (
@@ -253,35 +253,35 @@ export default function HealthDashboardPage() {
     },
     {
       id: "security",
-      header: "Security",
+      header: "安全",
       accessor: (r) => r.avg_security_score ?? 0,
       sortable: true,
       cell: (r) => <OptionalScore value={r.avg_security_score} />,
     },
     {
       id: "quality",
-      header: "Quality",
+      header: "质量",
       accessor: (r) => r.avg_quality_score ?? 0,
       sortable: true,
       cell: (r) => <OptionalScore value={r.avg_quality_score} />,
     },
     {
       id: "license",
-      header: "License",
+      header: "许可证",
       accessor: (r) => r.avg_license_score ?? 0,
       sortable: true,
       cell: (r) => <OptionalScore value={r.avg_license_score} />,
     },
     {
       id: "metadata",
-      header: "Metadata",
+      header: "元数据",
       accessor: (r) => r.avg_metadata_score ?? 0,
       sortable: true,
       cell: (r) => <OptionalScore value={r.avg_metadata_score} />,
     },
     {
       id: "artifacts",
-      header: "Artifacts",
+      header: "制品",
       accessor: (r) => r.artifacts_evaluated,
       sortable: true,
       cell: (r) => (
@@ -292,7 +292,7 @@ export default function HealthDashboardPage() {
     },
     {
       id: "passing",
-      header: "Passing",
+      header: "已通过",
       accessor: (r) => r.artifacts_passing,
       sortable: true,
       cell: (r) => (
@@ -308,7 +308,7 @@ export default function HealthDashboardPage() {
     },
     {
       id: "failing",
-      header: "Failing",
+      header: "未通过",
       accessor: (r) => r.artifacts_failing,
       sortable: true,
       cell: (r) =>
@@ -325,8 +325,8 @@ export default function HealthDashboardPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Health Dashboard"
-        description="Monitor artifact health scores, quality metrics, and grade distribution across all repositories."
+        title="健康仪表板"
+        description="监控所有仓库的制品健康评分、质量指标和等级分布。"
         actions={
           <Button
             variant="outline"
@@ -369,43 +369,43 @@ export default function HealthDashboardPage() {
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-2 xl:grid-cols-3">
               <StatCard
                 icon={Package}
-                label="Artifacts Evaluated"
+                label="已评估制品"
                 value={dashboard.total_artifacts_evaluated}
                 color="blue"
               />
               <StatCard
                 icon={HeartPulse}
-                label="Repositories"
+                label="仓库"
                 value={dashboard.total_repositories}
                 color="green"
               />
               <StatCard
                 icon={ShieldCheck}
-                label="Grade A Repos"
+                label="A 级仓库"
                 value={dashboard.repos_grade_a}
                 color="green"
               />
               <StatCard
                 icon={AlertTriangle}
-                label="Below Threshold"
+                label="低于阈值"
                 value={reposBelowThreshold}
-                description="Grade D or F"
+                description="D 或 F 级"
                 color={reposBelowThreshold > 0 ? "red" : "green"}
               />
               <StatCard
                 icon={AlertCircle}
-                label="Failing Artifacts"
+                label="未通过制品"
                 value={totalCriticalIssues}
                 color={totalCriticalIssues > 0 ? "red" : "green"}
               />
             </div>
           </div>
 
-          {/* Grade Distribution */}
+          {/* 等级分布 */}
           <Card>
             <CardHeader>
               <CardTitle className="text-base">
-                Grade Distribution
+                等级分布
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -416,13 +416,13 @@ export default function HealthDashboardPage() {
           {/* Repository Health Table */}
           <div>
             <h2 className="text-lg font-semibold tracking-tight mb-4">
-              Repository Health Scores
+              仓库健康评分
             </h2>
             <DataTable
               columns={columns}
               data={dashboard.repositories ?? []}
               loading={false}
-              emptyMessage="No repositories have been evaluated yet. Health scores are computed after artifact scans complete."
+              emptyMessage="暂无已评估的仓库。健康评分在制品扫描完成后计算。"
               rowKey={(r) => r.repository_id}
             />
           </div>

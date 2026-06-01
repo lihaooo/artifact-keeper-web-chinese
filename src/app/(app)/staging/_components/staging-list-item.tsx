@@ -54,7 +54,7 @@ export function StagingListItem({
               <>
                 <span className="text-muted-foreground">·</span>
                 <span className="text-[11px] text-muted-foreground">
-                  {artifactCount} artifact{artifactCount !== 1 ? "s" : ""}
+                  {artifactCount} 个制品
                 </span>
               </>
             )}

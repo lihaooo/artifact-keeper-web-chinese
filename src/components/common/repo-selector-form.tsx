@@ -44,7 +44,7 @@ export function RepoSelectorForm({ value, onChange }: RepoSelectorFormProps) {
     onSuccess: (data) => {
       setPreviewResults(data.matched_repositories);
     },
-    onError: mutationErrorToast("Failed to preview repository selector"),
+    onError: mutationErrorToast("预览仓库选择器失败"),
   });
 
   const toggleFormat = useCallback(
@@ -104,9 +104,9 @@ export function RepoSelectorForm({ value, onChange }: RepoSelectorFormProps) {
     <div className="space-y-4">
       {/* Formats */}
       <div className="space-y-2">
-        <Label>Formats</Label>
+        <Label>格式</Label>
         <p className="text-xs text-muted-foreground">
-          Restrict access to repositories of specific types.
+          限制访问特定类型的仓库。
         </p>
         <div className="grid grid-cols-3 gap-2">
           {COMMON_FORMATS.map((fmt) => (
@@ -123,7 +123,7 @@ export function RepoSelectorForm({ value, onChange }: RepoSelectorFormProps) {
 
       {/* Name pattern */}
       <div className="space-y-2">
-        <Label htmlFor="repo-pattern">Name Pattern</Label>
+        <Label htmlFor="repo-pattern">名称模式</Label>
         <Input
           id="repo-pattern"
           value={value.match_pattern ?? ""}
@@ -131,16 +131,15 @@ export function RepoSelectorForm({ value, onChange }: RepoSelectorFormProps) {
           placeholder="libs-*"
         />
         <p className="text-xs text-muted-foreground">
-          Use * as a wildcard. For example, &quot;prod-*&quot; matches all repos
-          starting with &quot;prod-&quot;.
+          使用 * 作为通配符。例如，&quot;prod-*&quot; 匹配所有以 &quot;prod-&quot; 开头的仓库。
         </p>
       </div>
 
       {/* Labels */}
       <div className="space-y-2">
-        <Label>Labels</Label>
+        <Label>标签</Label>
         <p className="text-xs text-muted-foreground">
-          Match repositories that have all specified label key-value pairs.
+          匹配包含所有指定标签键值对的仓库。
         </p>
         {Object.entries(value.match_labels ?? {}).length > 0 && (
           <div className="flex flex-wrap gap-1.5">
@@ -162,13 +161,13 @@ export function RepoSelectorForm({ value, onChange }: RepoSelectorFormProps) {
           <Input
             value={labelKey}
             onChange={(e) => setLabelKey(e.target.value)}
-            placeholder="key (e.g., env)"
+            placeholder="键（例如，env）"
             className="flex-1"
           />
           <Input
             value={labelValue}
             onChange={(e) => setLabelValue(e.target.value)}
-            placeholder="value (e.g., production)"
+            placeholder="值（例如，production）"
             className="flex-1"
             onKeyDown={(e) => {
               if (e.key === "Enter") {
@@ -199,12 +198,12 @@ export function RepoSelectorForm({ value, onChange }: RepoSelectorFormProps) {
           onClick={() => previewMutation.mutate(value)}
         >
           <Search className="size-4" />
-          {previewMutation.isPending ? "Checking..." : "Preview Matched Repos"}
+          {previewMutation.isPending ? "检查中..." : "预览匹配的仓库"}
         </Button>
         {previewResults !== null && (
           <div className="rounded-md border p-3 text-sm">
             <p className="font-medium mb-1">
-              {previewResults.length} {previewResults.length === 1 ? "repository" : "repositories"} matched
+              {previewResults.length} {previewResults.length === 1 ? "个仓库" : "个仓库"}匹配
             </p>
             {previewResults.length > 0 && (
               <div className="max-h-32 overflow-y-auto space-y-0.5">

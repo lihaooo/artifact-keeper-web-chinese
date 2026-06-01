@@ -48,7 +48,7 @@ export function DockerTagList({
   onScan,
   scanPending = false,
   // M7: actionable default — tells users how to add a tag, not just that there isn't one.
-  emptyMessage = "No image tags found. Push an image (`docker push <registry>/<image>:<tag>`) to see it here, or switch to Flat view to inspect raw blobs.",
+  emptyMessage = "未找到镜像标签。推送镜像（`docker push <registry>/<image>:<tag>`）后在此查看，或切换到平铺视图查看原始 blob。",
 }: DockerTagListProps) {
   const [showLayers, setShowLayers] = useState(false);
 
@@ -67,7 +67,7 @@ export function DockerTagList({
         className="space-y-2"
         data-testid="docker-tag-list-loading"
       >
-        <span className="sr-only">Loading image tags…</span>
+        <span className="sr-only">加载镜像标签中…</span>
         {Array.from({ length: 4 }).map((_, i) => (
           <Skeleton key={i} className="h-12 w-full" />
         ))}
@@ -83,9 +83,7 @@ export function DockerTagList({
         </div>
         {hiddenCount > 0 && (
           <p className="text-xs text-muted-foreground">
-            {hiddenCount} blob{hiddenCount === 1 ? "" : "s"} / digest-only
-            manifest{hiddenCount === 1 ? "" : "s"} present but no tagged images
-            were detected. Switch to flat view to inspect them.
+            存在 {hiddenCount} 个 blob / 仅摘要清单，但未检测到标记镜像。切换到平铺视图以查看它们。
           </p>
         )}
       </div>
@@ -105,29 +103,29 @@ export function DockerTagList({
           so SR users hear "Image tags table" instead of "table with 6
           columns" with no name.
         */}
-        <table className="w-full text-sm" aria-label="Image tags">
+        <table className="w-full text-sm" aria-label="镜像标签">
           <caption className="sr-only">
-            Docker image tags in this repository
+            此仓库中的 Docker 镜像标签
           </caption>
           <thead className="bg-muted/40 text-left text-xs text-muted-foreground">
             <tr>
               <th scope="col" className="px-3 py-2 font-medium">
-                Tag
+                标签
               </th>
               <th scope="col" className="px-3 py-2 font-medium">
-                Digest
+                摘要
               </th>
               <th scope="col" className="px-3 py-2 font-medium text-right">
-                Size
+                大小
               </th>
               <th scope="col" className="px-3 py-2 font-medium">
-                Last pushed
+                最后推送
               </th>
               <th scope="col" className="px-3 py-2 font-medium">
-                Status
+                状态
               </th>
               <th scope="col" className="px-3 py-2">
-                <span className="sr-only">Actions</span>
+                <span className="sr-only">操作</span>
               </th>
             </tr>
           </thead>
@@ -149,7 +147,7 @@ export function DockerTagList({
                   <button
                     type="button"
                     className="flex items-center gap-2 text-left text-primary hover:underline"
-                    aria-label={`View ${group.image}:${group.tag} manifest`}
+                    aria-label={`查看 ${group.image}:${group.tag} 清单`}
                     onClick={() => onTagClick?.(group.manifest)}
                   >
                     <Container className="size-4 text-muted-foreground" aria-hidden="true" />
@@ -196,20 +194,19 @@ export function DockerTagList({
                       <button
                         type="button"
                         className="inline-flex items-center gap-1 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                        aria-label={`${formatBytes(group.size_bytes)} (manifest size only — backend layer aggregation pending)`}
+                        aria-label={`${formatBytes(group.size_bytes)}（仅清单大小 — 后端层级聚合待支持）`}
                       >
                         {formatBytes(group.size_bytes)}
                         <Info className="size-3 opacity-60" aria-hidden="true" />
                       </button>
                     </TooltipTrigger>
                     <TooltipContent>
-                      Manifest size only. Total layer size will be aggregated
-                      once backend support lands.
+                      仅清单大小。待后端支持后将聚合所有层大小。
                     </TooltipContent>
                   </Tooltip>
                 </td>
                 <td className="px-3 py-2 text-xs text-muted-foreground">
-                  {new Date(group.manifest.created_at).toLocaleDateString()}
+                  {new Date(group.manifest.created_at).toLocaleDateString("zh-CN")}
                 </td>
                 <td className="px-3 py-2">
                   {isActivelyQuarantined(group.manifest) ? (
@@ -233,12 +230,12 @@ export function DockerTagList({
                             size="icon-xs"
                             onClick={() => onScan(group.manifest)}
                             disabled={scanPending}
-                            aria-label={`Scan ${group.image}:${group.tag}`}
+                            aria-label={`扫描 ${group.image}:${group.tag}`}
                           >
                             <Shield className="size-3.5" />
                           </Button>
                         </TooltipTrigger>
-                        <TooltipContent>Scan</TooltipContent>
+                        <TooltipContent>扫描</TooltipContent>
                       </Tooltip>
                     )}
                   </div>
@@ -253,12 +250,10 @@ export function DockerTagList({
         <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
           <span className="inline-flex items-center gap-1">
             <LayersIcon className="size-3.5" aria-hidden="true" />
-            {hiddenCount} layer{hiddenCount === 1 ? "" : "s"} /
+            {hiddenCount} 个层 /
             {grouped.manifestsByDigest.length > 0 && (
-              <> {grouped.manifestsByDigest.length} digest-only manifest{
-                grouped.manifestsByDigest.length === 1 ? "" : "s"
-              }</>
-            )} hidden
+              <> {grouped.manifestsByDigest.length} 个仅摘要清单</>
+            )} 已隐藏
           </span>
           {/*
             N3: aria-controls links the disclosure button to the panel
@@ -273,7 +268,7 @@ export function DockerTagList({
             aria-controls={LAYER_PANEL_ID}
             data-testid="toggle-layers"
           >
-            {showLayers ? "Hide layers" : "Show layers"}
+            {showLayers ? "隐藏层" : "显示层"}
           </Button>
         </div>
       )}
@@ -299,7 +294,7 @@ export function DockerTagList({
                 <code className="truncate font-mono text-muted-foreground" aria-hidden="true">
                   {a.path}
                 </code>
-                <span className="sr-only">Full path: {a.path}</span>
+                <span className="sr-only">完整路径: {a.path}</span>
                 <span className="shrink-0 text-muted-foreground">
                   {formatBytes(a.size_bytes)}
                 </span>

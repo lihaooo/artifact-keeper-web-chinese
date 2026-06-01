@@ -157,7 +157,7 @@ function PackageListItem({
       </div>
       <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
         {pkg.version && <span>v{pkg.version}</span>}
-        <span>{formatNumber(pkg.download_count)} downloads</span>
+        <span>{formatNumber(pkg.download_count)} 次下载</span>
       </div>
     </div>
   );
@@ -204,7 +204,7 @@ function PackageDetailPanel({
             </div>
             {pkg.version && (
               <p className="text-sm text-muted-foreground mt-0.5">
-                Latest: v{pkg.version}
+                最新: v{pkg.version}
               </p>
             )}
             {pkg.description && (
@@ -223,7 +223,7 @@ function PackageDetailPanel({
                   className="gap-1.5"
                 >
                   <ExternalLink className="size-3.5" />
-                  Homepage
+                  主页
                 </a>
               </Button>
             ) : homepageUrl ? (
@@ -232,7 +232,7 @@ function PackageDetailPanel({
             <Button variant="outline" size="sm" asChild>
               <Link href={`/packages/${pkg.id}`} className="gap-1.5">
                 <ExternalLink className="size-3.5" />
-                View Details
+                查看详情
               </Link>
             </Button>
           </div>
@@ -244,7 +244,7 @@ function PackageDetailPanel({
         <Tabs defaultValue="overview" className="h-full flex flex-col">
           <div className="px-6 pt-4">
             <TabsList>
-              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="overview">概览</TabsTrigger>
               <TabsTrigger value="versions">
                 Versions{versions.length > 0 ? ` (${versions.length})` : ""}
               </TabsTrigger>
@@ -256,7 +256,7 @@ function PackageDetailPanel({
             <div className="space-y-6">
               {/* Install command */}
               <div>
-                <h3 className="text-sm font-medium mb-2">Install</h3>
+                <h3 className="text-sm font-medium mb-2">安装</h3>
                 <div className="relative">
                   <pre className="rounded-lg bg-muted p-3 text-xs font-mono overflow-x-auto">
                     {installCmd}
@@ -278,30 +278,30 @@ function PackageDetailPanel({
 
               {/* Metadata grid */}
               <div>
-                <h3 className="text-sm font-medium mb-2">Details</h3>
+                <h3 className="text-sm font-medium mb-2">详情</h3>
                 <div className="grid grid-cols-2 gap-3">
-                  <MetadataItem label="Format" value={pkg.format} />
-                  <MetadataItem label="Repository" value={pkg.repository_key} />
+                  <MetadataItem label="格式" value={pkg.format} />
+                  <MetadataItem label="仓库" value={pkg.repository_key} />
                   <MetadataItem
-                    label="Size"
+                    label="大小"
                     value={formatBytes(pkg.size_bytes)}
                   />
                   <MetadataItem
-                    label="Downloads"
+                    label="下载次数"
                     value={formatNumber(pkg.download_count)}
                   />
                   {license && (
-                    <MetadataItem label="License" value={license} />
+                    <MetadataItem label="许可证" value={license} />
                   )}
                   {author && (
-                    <MetadataItem label="Author" value={author} />
+                    <MetadataItem label="作者" value={author} />
                   )}
                   <MetadataItem
-                    label="Created"
+                    label="创建时间"
                     value={formatDate(pkg.created_at)}
                   />
                   <MetadataItem
-                    label="Updated"
+                    label="更新时间"
                     value={formatDate(pkg.updated_at)}
                   />
                 </div>
@@ -322,7 +322,7 @@ function PackageDetailPanel({
               <div className="flex flex-col items-center justify-center py-12 text-center">
                 <Tag className="size-8 text-muted-foreground/40 mb-2" />
                 <p className="text-sm text-muted-foreground">
-                  No version information available
+                  暂无版本信息
                 </p>
               </div>
             ) : (
@@ -478,7 +478,7 @@ function PackagesContent() {
   const sortedPackages = [...packages].sort((a, b) => {
     switch (sortBy) {
       case "name":
-        return a.name.localeCompare(b.name);
+        return a.name.localeCompare(b.name, "zh-CN");
       case "downloads":
         return b.download_count - a.download_count;
       case "updated":
@@ -503,10 +503,10 @@ function PackagesContent() {
         {/* Header */}
         <div className="p-4 border-b space-y-3">
           <div className="flex items-center justify-between">
-            <h1 className="text-lg font-semibold">Packages</h1>
+            <h1 className="text-lg font-semibold">包</h1>
             {!packagesLoading && (
               <span className="text-xs text-muted-foreground">
-                {totalPackages} total
+                {totalPackages} 总计
               </span>
             )}
           </div>
@@ -515,7 +515,7 @@ function PackagesContent() {
           <div className="relative">
             <SearchIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
             <Input
-              placeholder="Search packages..."
+              placeholder="搜索包..."
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
@@ -535,10 +535,10 @@ function PackagesContent() {
               }}
             >
               <SelectTrigger className="w-[120px]" size="sm">
-                <SelectValue placeholder="Format" />
+                <SelectValue placeholder="格式" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="__all__">All formats</SelectItem>
+                <SelectItem value="__all__">所有格式</SelectItem>
                 {FORMAT_OPTIONS.map((f) => (
                   <SelectItem key={f} value={f}>
                     {f}
@@ -555,10 +555,10 @@ function PackagesContent() {
               }}
             >
               <SelectTrigger className="w-[130px]" size="sm">
-                <SelectValue placeholder="Repository" />
+                <SelectValue placeholder="仓库" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="__all__">All repos</SelectItem>
+                <SelectItem value="__all__">所有仓库</SelectItem>
                 {repositories.map((r) => (
                   <SelectItem key={r.id} value={r.key}>
                     {r.key}
@@ -575,9 +575,9 @@ function PackagesContent() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="downloads">Downloads</SelectItem>
-                <SelectItem value="name">Name</SelectItem>
-                <SelectItem value="updated">Updated</SelectItem>
+                <SelectItem value="downloads">下载次数</SelectItem>
+                <SelectItem value="name">名称</SelectItem>
+                <SelectItem value="updated">更新时间</SelectItem>
               </SelectContent>
             </Select>
 
@@ -615,7 +615,7 @@ function PackagesContent() {
               <div className="flex flex-col items-center justify-center py-16 text-center">
                 <PackageIcon className="size-10 text-muted-foreground/40 mb-3" />
                 <p className="text-sm text-muted-foreground">
-                  No packages found
+                  未找到包
                 </p>
               </div>
             )}
@@ -668,7 +668,7 @@ function PackagesContent() {
           <div className="flex flex-col items-center justify-center w-full text-center">
             <PackageIcon className="size-12 text-muted-foreground/30 mb-3" />
             <p className="text-sm text-muted-foreground">
-              Select a package to view details
+              选择一个包以查看详情
             </p>
           </div>
         ) : detailPkg ? (

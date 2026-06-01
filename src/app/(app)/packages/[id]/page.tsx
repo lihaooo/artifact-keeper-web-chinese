@@ -184,7 +184,7 @@ export default function PackageDetailPage() {
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <Package className="size-12 text-muted-foreground/30 mb-3" />
           <p className="text-sm text-muted-foreground">
-            Package not found
+            未找到包
           </p>
         </div>
       </div>
@@ -211,13 +211,13 @@ export default function PackageDetailPage() {
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link href="/">Home</Link>
+              <Link href="/">首页</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link href="/packages">Packages</Link>
+              <Link href="/packages">包</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
@@ -247,7 +247,7 @@ export default function PackageDetailPage() {
           </div>
           {pkg.version && (
             <p className="text-sm text-muted-foreground mt-1">
-              Latest: v{pkg.version}
+              最新: v{pkg.version}
             </p>
           )}
           {pkg.description && (
@@ -276,44 +276,44 @@ export default function PackageDetailPage() {
       {/* Tabs */}
       <Tabs defaultValue="overview">
         <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="overview">概览</TabsTrigger>
           <TabsTrigger value="versions">
             Versions
             {sortedVersions.length > 0 ? ` (${sortedVersions.length})` : ""}
           </TabsTrigger>
-          <TabsTrigger value="files">Files</TabsTrigger>
+          <TabsTrigger value="files">文件</TabsTrigger>
         </TabsList>
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-6 pt-4">
           {/* Install command */}
           <div>
-            <h3 className="text-sm font-medium mb-2">Install</h3>
+            <h3 className="text-sm font-medium mb-2">安装</h3>
             <InstallCommandBlock command={installCmd} />
           </div>
 
           {/* Metadata grid */}
           <div>
-            <h3 className="text-sm font-medium mb-2">Details</h3>
+            <h3 className="text-sm font-medium mb-2">详情</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <MetadataItem label="Format" value={pkg.format} />
-              <MetadataItem label="Repository" value={pkg.repository_key} />
-              {license && <MetadataItem label="License" value={license} />}
-              {author && <MetadataItem label="Author" value={author} />}
+              <MetadataItem label="格式" value={pkg.format} />
+              <MetadataItem label="仓库" value={pkg.repository_key} />
+              {license && <MetadataItem label="许可证" value={license} />}
+              {author && <MetadataItem label="作者" value={author} />}
               <MetadataItem
-                label="Size"
+                label="大小"
                 value={formatBytes(pkg.size_bytes)}
               />
               <MetadataItem
-                label="Downloads"
+                label="下载次数"
                 value={formatNumber(pkg.download_count)}
               />
               <MetadataItem
-                label="Created"
+                label="创建时间"
                 value={formatDate(pkg.created_at)}
               />
               <MetadataItem
-                label="Updated"
+                label="更新时间"
                 value={formatDate(pkg.updated_at)}
               />
             </div>
@@ -321,7 +321,7 @@ export default function PackageDetailPage() {
 
           {homepageUrl && (
             <div>
-              <h3 className="text-sm font-medium mb-2">Links</h3>
+              <h3 className="text-sm font-medium mb-2">链接</h3>
               {isSafeUrl(homepageUrl) ? (
                 <a
                   href={homepageUrl}
@@ -352,7 +352,7 @@ export default function PackageDetailPage() {
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <Tag className="size-8 text-muted-foreground/40 mb-2" />
               <p className="text-sm text-muted-foreground">
-                No version information available
+                暂无版本信息
               </p>
             </div>
           ) : (
@@ -363,7 +363,7 @@ export default function PackageDetailPage() {
                   <TableHead className="text-right">Size</TableHead>
                   <TableHead className="text-right">Downloads</TableHead>
                   <TableHead>Published</TableHead>
-                  <TableHead>Install Command</TableHead>
+                  <TableHead>安装命令</TableHead>
                   <TableHead className="w-10" />
                 </TableRow>
               </TableHeader>

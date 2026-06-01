@@ -161,12 +161,12 @@ export default function PermissionsPage() {
   const createMutation = useMutation({
     mutationFn: (data: CreatePermissionRequest) => permissionsApi.create(data),
     onSuccess: () => {
-      toast.success("Permission created successfully");
+      toast.success("权限创建成功");
       queryClient.invalidateQueries({ queryKey: ["admin-permissions"] });
       setCreateOpen(false);
       setForm(EMPTY_FORM);
     },
-    onError: mutationErrorToast("Failed to create permission"),
+    onError: mutationErrorToast("创建权限失败"),
   });
 
   const updateMutation = useMutation({
@@ -178,23 +178,23 @@ export default function PermissionsPage() {
       data: CreatePermissionRequest;
     }) => permissionsApi.update(id, data),
     onSuccess: () => {
-      toast.success("Permission updated successfully");
+      toast.success("权限更新成功");
       queryClient.invalidateQueries({ queryKey: ["admin-permissions"] });
       setEditOpen(false);
       setSelectedPermission(null);
     },
-    onError: mutationErrorToast("Failed to update permission"),
+    onError: mutationErrorToast("更新权限失败"),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => permissionsApi.delete(id),
     onSuccess: () => {
-      toast.success("Permission deleted successfully");
+      toast.success("权限删除成功");
       queryClient.invalidateQueries({ queryKey: ["admin-permissions"] });
       setDeleteOpen(false);
       setSelectedPermission(null);
     },
-    onError: mutationErrorToast("Failed to delete permission"),
+    onError: mutationErrorToast("删除权限失败"),
   });
 
   // -- handlers --
@@ -231,7 +231,7 @@ export default function PermissionsPage() {
   const columns: DataTableColumn<Permission>[] = [
     {
       id: "principal",
-      header: "Principal",
+      header: "授权主体",
       accessor: (p) => p.principal_name ?? p.principal_id,
       sortable: true,
       cell: (p) => (
@@ -250,7 +250,7 @@ export default function PermissionsPage() {
     },
     {
       id: "target",
-      header: "Target",
+      header: "目标",
       accessor: (p) => p.target_name ?? p.target_id,
       sortable: true,
       cell: (p) => (
@@ -266,7 +266,7 @@ export default function PermissionsPage() {
     },
     {
       id: "actions_list",
-      header: "Actions",
+      header: "操作",
       cell: (p) => (
         <div className="flex items-center gap-1 flex-wrap">
           {p.actions.map((a) => (
@@ -282,7 +282,7 @@ export default function PermissionsPage() {
     },
     {
       id: "created_at",
-      header: "Created",
+      header: "创建时间",
       accessor: (p) => p.created_at,
       sortable: true,
       cell: (p) => (
@@ -309,7 +309,7 @@ export default function PermissionsPage() {
                 <Pencil className="size-3.5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Edit</TooltipContent>
+            <TooltipContent>编辑</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -322,7 +322,7 @@ export default function PermissionsPage() {
                 <Trash2 className="size-3.5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Delete</TooltipContent>
+            <TooltipContent>删除</TooltipContent>
           </Tooltip>
         </div>
       ),
@@ -334,7 +334,7 @@ export default function PermissionsPage() {
     <>
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label>Principal Type</Label>
+          <Label>主体类型</Label>
           <Select
             value={form.principal_type}
             onValueChange={(v) =>
@@ -350,13 +350,13 @@ export default function PermissionsPage() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="user">User</SelectItem>
-              <SelectItem value="group">Group</SelectItem>
+              <SelectItem value="user">用户</SelectItem>
+              <SelectItem value="group">用户组</SelectItem>
             </SelectContent>
           </Select>
         </div>
         <div className="space-y-2">
-          <Label>Principal</Label>
+          <Label>主体</Label>
           <Select
             value={form.principal_id}
             onValueChange={(v) =>
@@ -365,7 +365,7 @@ export default function PermissionsPage() {
             disabled={editOpen}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select..." />
+              <SelectValue placeholder="选择..." />
             </SelectTrigger>
             <SelectContent>
               {principalOptions.map((o) => (
@@ -380,7 +380,7 @@ export default function PermissionsPage() {
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label>Target Type</Label>
+          <Label>目标类型</Label>
           <Select
             value={form.target_type}
             onValueChange={(v) =>
@@ -396,17 +396,17 @@ export default function PermissionsPage() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="repository">Repository</SelectItem>
-              <SelectItem value="group">Group</SelectItem>
-              <SelectItem value="artifact">Artifact</SelectItem>
+              <SelectItem value="repository">仓库</SelectItem>
+              <SelectItem value="group">用户组</SelectItem>
+              <SelectItem value="artifact">制品</SelectItem>
             </SelectContent>
           </Select>
         </div>
         <div className="space-y-2">
-          <Label>{form.target_type === "repository" ? "Repository" : form.target_type === "group" ? "Target Group" : "Artifact ID"}</Label>
+          <Label>{form.target_type === "repository" ? "仓库" : form.target_type === "group" ? "目标用户组" : "制品 ID"}</Label>
           {form.target_type === "artifact" ? (
             <Input
-              placeholder="Artifact UUID"
+              placeholder="制品 UUID"
               value={form.target_id}
               onChange={(e) =>
                 setForm((f) => ({ ...f, target_id: e.target.value.trim() }))
@@ -422,7 +422,7 @@ export default function PermissionsPage() {
               disabled={editOpen}
             >
               <SelectTrigger>
-                <SelectValue placeholder={`Select ${form.target_type}...`} />
+                <SelectValue placeholder={`选择${form.target_type === "repository" ? "仓库" : "用户组"}...`} />
               </SelectTrigger>
               <SelectContent>
                 {targetOptions.map((o) => (
@@ -437,7 +437,7 @@ export default function PermissionsPage() {
       </div>
 
       <div className="space-y-2">
-        <Label>Actions</Label>
+        <Label>权限操作</Label>
         <div className="flex items-center gap-4">
           {ALL_ACTIONS.map((action) => (
             <div key={action} className="flex items-center gap-2">
@@ -463,9 +463,9 @@ export default function PermissionsPage() {
   if (!currentUser?.is_admin) {
     return (
       <div className="space-y-6">
-        <PageHeader title="Permissions" />
+        <PageHeader title="权限" />
         <p className="text-sm text-muted-foreground">
-          You must be an administrator to view this page.
+          您必须是管理员才能查看此页面。
         </p>
       </div>
     );
@@ -474,8 +474,8 @@ export default function PermissionsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Permissions"
-        description="Control access to repositories and resources."
+        title="权限"
+        description="控制对仓库和资源的访问权限。"
         actions={
           <Button
             onClick={() => {
@@ -484,7 +484,7 @@ export default function PermissionsPage() {
             }}
           >
             <Plus className="size-4" />
-            Create Permission
+            创建权限
           </Button>
         }
       />
@@ -492,8 +492,8 @@ export default function PermissionsPage() {
       {!permissionsLoading && permissions.length === 0 ? (
         <EmptyState
           icon={Shield}
-          title="No permissions configured"
-          description="Create a permission rule to control access to repositories and resources."
+          title="暂无权限配置"
+          description="创建权限规则以控制对仓库和资源的访问。"
           action={
             <Button
               onClick={() => {
@@ -502,7 +502,7 @@ export default function PermissionsPage() {
               }}
             >
               <Plus className="size-4" />
-              Create Permission
+              创建权限
             </Button>
           }
         />
@@ -511,12 +511,12 @@ export default function PermissionsPage() {
           columns={columns}
           data={permissions}
           loading={permissionsLoading}
-          emptyMessage="No permissions found."
+          emptyMessage="未找到权限。"
           rowKey={(p) => p.id}
         />
       )}
 
-      {/* Create Permission Dialog */}
+      {/* 创建权限对话框 */}
       <Dialog
         open={createOpen}
         onOpenChange={(o) => {
@@ -526,9 +526,9 @@ export default function PermissionsPage() {
       >
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>Create Permission</DialogTitle>
+            <DialogTitle>创建权限</DialogTitle>
             <DialogDescription>
-              Grant a user or group access to a target resource.
+              授予用户或用户组对目标资源的访问权限。
             </DialogDescription>
           </DialogHeader>
           <form
@@ -536,7 +536,7 @@ export default function PermissionsPage() {
             onSubmit={(e) => {
               e.preventDefault();
               if (!form.principal_id || !form.target_id || form.actions.length === 0) {
-                toast.error("Please fill in all required fields");
+                toast.error("请填写所有必填字段");
                 return;
               }
               createMutation.mutate({
@@ -558,17 +558,17 @@ export default function PermissionsPage() {
                   setForm(EMPTY_FORM);
                 }}
               >
-                Cancel
+                取消
               </Button>
               <Button type="submit" disabled={createMutation.isPending}>
-                {createMutation.isPending ? "Creating..." : "Create Permission"}
+                {createMutation.isPending ? "创建中..." : "创建权限"}
               </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
 
-      {/* Edit Permission Dialog */}
+      {/* 编辑权限对话框 */}
       <Dialog
         open={editOpen}
         onOpenChange={(o) => {
@@ -581,9 +581,9 @@ export default function PermissionsPage() {
       >
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>Edit Permission</DialogTitle>
+            <DialogTitle>编辑权限</DialogTitle>
             <DialogDescription>
-              Update the granted actions for this permission.
+              更新此权限的已授权操作。
             </DialogDescription>
           </DialogHeader>
           <form
@@ -615,26 +615,26 @@ export default function PermissionsPage() {
                   setForm(EMPTY_FORM);
                 }}
               >
-                Cancel
+                取消
               </Button>
               <Button type="submit" disabled={updateMutation.isPending}>
-                {updateMutation.isPending ? "Saving..." : "Save Changes"}
+                {updateMutation.isPending ? "保存中..." : "保存更改"}
               </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
 
-      {/* Delete Permission Confirm */}
+      {/* 删除权限确认 */}
       <ConfirmDialog
         open={deleteOpen}
         onOpenChange={(o) => {
           setDeleteOpen(o);
           if (!o) setSelectedPermission(null);
         }}
-        title="Delete Permission"
-        description="Deleting this permission will revoke the associated access. Users or groups will lose the granted actions on the target resource. This action cannot be undone."
-        confirmText="Delete Permission"
+        title="删除权限"
+        description="删除此权限将撤销关联的访问权限。用户或用户组将失去对目标资源的已授权操作。此操作无法撤销。"
+        confirmText="删除权限"
         danger
         loading={deleteMutation.isPending}
         onConfirm={() => {

@@ -50,10 +50,10 @@ import { TokenCreatedAlert } from "@/components/common/token-created-alert";
 import { TokenCreateForm } from "@/components/common/token-create-form";
 
 function DateCell({ value }: { value?: string | null }) {
-  if (!value) return <span className="text-sm text-muted-foreground">Never</span>;
+  if (!value) return <span className="text-sm text-muted-foreground">从未</span>;
   return (
     <span className="text-sm text-muted-foreground">
-      {new Date(value).toLocaleDateString()}
+      {new Date(value).toLocaleDateString("zh-CN")}
     </span>
   );
 }
@@ -82,30 +82,30 @@ export function renderRepoAccess(token: AccessToken) {
   if (token.repo_selector) {
     const parts: string[] = [];
     if (token.repo_selector.match_formats?.length) {
-      parts.push(`${token.repo_selector.match_formats.length} format(s)`);
+      parts.push(`${token.repo_selector.match_formats.length} 种格式`);
     }
     if (token.repo_selector.match_pattern) {
       parts.push(token.repo_selector.match_pattern);
     }
     const labelCount = Object.keys(token.repo_selector.match_labels ?? {}).length;
     if (labelCount > 0) {
-      parts.push(`${labelCount} label(s)`);
+      parts.push(`${labelCount} 个标签`);
     }
     return (
       <Badge variant="secondary" className="text-xs">
-        {parts.join(", ") || "Selector"}
+        {parts.join("、") || "选择器"}
       </Badge>
     );
   }
   if (token.repository_ids && token.repository_ids.length > 0) {
     return (
       <Badge variant="secondary" className="text-xs">
-        {token.repository_ids.length} repo(s)
+        {token.repository_ids.length} 个仓库
       </Badge>
     );
   }
   return (
-    <span className="text-xs text-muted-foreground">All repos</span>
+    <span className="text-xs text-muted-foreground">所有仓库</span>
   );
 }
 
@@ -155,9 +155,9 @@ export default function AccessTokensPage() {
       setKeyName("");
       setKeyScopes(["read"]);
       setKeyExpiry("90");
-      toast.success("API key created");
+      toast.success("API 密钥已创建");
     },
-    onError: mutationErrorToast("Failed to create API key"),
+    onError: mutationErrorToast("创建 API 密钥失败"),
   });
 
   const revokeKeyMutation = useMutation({
@@ -165,9 +165,9 @@ export default function AccessTokensPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile", "api-keys"] });
       setRevokeKeyId(null);
-      toast.success("API key revoked");
+      toast.success("API 密钥已撤销");
     },
-    onError: mutationErrorToast("Failed to revoke API key"),
+    onError: mutationErrorToast("撤销 API 密钥失败"),
   });
 
   const createTokenMutation = useMutation({
@@ -182,9 +182,9 @@ export default function AccessTokensPage() {
       setTokenScopes(["read"]);
       setTokenExpiry("90");
       setTokenRepoSelector({});
-      toast.success("Access token created");
+      toast.success("访问令牌已创建");
     },
-    onError: mutationErrorToast("Failed to create access token"),
+    onError: mutationErrorToast("创建访问令牌失败"),
   });
 
   const revokeTokenMutation = useMutation({
@@ -194,9 +194,9 @@ export default function AccessTokensPage() {
         queryKey: ["profile", "access-tokens"],
       });
       setRevokeTokenId(null);
-      toast.success("Access token revoked");
+      toast.success("访问令牌已撤销");
     },
-    onError: mutationErrorToast("Failed to revoke access token"),
+    onError: mutationErrorToast("撤销访问令牌失败"),
   });
 
   // Column definitions
@@ -213,11 +213,11 @@ export default function AccessTokensPage() {
         </div>
       ),
     },
-    { id: "prefix", header: "Key Prefix", cell: (k) => <TokenPrefix prefix={k.key_prefix} /> },
-    { id: "scopes", header: "Scopes", cell: (k) => <ScopeBadges scopes={k.scopes} /> },
-    { id: "expires", header: "Expires", accessor: (k) => k.expires_at ?? "", cell: (k) => <DateCell value={k.expires_at} /> },
-    { id: "last_used", header: "Last Used", accessor: (k) => k.last_used_at ?? "", cell: (k) => <DateCell value={k.last_used_at} /> },
-    { id: "created", header: "Created", accessor: (k) => k.created_at, sortable: true, cell: (k) => <DateCell value={k.created_at} /> },
+    { id: "prefix", header: "密钥前缀", cell: (k) => <TokenPrefix prefix={k.key_prefix} /> },
+    { id: "scopes", header: "权限范围", cell: (k) => <ScopeBadges scopes={k.scopes} /> },
+    { id: "expires", header: "过期时间", accessor: (k) => k.expires_at ?? "", cell: (k) => <DateCell value={k.expires_at} /> },
+    { id: "last_used", header: "最后使用", accessor: (k) => k.last_used_at ?? "", cell: (k) => <DateCell value={k.last_used_at} /> },
+    { id: "created", header: "创建时间", accessor: (k) => k.created_at, sortable: true, cell: (k) => <DateCell value={k.created_at} /> },
     {
       id: "actions",
       header: "",
@@ -234,7 +234,7 @@ export default function AccessTokensPage() {
                 <Trash2 className="size-3.5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Revoke</TooltipContent>
+            <TooltipContent>撤销</TooltipContent>
           </Tooltip>
         </div>
       ),
@@ -244,7 +244,7 @@ export default function AccessTokensPage() {
   const tokenColumns: DataTableColumn<AccessToken>[] = [
     {
       id: "name",
-      header: "Name",
+      header: "名称",
       accessor: (t) => t.name,
       sortable: true,
       cell: (t) => (
@@ -254,12 +254,12 @@ export default function AccessTokensPage() {
         </div>
       ),
     },
-    { id: "prefix", header: "Token Prefix", cell: (t) => <TokenPrefix prefix={t.token_prefix} /> },
-    { id: "scopes", header: "Scopes", cell: (t) => <ScopeBadges scopes={t.scopes} /> },
-    { id: "repo_access", header: "Repo Access", cell: renderRepoAccess },
-    { id: "expires", header: "Expires", accessor: (t) => t.expires_at ?? "", cell: (t) => <DateCell value={t.expires_at} /> },
-    { id: "last_used", header: "Last Used", accessor: (t) => t.last_used_at ?? "", cell: (t) => <DateCell value={t.last_used_at} /> },
-    { id: "created", header: "Created", accessor: (t) => t.created_at, sortable: true, cell: (t) => <DateCell value={t.created_at} /> },
+    { id: "prefix", header: "令牌前缀", cell: (t) => <TokenPrefix prefix={t.token_prefix} /> },
+    { id: "scopes", header: "权限范围", cell: (t) => <ScopeBadges scopes={t.scopes} /> },
+    { id: "repo_access", header: "仓库访问", cell: renderRepoAccess },
+    { id: "expires", header: "过期时间", accessor: (t) => t.expires_at ?? "", cell: (t) => <DateCell value={t.expires_at} /> },
+    { id: "last_used", header: "最后使用", accessor: (t) => t.last_used_at ?? "", cell: (t) => <DateCell value={t.last_used_at} /> },
+    { id: "created", header: "创建时间", accessor: (t) => t.created_at, sortable: true, cell: (t) => <DateCell value={t.created_at} /> },
     {
       id: "actions",
       header: "",
@@ -276,7 +276,7 @@ export default function AccessTokensPage() {
                 <Trash2 className="size-3.5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Revoke</TooltipContent>
+            <TooltipContent>撤销</TooltipContent>
           </Tooltip>
         </div>
       ),
@@ -286,19 +286,19 @@ export default function AccessTokensPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Access Tokens"
-        description="Manage API keys and personal access tokens for programmatic access to the registry."
+        title="访问令牌"
+        description="管理用于通过编程方式访问仓库的 API 密钥和个人访问令牌。"
       />
 
       <Tabs defaultValue="api-keys">
         <TabsList>
           <TabsTrigger value="api-keys">
             <Key className="size-4" />
-            API Keys
+            API 密钥
           </TabsTrigger>
           <TabsTrigger value="access-tokens">
             <Shield className="size-4" />
-            Access Tokens
+            访问令牌
           </TabsTrigger>
         </TabsList>
 
@@ -306,22 +306,22 @@ export default function AccessTokensPage() {
         <TabsContent value="api-keys" className="mt-6 space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-semibold">API Keys</h2>
+              <h2 className="text-lg font-semibold">API 密钥</h2>
               <p className="text-sm text-muted-foreground">
-                Use API keys for programmatic access to the registry API.
+                使用 API 密钥通过编程方式访问仓库 API。
               </p>
             </div>
             <Button onClick={() => setCreateKeyOpen(true)}>
               <Plus className="size-4" />
-              Create API Key
+              创建 API 密钥
             </Button>
           </div>
 
           {apiKeys.length === 0 && !keysLoading ? (
             <EmptyState
               icon={Key}
-              title="No API keys"
-              description="Create an API key for programmatic access to the registry."
+              title="暂无 API 密钥"
+              description="创建一个 API 密钥用于通过编程方式访问仓库。"
             />
           ) : (
             <DataTable
@@ -329,7 +329,7 @@ export default function AccessTokensPage() {
               data={apiKeys}
               loading={keysLoading}
               rowKey={(k) => k.id}
-              emptyMessage="No API keys found."
+              emptyMessage="未找到 API 密钥。"
             />
           )}
         </TabsContent>
@@ -338,22 +338,22 @@ export default function AccessTokensPage() {
         <TabsContent value="access-tokens" className="mt-6 space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-semibold">Access Tokens</h2>
+              <h2 className="text-lg font-semibold">访问令牌</h2>
               <p className="text-sm text-muted-foreground">
-                Personal access tokens for CLI and CI/CD authentication. Tokens can be scoped to specific repositories.
+                用于 CLI 和 CI/CD 身份验证的个人访问令牌。令牌可以限定到特定仓库。
               </p>
             </div>
             <Button onClick={() => setCreateTokenOpen(true)}>
               <Plus className="size-4" />
-              Create Token
+              创建令牌
             </Button>
           </div>
 
           {accessTokens.length === 0 && !tokensLoading ? (
             <EmptyState
               icon={Shield}
-              title="No access tokens"
-              description="Create a personal access token for CLI or CI/CD authentication."
+              title="暂无访问令牌"
+              description="创建一个个人访问令牌用于 CLI 或 CI/CD 身份验证。"
             />
           ) : (
             <DataTable
@@ -361,7 +361,7 @@ export default function AccessTokensPage() {
               data={accessTokens}
               loading={tokensLoading}
               rowKey={(t) => t.id}
-              emptyMessage="No access tokens found."
+              emptyMessage="未找到访问令牌。"
             />
           )}
         </TabsContent>
@@ -383,8 +383,8 @@ export default function AccessTokensPage() {
         <DialogContent className="sm:max-w-md">
           {newlyCreatedKey ? (
             <TokenCreatedAlert
-              title="API Key Created"
-              description="Copy your API key now. You will not be able to see it again."
+              title="API 密钥已创建"
+              description="请立即复制您的 API 密钥。您将无法再次查看它。"
               token={newlyCreatedKey}
               onDone={() => {
                 setCreateKeyOpen(false);
@@ -393,11 +393,11 @@ export default function AccessTokensPage() {
             />
           ) : (
             <TokenCreateForm
-              title="Create API Key"
-              description="Generate a new API key for programmatic access."
+              title="创建 API 密钥"
+              description="生成新的 API 密钥用于通过编程方式访问。"
               name={keyName}
               onNameChange={setKeyName}
-              namePlaceholder="e.g., CI/CD Pipeline"
+              namePlaceholder="例如：CI/CD 流水线"
               expiry={keyExpiry}
               onExpiryChange={setKeyExpiry}
               scopes={keyScopes}
@@ -413,7 +413,7 @@ export default function AccessTokensPage() {
                 })
               }
               onCancel={() => setCreateKeyOpen(false)}
-              submitLabel="Create Key"
+              submitLabel="创建密钥"
             />
           )}
         </DialogContent>
@@ -436,8 +436,8 @@ export default function AccessTokensPage() {
         <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
           {newlyCreatedToken ? (
             <TokenCreatedAlert
-              title="Access Token Created"
-              description="Copy your access token now. You will not be able to see it again."
+              title="访问令牌已创建"
+              description="请立即复制您的访问令牌。您将无法再次查看它。"
               token={newlyCreatedToken}
               onDone={() => {
                 setCreateTokenOpen(false);
@@ -446,11 +446,11 @@ export default function AccessTokensPage() {
             />
           ) : (
             <TokenCreateForm
-              title="Create Access Token"
-              description="Generate a personal access token for CLI or CI/CD authentication."
+              title="创建访问令牌"
+              description="生成用于 CLI 或 CI/CD 身份验证的个人访问令牌。"
               name={tokenName}
               onNameChange={setTokenName}
-              namePlaceholder="e.g., Local Development"
+              namePlaceholder="例如：本地开发"
               expiry={tokenExpiry}
               onExpiryChange={setTokenExpiry}
               scopes={tokenScopes}
@@ -471,7 +471,7 @@ export default function AccessTokensPage() {
                 });
               }}
               onCancel={() => setCreateTokenOpen(false)}
-              submitLabel="Create Token"
+              submitLabel="创建令牌"
               showRepoSelector
               repoSelector={tokenRepoSelector}
               onRepoSelectorChange={setTokenRepoSelector}
@@ -486,9 +486,9 @@ export default function AccessTokensPage() {
         onOpenChange={(o) => {
           if (!o) setRevokeKeyId(null);
         }}
-        title="Revoke API Key"
-        description="This will permanently invalidate this API key. Any applications using it will lose access immediately."
-        confirmText="Revoke Key"
+        title="撤销 API 密钥"
+        description="这将永久使此 API 密钥失效。使用它的所有应用程序将立即失去访问权限。"
+        confirmText="撤销密钥"
         danger
         loading={revokeKeyMutation.isPending}
         onConfirm={() => {
@@ -502,9 +502,9 @@ export default function AccessTokensPage() {
         onOpenChange={(o) => {
           if (!o) setRevokeTokenId(null);
         }}
-        title="Revoke Access Token"
-        description="This will permanently invalidate this access token. Any sessions using it will be terminated."
-        confirmText="Revoke Token"
+        title="撤销访问令牌"
+        description="这将永久使此访问令牌失效。使用它的所有会话将被终止。"
+        confirmText="撤销令牌"
         danger
         loading={revokeTokenMutation.isPending}
         onConfirm={() => {

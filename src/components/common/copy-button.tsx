@@ -16,7 +16,7 @@ interface CopyButtonProps {
   label?: string;
 }
 
-export function CopyButton({ value, className, label = "Copy" }: CopyButtonProps) {
+export function CopyButton({ value, className, label = "复制" }: CopyButtonProps) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = useCallback(async () => {
@@ -46,7 +46,7 @@ export function CopyButton({ value, className, label = "Copy" }: CopyButtonProps
           <span className="sr-only">{label}</span>
         </Button>
       </TooltipTrigger>
-      <TooltipContent>{copied ? "Copied!" : label}</TooltipContent>
+      <TooltipContent>{copied ? "已复制!" : label}</TooltipContent>
     </Tooltip>
   );
 }

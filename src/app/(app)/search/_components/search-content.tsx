@@ -305,7 +305,7 @@ export function SearchContent() {
     const items: SearchResult[] = (searchResults?.items ?? []) as SearchResult[];
     const copy = [...items];
     copy.sort((a, b) => {
-      if (sortField === "name") return a.name.localeCompare(b.name);
+      if (sortField === "name") return a.name.localeCompare(b.name, "zh-CN");
       if (sortField === "size_bytes")
         return (b.size_bytes ?? 0) - (a.size_bytes ?? 0);
       return (
@@ -322,7 +322,7 @@ export function SearchContent() {
           Advanced Search
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Search across all repositories, packages, and artifacts
+          跨所有仓库、包和制品进行搜索
         </p>
       </div>
 
@@ -352,7 +352,7 @@ export function SearchContent() {
             <TabsContent value="package">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-1.5">
-                  <label htmlFor="search-package-name" className="text-sm font-medium">Package Name</label>
+                  <label htmlFor="search-package-name" className="text-sm font-medium">包名称</label>
                   <Input
                     id="search-package-name"
                     placeholder="e.g., react, lodash"
@@ -364,7 +364,7 @@ export function SearchContent() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label htmlFor="search-package-version" className="text-sm font-medium">Version</label>
+                  <label htmlFor="search-package-version" className="text-sm font-medium">版本</label>
                   <Input
                     id="search-package-version"
                     placeholder="e.g., 1.0.0, ^2.0"
@@ -379,7 +379,7 @@ export function SearchContent() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label htmlFor="search-package-repository" className="text-sm font-medium">Repository</label>
+                  <label htmlFor="search-package-repository" className="text-sm font-medium">仓库</label>
                   <Select
                     value={packageValues.repository}
                     onValueChange={(val) =>
@@ -390,10 +390,10 @@ export function SearchContent() {
                     }
                   >
                     <SelectTrigger id="search-package-repository" className="w-full">
-                      <SelectValue placeholder="All repositories" />
+                      <SelectValue placeholder="所有仓库" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="__all__">All repositories</SelectItem>
+                      <SelectItem value="__all__">所有仓库</SelectItem>
                       {repositories.map((r) => (
                         <SelectItem key={r.id} value={r.key}>
                           {r.name} ({r.key})
@@ -403,7 +403,7 @@ export function SearchContent() {
                   </Select>
                 </div>
                 <div className="space-y-1.5">
-                  <label htmlFor="search-package-format" className="text-sm font-medium">Format</label>
+                  <label htmlFor="search-package-format" className="text-sm font-medium">格式</label>
                   <Select
                     value={packageValues.format}
                     onValueChange={(val) =>
@@ -414,10 +414,10 @@ export function SearchContent() {
                     }
                   >
                     <SelectTrigger id="search-package-format" className="w-full">
-                      <SelectValue placeholder="All formats" />
+                      <SelectValue placeholder="所有格式" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="__all__">All formats</SelectItem>
+                      <SelectItem value="__all__">所有格式</SelectItem>
                       {FORMAT_OPTIONS.map((f) => (
                         <SelectItem key={f} value={f}>
                           {f}
@@ -468,7 +468,7 @@ export function SearchContent() {
                         size="icon"
                         onClick={() => removePropertyFilter(index)}
                         className="shrink-0"
-                        aria-label="Remove filter"
+                        aria-label="移除筛选条件"
                       >
                         <Trash2 className="size-4" />
                       </Button>
@@ -491,7 +491,7 @@ export function SearchContent() {
             <TabsContent value="gavc">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-1.5">
-                  <label htmlFor="search-gavc-group" className="text-sm font-medium">Group ID</label>
+                  <label htmlFor="search-gavc-group" className="text-sm font-medium">组 ID</label>
                   <Input
                     id="search-gavc-group"
                     placeholder="e.g., org.apache.maven"
@@ -506,7 +506,7 @@ export function SearchContent() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label htmlFor="search-gavc-artifact" className="text-sm font-medium">Artifact ID</label>
+                  <label htmlFor="search-gavc-artifact" className="text-sm font-medium">制品 ID</label>
                   <Input
                     id="search-gavc-artifact"
                     placeholder="e.g., maven-core"
@@ -521,7 +521,7 @@ export function SearchContent() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label htmlFor="search-gavc-version" className="text-sm font-medium">Version</label>
+                  <label htmlFor="search-gavc-version" className="text-sm font-medium">版本</label>
                   <Input
                     id="search-gavc-version"
                     placeholder="e.g., 3.9.0"
@@ -536,7 +536,7 @@ export function SearchContent() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label htmlFor="search-gavc-classifier" className="text-sm font-medium">Classifier</label>
+                  <label htmlFor="search-gavc-classifier" className="text-sm font-medium">分类器</label>
                   <Input
                     id="search-gavc-classifier"
                     placeholder="e.g., sources, javadoc"
@@ -557,10 +557,10 @@ export function SearchContent() {
             <TabsContent value="checksum">
               <div className="grid gap-4 sm:grid-cols-[1fr_200px]">
                 <div className="space-y-1.5">
-                  <label htmlFor="search-checksum-value" className="text-sm font-medium">Checksum Value</label>
+                  <label htmlFor="search-checksum-value" className="text-sm font-medium">校验和值</label>
                   <Input
                     id="search-checksum-value"
-                    placeholder="Enter SHA-256, SHA-1, or MD5 checksum"
+                    placeholder="输入 SHA-256、SHA-1 或 MD5 校验和"
                     value={checksumValues.value}
                     onChange={(e) =>
                       setChecksumValues((v) => ({
@@ -573,7 +573,7 @@ export function SearchContent() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label htmlFor="search-checksum-algorithm" className="text-sm font-medium">Algorithm</label>
+                  <label htmlFor="search-checksum-algorithm" className="text-sm font-medium">算法</label>
                   <Select
                     value={checksumValues.type}
                     onValueChange={(val) =>
@@ -618,7 +618,7 @@ export function SearchContent() {
             {/* Results header */}
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <h2 className="text-lg font-semibold">Results</h2>
+                <h2 className="text-lg font-semibold">结果</h2>
                 {!loading && (
                   <span className="text-sm text-muted-foreground">
                     {totalResults} {totalResults === 1 ? "result" : "results"} found
@@ -637,9 +637,9 @@ export function SearchContent() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="created_at">Date</SelectItem>
-                    <SelectItem value="name">Name</SelectItem>
-                    <SelectItem value="size_bytes">Size</SelectItem>
+                    <SelectItem value="created_at">日期</SelectItem>
+                    <SelectItem value="name">名称</SelectItem>
+                    <SelectItem value="size_bytes">大小</SelectItem>
                   </SelectContent>
                 </Select>
                 <div className="flex items-center rounded-md border">
@@ -677,7 +677,7 @@ export function SearchContent() {
               <div className="flex flex-col items-center justify-center py-16 text-center">
                 <SearchIcon className="size-10 text-muted-foreground/40 mb-3" />
                 <p className="text-sm text-muted-foreground">
-                  No results found. Try adjusting your search criteria.
+                  No 个结果. Try adjusting your search criteria.
                 </p>
               </div>
             )}
@@ -687,12 +687,12 @@ export function SearchContent() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Version</TableHead>
-                    <TableHead>Format</TableHead>
-                    <TableHead>Repository</TableHead>
-                    <TableHead className="text-right">Size</TableHead>
-                    <TableHead>Date</TableHead>
+                    <TableHead>名称</TableHead>
+                    <TableHead>版本</TableHead>
+                    <TableHead>格式</TableHead>
+                    <TableHead>仓库</TableHead>
+                    <TableHead className="text-right">大小</TableHead>
+                    <TableHead>日期</TableHead>
                     <TableHead className="w-10" />
                   </TableRow>
                 </TableHeader>

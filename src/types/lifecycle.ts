@@ -53,10 +53,10 @@ export type PolicyType =
   | "size_quota_bytes";
 
 export const POLICY_TYPE_LABELS: Record<PolicyType, string> = {
-  max_age_days: "Max Age (Days)",
-  max_versions: "Max Versions",
-  no_downloads_days: "No Downloads (Days)",
-  tag_pattern_keep: "Keep by Tag Pattern",
-  tag_pattern_delete: "Delete by Tag Pattern",
-  size_quota_bytes: "Size Quota",
+  max_age_days: "最大保留天数",
+  max_versions: "最大版本数",
+  no_downloads_days: "无下载天数",
+  tag_pattern_keep: "按标签模式保留",
+  tag_pattern_delete: "按标签模式删除",
+  size_quota_bytes: "大小配额",
 };

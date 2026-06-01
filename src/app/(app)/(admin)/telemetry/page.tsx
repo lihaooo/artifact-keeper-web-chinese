@@ -101,10 +101,10 @@ export default function TelemetryPage() {
   const updateSettingsMutation = useMutation({
     mutationFn: (s: TelemetrySettings) => telemetryApi.updateSettings(s),
     onSuccess: () => {
-      toast.success("Settings updated");
+      toast.success("设置已更新");
       queryClient.invalidateQueries({ queryKey: ["telemetry-settings"] });
     },
-    onError: mutationErrorToast("Failed to update settings"),
+    onError: mutationErrorToast("更新设置失败"),
   });
 
   const submitMutation = useMutation({
@@ -114,18 +114,18 @@ export default function TelemetryPage() {
       queryClient.invalidateQueries({ queryKey: ["telemetry-crashes"] });
       queryClient.invalidateQueries({ queryKey: ["telemetry-pending"] });
     },
-    onError: mutationErrorToast("Failed to submit crash reports"),
+    onError: mutationErrorToast("提交崩溃报告失败"),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => telemetryApi.deleteCrash(id),
     onSuccess: () => {
-      toast.success("Crash report deleted");
+      toast.success("崩溃报告已删除");
       queryClient.invalidateQueries({ queryKey: ["telemetry-crashes"] });
       queryClient.invalidateQueries({ queryKey: ["telemetry-pending"] });
       setDeleteTarget(null);
     },
-    onError: mutationErrorToast("Failed to delete crash report"),
+    onError: mutationErrorToast("删除崩溃报告失败"),
   });
 
   function handleToggle(field: keyof TelemetrySettings, value: boolean) {
@@ -141,9 +141,9 @@ export default function TelemetryPage() {
   if (!user?.is_admin) {
     return (
       <div className="space-y-6">
-        <PageHeader title="Telemetry" />
+        <PageHeader title="遥测" />
         <Alert variant="destructive">
-          <AlertTitle>Access Denied</AlertTitle>
+          <AlertTitle>访问被拒绝</AlertTitle>
         </Alert>
       </div>
     );
@@ -156,8 +156,8 @@ export default function TelemetryPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Telemetry & Crash Reporting"
-        description="Opt-in crash reporting with privacy-first PII scrubbing."
+        title="遥测与崩溃报告"
+        description="可选择加入的崩溃报告，优先保护隐私的 PII 脱敏。"
         actions={
           <Button
             variant="outline"
@@ -177,25 +177,25 @@ export default function TelemetryPage() {
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard
           icon={Radio}
-          label="Telemetry"
+          label="遥测"
           value={settings?.enabled ? "Enabled" : "Disabled"}
           color={settings?.enabled ? "green" : "default"}
         />
         <StatCard
           icon={Bug}
-          label="Total Crashes"
+          label="崩溃总数"
           value={totalCrashes}
           color={totalCrashes > 0 ? "red" : "green"}
         />
         <StatCard
           icon={Send}
-          label="Pending Submit"
+          label="待提交"
           value={pendingCount}
           color={pendingCount > 0 ? "yellow" : "green"}
         />
         <StatCard
           icon={Shield}
-          label="Scrub Level"
+          label="脱敏级别"
           value={settings?.scrub_level ?? "..."}
           color="blue"
         />
@@ -204,7 +204,7 @@ export default function TelemetryPage() {
       {/* Settings Card */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Telemetry Settings</CardTitle>
+          <CardTitle className="text-base">遥测设置</CardTitle>
           <CardDescription>
             Control what data is collected and how it is handled.
           </CardDescription>
@@ -326,7 +326,7 @@ export default function TelemetryPage() {
       {/* Crash Reports Table */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Crash Reports</CardTitle>
+          <CardTitle className="text-base">崩溃报告</CardTitle>
         </CardHeader>
         <CardContent className="px-0">
           {crashesLoading ? (
@@ -339,7 +339,7 @@ export default function TelemetryPage() {
             <div className="px-6 pb-4">
               <EmptyState
                 icon={Bug}
-                title="No crash reports"
+                title="暂无崩溃报告"
                 description="No crashes have been recorded. That's good news."
               />
             </div>
@@ -390,9 +390,9 @@ export default function TelemetryPage() {
                     </TableCell>
                     <TableCell>
                       {crash.submitted ? (
-                        <Badge variant="secondary">Submitted</Badge>
+                        <Badge variant="secondary">已提交</Badge>
                       ) : (
-                        <Badge>Pending</Badge>
+                        <Badge>待处理</Badge>
                       )}
                     </TableCell>
                     <TableCell className="text-right">
@@ -500,8 +500,8 @@ export default function TelemetryPage() {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(null)}
-        title="Delete Crash Report"
-        description="This will permanently delete this crash report."
+        title="删除崩溃报告"
+        description="此操作将永久删除此崩溃报告。"
         danger
         onConfirm={() => {
           if (deleteTarget) deleteMutation.mutate(deleteTarget.id);

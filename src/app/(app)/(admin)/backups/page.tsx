@@ -89,7 +89,7 @@ interface BackupsResponse {
 // -- helpers --
 
 function formatDuration(start: string, end?: string): string {
-  if (!end) return "In progress...";
+  if (!end) return "进行中...";
   const ms = new Date(end).getTime() - new Date(start).getTime();
   const seconds = Math.floor(ms / 1000);
   const minutes = Math.floor(seconds / 60);
@@ -176,12 +176,12 @@ export default function BackupsPage() {
       return data as any as Backup;
     },
     onSuccess: () => {
-      toast.success("Backup created successfully");
+      toast.success("备份创建成功");
       queryClient.invalidateQueries({ queryKey: ["backups"] });
       setCreateOpen(false);
       setBackupType("full");
     },
-    onError: mutationErrorToast("Failed to create backup"),
+    onError: mutationErrorToast("创建备份失败"),
   });
 
   const executeMutation = useMutation({
@@ -190,10 +190,10 @@ export default function BackupsPage() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Backup started");
+      toast.success("备份已启动");
       queryClient.invalidateQueries({ queryKey: ["backups"] });
     },
-    onError: mutationErrorToast("Failed to start backup"),
+    onError: mutationErrorToast("启动备份失败"),
   });
 
   const cancelMutation = useMutation({
@@ -202,10 +202,10 @@ export default function BackupsPage() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Backup cancelled");
+      toast.success("备份已取消");
       queryClient.invalidateQueries({ queryKey: ["backups"] });
     },
-    onError: mutationErrorToast("Failed to cancel backup"),
+    onError: mutationErrorToast("取消备份失败"),
   });
 
   const restoreMutation = useMutation({
@@ -217,12 +217,12 @@ export default function BackupsPage() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Restore started");
+      toast.success("恢复已启动");
       queryClient.invalidateQueries({ queryKey: ["backups"] });
       setRestoreOpen(false);
       setSelectedBackup(null);
     },
-    onError: mutationErrorToast("Failed to start restore"),
+    onError: mutationErrorToast("启动恢复失败"),
   });
 
   const deleteMutation = useMutation({
@@ -231,12 +231,12 @@ export default function BackupsPage() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Backup deleted");
+      toast.success("备份已删除");
       queryClient.invalidateQueries({ queryKey: ["backups"] });
       setDeleteOpen(false);
       setSelectedBackup(null);
     },
-    onError: mutationErrorToast("Failed to delete backup"),
+    onError: mutationErrorToast("删除备份失败"),
   });
 
   // -- handlers --
@@ -254,7 +254,7 @@ export default function BackupsPage() {
   const columns: DataTableColumn<Backup>[] = [
     {
       id: "type",
-      header: "Type",
+      header: "类型",
       accessor: (b) => b.type,
       cell: (b) => (
         <span
@@ -266,7 +266,7 @@ export default function BackupsPage() {
     },
     {
       id: "status",
-      header: "Status",
+      header: "状态",
       accessor: (b) => b.status,
       cell: (b) => (
         <div className="flex items-center gap-1.5">
@@ -280,7 +280,7 @@ export default function BackupsPage() {
     },
     {
       id: "size",
-      header: "Size",
+      header: "大小",
       accessor: (b) => b.size_bytes,
       sortable: true,
       cell: (b) => (
@@ -291,7 +291,7 @@ export default function BackupsPage() {
     },
     {
       id: "artifacts",
-      header: "Artifacts",
+      header: "制品数",
       accessor: (b) => b.artifact_count,
       sortable: true,
       cell: (b) => (
@@ -302,7 +302,7 @@ export default function BackupsPage() {
     },
     {
       id: "duration",
-      header: "Duration",
+      header: "耗时",
       cell: (b) => (
         <span className="text-sm text-muted-foreground">
           {b.started_at ? formatDuration(b.started_at, b.completed_at) : "\u2014"}
@@ -311,7 +311,7 @@ export default function BackupsPage() {
     },
     {
       id: "created_at",
-      header: "Created",
+      header: "创建时间",
       accessor: (b) => b.created_at,
       sortable: true,
       cell: (b) => (
@@ -322,7 +322,7 @@ export default function BackupsPage() {
     },
     {
       id: "error",
-      header: "Error",
+      header: "错误",
       cell: (b) =>
         b.error_message ? (
           <Tooltip>
@@ -359,7 +359,7 @@ export default function BackupsPage() {
                   <Play className="size-3.5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Execute</TooltipContent>
+              <TooltipContent>执行</TooltipContent>
             </Tooltip>
           )}
           {b.status === "in_progress" && (
@@ -374,7 +374,7 @@ export default function BackupsPage() {
                   <StopCircle className="size-3.5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Cancel</TooltipContent>
+              <TooltipContent>取消</TooltipContent>
             </Tooltip>
           )}
           {b.status === "completed" && (
@@ -388,7 +388,7 @@ export default function BackupsPage() {
                   <Download className="size-3.5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Restore</TooltipContent>
+              <TooltipContent>恢复</TooltipContent>
             </Tooltip>
           )}
           {(b.status === "completed" ||
@@ -405,7 +405,7 @@ export default function BackupsPage() {
                   <Trash2 className="size-3.5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Delete</TooltipContent>
+              <TooltipContent>删除</TooltipContent>
             </Tooltip>
           )}
         </div>
@@ -417,11 +417,11 @@ export default function BackupsPage() {
   if (!user?.is_admin) {
     return (
       <div className="space-y-6">
-        <PageHeader title="Backups" />
+        <PageHeader title="备份" />
         <Alert variant="destructive">
-          <AlertTitle>Access Denied</AlertTitle>
+          <AlertTitle>访问被拒绝</AlertTitle>
           <AlertDescription>
-            You must be an administrator to view this page.
+            您必须是管理员才能查看此页面。
           </AlertDescription>
         </Alert>
       </div>
@@ -431,8 +431,8 @@ export default function BackupsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Backups"
-        description="Create, manage, and restore system backups."
+        title="备份"
+        description="创建、管理和恢复系统备份。"
         actions={
           <div className="flex items-center gap-2">
             <Tooltip>
@@ -449,11 +449,11 @@ export default function BackupsPage() {
                   />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Refresh</TooltipContent>
+              <TooltipContent>刷新</TooltipContent>
             </Tooltip>
             <Button onClick={() => setCreateOpen(true)}>
               <Plus className="size-4" />
-              Create Backup
+              创建备份
             </Button>
           </div>
         }
@@ -463,10 +463,9 @@ export default function BackupsPage() {
       {inProgressBackups > 0 && (
         <Alert>
           <Loader2 className="size-4 animate-spin" />
-          <AlertTitle>Backup in progress</AlertTitle>
+          <AlertTitle>备份正在进行中</AlertTitle>
           <AlertDescription>
-            {inProgressBackups} backup(s) currently running. This page auto-refreshes
-            every 10 seconds.
+            {inProgressBackups} 个备份正在运行。此页面每 10 秒自动刷新。
           </AlertDescription>
         </Alert>
       )}
@@ -475,29 +474,29 @@ export default function BackupsPage() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           icon={Archive}
-          label="Total Backups"
+          label="备份总数"
           value={backups.length}
           color="blue"
         />
         <StatCard
           icon={CheckCircle2}
-          label="Completed"
+          label="已完成"
           value={completedBackups}
           color="green"
         />
         <StatCard
           icon={HardDrive}
-          label="Total Backup Size"
+          label="备份总大小"
           value={formatBytes(totalSize)}
           color="purple"
         />
         <StatCard
           icon={CalendarDays}
-          label="Last Backup"
+          label="上次备份"
           value={
             lastBackup
               ? new Date(lastBackup.created_at).toLocaleDateString()
-              : "Never"
+              : "从未"
           }
           color="default"
         />
@@ -507,15 +506,15 @@ export default function BackupsPage() {
       <div className="flex items-center gap-3">
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-[160px]">
-            <SelectValue placeholder="Filter by status" />
+            <SelectValue placeholder="按状态筛选" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="__all__">All statuses</SelectItem>
-            <SelectItem value="pending">Pending</SelectItem>
-            <SelectItem value="in_progress">In Progress</SelectItem>
-            <SelectItem value="completed">Completed</SelectItem>
-            <SelectItem value="failed">Failed</SelectItem>
-            <SelectItem value="cancelled">Cancelled</SelectItem>
+            <SelectItem value="__all__">全部状态</SelectItem>
+            <SelectItem value="pending">待处理</SelectItem>
+            <SelectItem value="in_progress">进行中</SelectItem>
+            <SelectItem value="completed">已完成</SelectItem>
+            <SelectItem value="failed">已失败</SelectItem>
+            <SelectItem value="cancelled">已取消</SelectItem>
           </SelectContent>
         </Select>
         {statusFilter !== "__all__" && (
@@ -524,7 +523,7 @@ export default function BackupsPage() {
             size="sm"
             onClick={() => setStatusFilter("__all__")}
           >
-            Clear filter
+            清除筛选
           </Button>
         )}
       </div>
@@ -533,12 +532,12 @@ export default function BackupsPage() {
       {!isLoading && backups.length === 0 ? (
         <EmptyState
           icon={Archive}
-          title="No backups yet"
-          description="Create a backup to protect your data."
+          title="暂无备份"
+          description="创建备份以保护您的数据。"
           action={
             <Button onClick={() => setCreateOpen(true)}>
               <Plus className="size-4" />
-              Create Backup
+              创建备份
             </Button>
           }
         />
@@ -547,12 +546,12 @@ export default function BackupsPage() {
           columns={columns}
           data={backups}
           loading={isLoading}
-          emptyMessage="No backups found."
+          emptyMessage="未找到备份。"
           rowKey={(b) => b.id}
         />
       )}
 
-      {/* Create Backup Dialog */}
+      {/* 创建备份对话框 */}
       <Dialog
         open={createOpen}
         onOpenChange={(o) => {
@@ -562,9 +561,9 @@ export default function BackupsPage() {
       >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Create Backup</DialogTitle>
+            <DialogTitle>创建备份</DialogTitle>
             <DialogDescription>
-              Choose a backup type to create a new system backup.
+              选择备份类型以创建新的系统备份。
             </DialogDescription>
           </DialogHeader>
           <form
@@ -575,20 +574,20 @@ export default function BackupsPage() {
             }}
           >
             <div className="space-y-2">
-              <Label>Backup Type</Label>
+              <Label>备份类型</Label>
               <Select value={backupType} onValueChange={setBackupType}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="full">
-                    Full - Complete backup of all data and artifacts
+                    完整 - 备份所有数据和制品
                   </SelectItem>
                   <SelectItem value="incremental">
-                    Incremental - Only changes since last backup
+                    增量 - 仅上次备份以来的变更
                   </SelectItem>
                   <SelectItem value="metadata">
-                    Metadata - Database only, no artifacts
+                    元数据 - 仅数据库，不含制品
                   </SelectItem>
                 </SelectContent>
               </Select>
@@ -602,26 +601,26 @@ export default function BackupsPage() {
                   setBackupType("full");
                 }}
               >
-                Cancel
+                取消
               </Button>
               <Button type="submit" disabled={createMutation.isPending}>
-                {createMutation.isPending ? "Creating..." : "Create Backup"}
+                {createMutation.isPending ? "创建中..." : "创建备份"}
               </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
 
-      {/* Restore Confirm */}
+      {/* 恢复确认 */}
       <ConfirmDialog
         open={restoreOpen}
         onOpenChange={(o) => {
           setRestoreOpen(o);
           if (!o) setSelectedBackup(null);
         }}
-        title="Restore from Backup"
-        description={`This will restore all data from the backup created on ${selectedBackup ? new Date(selectedBackup.created_at).toLocaleString() : ""}. This operation may overwrite current data. Are you sure?`}
-        confirmText="Yes, Restore"
+        title="从备份恢复"
+        description={`这将恢复备份创建于 ${selectedBackup ? new Date(selectedBackup.created_at).toLocaleString() : ""} 的所有数据。此操作可能覆盖当前数据。确定吗？`}
+        confirmText="确认恢复"
         danger
         loading={restoreMutation.isPending}
         onConfirm={() => {
@@ -629,16 +628,16 @@ export default function BackupsPage() {
         }}
       />
 
-      {/* Delete Confirm */}
+      {/* 删除确认 */}
       <ConfirmDialog
         open={deleteOpen}
         onOpenChange={(o) => {
           setDeleteOpen(o);
           if (!o) setSelectedBackup(null);
         }}
-        title="Delete Backup"
-        description="This will permanently delete the backup file. This action cannot be undone."
-        confirmText="Delete Backup"
+        title="删除备份"
+        description="此操作将永久删除备份文件，且无法撤销。"
+        confirmText="删除备份"
         danger
         loading={deleteMutation.isPending}
         onConfirm={() => {

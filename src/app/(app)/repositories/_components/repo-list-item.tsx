@@ -64,7 +64,7 @@ export function RepoListItem({ repo, isSelected, onSelect, onEdit, onDelete, art
               <div className="flex items-center gap-1 mt-0.5">
                 <Search className="size-2.5 text-blue-500" />
                 <span className="text-[11px] text-blue-500">
-                  {artifactMatchCount} artifact{artifactMatchCount > 1 ? "s" : ""} match
+                  {artifactMatchCount} 个制品匹配
                 </span>
               </div>
             )}

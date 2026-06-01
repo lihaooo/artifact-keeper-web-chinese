@@ -24,7 +24,7 @@ export function QuarantineBanner({
     >
       <ShieldAlert className="size-4 text-amber-600 dark:text-amber-400" aria-hidden="true" />
       <AlertTitle className="font-semibold">
-        This artifact is quarantined
+        此制品已被隔离
       </AlertTitle>
       <AlertDescription>
         <div className="space-y-1">
@@ -36,7 +36,7 @@ export function QuarantineBanner({
           )}
           {!reason && !expiry && (
             <p>
-              Downloads may be restricted until the quarantine is lifted by an administrator.
+              在管理员解除隔离之前，下载可能会受到限制。
             </p>
           )}
         </div>

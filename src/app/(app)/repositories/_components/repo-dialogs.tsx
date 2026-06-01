@@ -237,9 +237,9 @@ export function RepoDialogs({
       <Dialog open={createOpen} onOpenChange={handleCreateClose}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Create Repository</DialogTitle>
+            <DialogTitle>创建仓库</DialogTitle>
             <DialogDescription>
-              Add a new artifact repository to your registry.
+              添加新的制品仓库到您的注册中心。
             </DialogDescription>
           </DialogHeader>
           <form
@@ -276,7 +276,7 @@ export function RepoDialogs({
               />
               {keyTaken && (
                 <p className="text-sm text-red-500">
-                  Repository key &quot;{createForm.key}&quot; is already taken. Please choose a different key.
+                  仓库键 &quot;{createForm.key}&quot; 已被占用。请选择其他键。
                 </p>
               )}
             </div>
@@ -284,7 +284,7 @@ export function RepoDialogs({
               <Label htmlFor="create-name">Name</Label>
               <Input
                 id="create-name"
-                placeholder="My Repository"
+                placeholder="我的仓库"
                 value={createForm.name}
                 onChange={(e) =>
                   setCreateForm((f) => ({ ...f, name: e.target.value }))
@@ -296,7 +296,7 @@ export function RepoDialogs({
               <Label htmlFor="create-desc">Description</Label>
               <Textarea
                 id="create-desc"
-                placeholder="Optional description..."
+                placeholder="可选描述..."
                 value={createForm.description}
                 onChange={(e) =>
                   setCreateForm((f) => ({ ...f, description: e.target.value }))
@@ -306,7 +306,7 @@ export function RepoDialogs({
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Format</Label>
+                <Label>格式</Label>
                 <Select
                   value={createForm.format}
                   onValueChange={(v) => {
@@ -330,7 +330,7 @@ export function RepoDialogs({
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Type</Label>
+                <Label>类型</Label>
                 <Select
                   value={createForm.repo_type}
                   onValueChange={(v) => {
@@ -362,14 +362,14 @@ export function RepoDialogs({
             {/* Staging repository: inline hint */}
             {createForm.repo_type === "staging" && (
               <p className="text-xs text-muted-foreground">
-                Staging repos hold artifacts for review before promotion to a release repository.
-                Configure promotion rules after creation.
+                暂存仓库用于在推广到发布仓库之前审核制品。
+                创建后配置推广规则。
               </p>
             )}
             {/* Remote repository: upstream URL */}
             {createForm.repo_type === "remote" && (
               <div className="space-y-2">
-                <Label htmlFor="create-upstream">Upstream URL</Label>
+                <Label htmlFor="create-upstream">上游 URL</Label>
                 <Input
                   id="create-upstream"
                   placeholder={DEFAULT_UPSTREAM_URLS[createForm.format] ?? "https://upstream-registry.example.com"}
@@ -380,7 +380,7 @@ export function RepoDialogs({
                   required
                 />
                 <p className="text-xs text-muted-foreground">
-                  The upstream registry URL to proxy requests to.
+                  代理请求的上游注册中心 URL。
                 </p>
               </div>
             )}
@@ -388,37 +388,37 @@ export function RepoDialogs({
             {/* Remote repository: upstream authentication */}
             {createForm.repo_type === "remote" && (
               <div className="space-y-3">
-                <Label htmlFor="create-upstream-auth-type">Upstream Authentication</Label>
+                <Label htmlFor="create-upstream-auth-type">上游认证</Label>
                 <Select value={upstreamAuthType} onValueChange={setUpstreamAuthType}>
                   <SelectTrigger className="w-full" id="create-upstream-auth-type">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">None</SelectItem>
-                    <SelectItem value="basic">Basic (username + password)</SelectItem>
-                    <SelectItem value="bearer">Bearer token</SelectItem>
+                    <SelectItem value="basic">Basic（用户名 + 密码）</SelectItem>
+                    <SelectItem value="bearer">Bearer 令牌</SelectItem>
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-muted-foreground">
-                  Credentials are stored encrypted and used when fetching artifacts from the upstream registry.
+                  凭证以加密方式存储，用于从上游注册中心获取制品。
                 </p>
 
                 {upstreamAuthType === "basic" && (
                   <>
-                    <Label htmlFor="create-upstream-username">Username</Label>
+                    <Label htmlFor="create-upstream-username">用户名</Label>
                     <Input
                       id="create-upstream-username"
-                      placeholder="Username"
+                      placeholder="用户名"
                       required
                       value={upstreamUsername}
                       onChange={(e) => setUpstreamUsername(e.target.value)}
                       autoComplete="off"
                     />
-                    <Label htmlFor="create-upstream-password">Password</Label>
+                    <Label htmlFor="create-upstream-password">密码</Label>
                     <Input
                       id="create-upstream-password"
                       type="password"
-                      placeholder="Password or access token"
+                      placeholder="密码或访问令牌"
                       required
                       value={upstreamPassword}
                       onChange={(e) => setUpstreamPassword(e.target.value)}
@@ -429,11 +429,11 @@ export function RepoDialogs({
 
                 {upstreamAuthType === "bearer" && (
                   <>
-                    <Label htmlFor="create-upstream-token">Token</Label>
+                    <Label htmlFor="create-upstream-token">令牌</Label>
                     <Input
                       id="create-upstream-token"
                       type="password"
-                      placeholder="Bearer token"
+                      placeholder="Bearer 令牌"
                       required
                       value={upstreamPassword}
                       onChange={(e) => setUpstreamPassword(e.target.value)}
@@ -447,10 +447,10 @@ export function RepoDialogs({
             {/* Virtual repository: member selection */}
             {createForm.repo_type === "virtual" && (
               <div className="space-y-2">
-                <Label>Member Repositories</Label>
+                <Label>成员仓库</Label>
                 {eligibleMembers.length === 0 ? (
                   <p className="text-sm text-muted-foreground">
-                    No {createForm.format} local or remote repositories available. Create some first.
+                    没有可用的 {createForm.format} 本地或远程仓库。请先创建。
                   </p>
                 ) : (
                   <div className="border rounded-md p-2 max-h-40 overflow-y-auto space-y-1">
@@ -478,7 +478,7 @@ export function RepoDialogs({
                   </div>
                 )}
                 <p className="text-xs text-muted-foreground">
-                  Select repositories to aggregate. Order determines priority.
+                  选择要聚合的仓库。顺序决定优先级。
                 </p>
               </div>
             )}
@@ -491,17 +491,17 @@ export function RepoDialogs({
                   setCreateForm((f) => ({ ...f, is_public: v }))
                 }
               />
-              <Label htmlFor="create-public">Public repository</Label>
+              <Label htmlFor="create-public">公开仓库</Label>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="create-quota">Storage Quota</Label>
+              <Label htmlFor="create-quota">存储配额</Label>
               <div className="flex gap-2">
                 <Input
                   id="create-quota"
                   type="number"
                   min="0"
                   step="any"
-                  placeholder="No limit"
+                  placeholder="无限制"
                   value={createQuotaValue}
                   onChange={(e) => setCreateQuotaValue(e.target.value)}
                   className="flex-1"
@@ -520,7 +520,7 @@ export function RepoDialogs({
                 </Select>
               </div>
               <p className="text-xs text-muted-foreground">
-                Maximum storage for this repository. Leave empty for no limit.
+                此仓库的最大存储空间。留空表示无限制。
               </p>
             </div>
             <DialogFooter>
@@ -532,7 +532,7 @@ export function RepoDialogs({
                 Cancel
               </Button>
               <Button type="submit" disabled={createPending || keyTaken}>
-                {createPending ? "Creating..." : "Create"}
+                {createPending ? "创建中..." : "创建"}
               </Button>
             </DialogFooter>
           </form>
@@ -554,9 +554,9 @@ export function RepoDialogs({
       }}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Edit Repository: {editRepo?.key}</DialogTitle>
+            <DialogTitle>编辑仓库：{editRepo?.key}</DialogTitle>
             <DialogDescription>
-              Update the repository name, description, or visibility.
+              更新仓库名称、描述或可见性。
             </DialogDescription>
           </DialogHeader>
           <form
@@ -574,7 +574,7 @@ export function RepoDialogs({
             }}
           >
             <div className="space-y-2">
-              <Label htmlFor="edit-key">Key (URL slug)</Label>
+              <Label htmlFor="edit-key">键（URL 路径）</Label>
               <Input
                 id="edit-key"
                 value={editForm.key}
@@ -585,7 +585,7 @@ export function RepoDialogs({
               />
               {editKeyChanged && (
                 <p className="text-sm text-yellow-600 dark:text-yellow-500">
-                  Changing the key will update all URLs for this repository.
+                  更改键将更新此仓库的所有 URL。
                 </p>
               )}
             </div>
@@ -619,17 +619,17 @@ export function RepoDialogs({
                   setEditFormOverrides((f) => ({ ...f, is_public: v }))
                 }
               />
-              <Label htmlFor="edit-public">Public repository</Label>
+              <Label htmlFor="edit-public">公开仓库</Label>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="edit-quota">Storage Quota</Label>
+              <Label htmlFor="edit-quota">存储配额</Label>
               <div className="flex gap-2">
                 <Input
                   id="edit-quota"
                   type="number"
                   min="0"
                   step="any"
-                  placeholder="No limit"
+                  placeholder="无限制"
                   value={editQuotaValue}
                   onChange={(e) => setEditQuotaOverrides((o) => ({ ...o, value: e.target.value }))}
                   className="flex-1"
@@ -648,16 +648,16 @@ export function RepoDialogs({
                 </Select>
               </div>
               <p className="text-xs text-muted-foreground">
-                Maximum storage for this repository. Leave empty for no limit.
+                此仓库的最大存储空间。留空表示无限制。
               </p>
             </div>
 
             {/* Upstream authentication for remote repos (saved separately from main form) */}
             {editRepo?.repo_type === "remote" && (
               <div className="space-y-3 border-t pt-4">
-                <Label>Upstream Authentication</Label>
+                <Label>上游认证</Label>
                 <p className="text-xs text-muted-foreground">
-                  Credentials are stored encrypted and saved separately from other repository settings.
+                  凭证以加密方式存储，与其他仓库设置分开保存。
                 </p>
 
                 {editAuthMode === "view" ? (
@@ -665,7 +665,7 @@ export function RepoDialogs({
                     {editRepo.upstream_auth_configured ? (
                       <div className="flex items-center justify-between">
                         <p className="text-sm text-muted-foreground">
-                          Authentication configured ({editRepo.upstream_auth_type === "basic" ? "Basic Auth" : editRepo.upstream_auth_type === "bearer" ? "Bearer Token" : editRepo.upstream_auth_type})
+                          已配置认证 ({editRepo.upstream_auth_type === "basic" ? "Basic 认证" : editRepo.upstream_auth_type === "bearer" ? "Bearer 令牌" : editRepo.upstream_auth_type})
                         </p>
                         <div className="flex gap-2">
                           <Button
@@ -693,7 +693,7 @@ export function RepoDialogs({
                     ) : (
                       <div className="flex items-center justify-between">
                         <p className="text-sm text-muted-foreground">
-                          No authentication configured
+                          未配置认证
                         </p>
                         <Button
                           type="button"
@@ -708,7 +708,7 @@ export function RepoDialogs({
                     {removeAuthConfirm && (
                       <div className="flex items-center gap-2 rounded border border-destructive/50 bg-destructive/5 p-2">
                         <p className="text-xs text-destructive flex-1">
-                          Removing credentials will cause upstream requests to fail if the registry requires authentication.
+                          移除凭证将导致上游请求失败（如果注册中心需要认证）。
                         </p>
                         <Button
                           type="button"
@@ -743,27 +743,27 @@ export function RepoDialogs({
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="none">None</SelectItem>
-                        <SelectItem value="basic">Basic (username + password)</SelectItem>
-                        <SelectItem value="bearer">Bearer token</SelectItem>
+                        <SelectItem value="basic">Basic（用户名 + 密码）</SelectItem>
+                        <SelectItem value="bearer">Bearer 令牌</SelectItem>
                       </SelectContent>
                     </Select>
 
                     {editAuthType === "basic" && (
                       <>
-                        <Label htmlFor="edit-upstream-username">Username</Label>
+                        <Label htmlFor="edit-upstream-username">用户名</Label>
                         <Input
                           id="edit-upstream-username"
-                          placeholder="Username"
+                          placeholder="用户名"
                           required
                           value={editAuthUsername}
                           onChange={(e) => setEditAuthUsername(e.target.value)}
                           autoComplete="off"
                         />
-                        <Label htmlFor="edit-upstream-password">Password</Label>
+                        <Label htmlFor="edit-upstream-password">密码</Label>
                         <Input
                           id="edit-upstream-password"
                           type="password"
-                          placeholder="Password or access token"
+                          placeholder="密码或访问令牌"
                           required
                           value={editAuthPassword}
                           onChange={(e) => setEditAuthPassword(e.target.value)}
@@ -774,11 +774,11 @@ export function RepoDialogs({
 
                     {editAuthType === "bearer" && (
                       <>
-                        <Label htmlFor="edit-upstream-token">Token</Label>
+                        <Label htmlFor="edit-upstream-token">令牌</Label>
                         <Input
                           id="edit-upstream-token"
                           type="password"
-                          placeholder="Bearer token"
+                          placeholder="Bearer 令牌"
                           required
                           value={editAuthPassword}
                           onChange={(e) => setEditAuthPassword(e.target.value)}
@@ -824,7 +824,7 @@ export function RepoDialogs({
                           }
                         }}
                       >
-                        {upstreamAuthPending ? "Saving..." : "Save Authentication"}
+                        {upstreamAuthPending ? "保存中..." : "保存认证"}
                       </Button>
                     </div>
                   </div>
@@ -841,7 +841,7 @@ export function RepoDialogs({
                 Cancel
               </Button>
               <Button type="submit" disabled={editPending}>
-                {editPending ? "Saving..." : "Save Changes"}
+                {editPending ? "保存中..." : "保存更改"}
               </Button>
             </DialogFooter>
           </form>
@@ -852,10 +852,10 @@ export function RepoDialogs({
       <ConfirmDialog
         open={deleteOpen}
         onOpenChange={onDeleteOpenChange}
-        title="Delete Repository"
-        description={`Deleting "${deleteRepo?.key}" will permanently remove all artifacts and metadata. This action cannot be undone.`}
+        title="删除仓库"
+        description={`删除 "${deleteRepo?.key}" 将永久删除所有制品和元数据。此操作无法撤销。`}
         typeToConfirm={deleteRepo?.key}
-        confirmText="Delete Repository"
+        confirmText="删除仓库"
         danger
         loading={deletePending}
         onConfirm={() => {

@@ -234,9 +234,9 @@ export default function MigrationPage() {
       });
       setCreateConnOpen(false);
       setConnForm(INITIAL_CONN_FORM);
-      toast.success("Connection created");
+      toast.success("连接已创建");
     },
-    onError: mutationErrorToast("Failed to create connection"),
+    onError: mutationErrorToast("创建连接失败"),
   });
 
   const deleteConnMutation = useMutation({
@@ -246,9 +246,9 @@ export default function MigrationPage() {
         queryKey: ["migration", "connections"],
       });
       setDeleteConnId(null);
-      toast.success("Connection deleted");
+      toast.success("连接已删除");
     },
-    onError: mutationErrorToast("Failed to delete connection"),
+    onError: mutationErrorToast("删除连接失败"),
   });
 
   const testConnMutation = useMutation({
@@ -256,13 +256,13 @@ export default function MigrationPage() {
     onSuccess: (result) => {
       if (result.success) {
         toast.success(
-          `Connection verified. ${result.artifactory_version ? `Artifactory ${result.artifactory_version}` : ""}`
+          `连接已验证。${result.artifactory_version ? `Artifactory ${result.artifactory_version}` : ""}`
         );
       } else {
-        toast.error(`Connection failed: ${result.message}`);
+        toast.error(`连接失败：${result.message}`);
       }
     },
-    onError: mutationErrorToast("Failed to test connection"),
+    onError: mutationErrorToast("测试连接失败"),
   });
 
   // -- Migration mutations --
@@ -277,9 +277,9 @@ export default function MigrationPage() {
         job_type: "full",
         dry_run: false,
       });
-      toast.success("Migration job created");
+      toast.success("迁移任务已创建");
     },
-    onError: mutationErrorToast("Failed to create migration"),
+    onError: mutationErrorToast("创建迁移失败"),
   });
 
   const startMigMutation = useMutation({
@@ -287,18 +287,18 @@ export default function MigrationPage() {
     onSuccess: (job) => {
       queryClient.invalidateQueries({ queryKey: ["migration", "jobs"] });
       startStream(job.id);
-      toast.success("Migration started");
+      toast.success("迁移已启动");
     },
-    onError: mutationErrorToast("Failed to start migration"),
+    onError: mutationErrorToast("启动迁移失败"),
   });
 
   const pauseMigMutation = useMutation({
     mutationFn: (id: string) => migrationApi.pauseMigration(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["migration", "jobs"] });
-      toast.success("Migration paused");
+      toast.success("迁移已暂停");
     },
-    onError: mutationErrorToast("Failed to pause migration"),
+    onError: mutationErrorToast("暂停迁移失败"),
   });
 
   const resumeMigMutation = useMutation({
@@ -306,18 +306,18 @@ export default function MigrationPage() {
     onSuccess: (job) => {
       queryClient.invalidateQueries({ queryKey: ["migration", "jobs"] });
       startStream(job.id);
-      toast.success("Migration resumed");
+      toast.success("迁移已恢复");
     },
-    onError: mutationErrorToast("Failed to resume migration"),
+    onError: mutationErrorToast("恢复迁移失败"),
   });
 
   const cancelMigMutation = useMutation({
     mutationFn: (id: string) => migrationApi.cancelMigration(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["migration", "jobs"] });
-      toast.success("Migration cancelled");
+      toast.success("迁移已取消");
     },
-    onError: mutationErrorToast("Failed to cancel migration"),
+    onError: mutationErrorToast("取消迁移失败"),
   });
 
   const deleteMigMutation = useMutation({
@@ -325,16 +325,16 @@ export default function MigrationPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["migration", "jobs"] });
       setDeleteMigId(null);
-      toast.success("Migration deleted");
+      toast.success("迁移已删除");
     },
-    onError: mutationErrorToast("Failed to delete migration"),
+    onError: mutationErrorToast("删除迁移失败"),
   });
 
   // -- Connection columns --
   const connColumns: DataTableColumn<SourceConnection>[] = [
     {
       id: "name",
-      header: "Name",
+      header: "名称",
       accessor: (c) => c.name,
       sortable: true,
       cell: (c) => (
@@ -346,7 +346,7 @@ export default function MigrationPage() {
     },
     {
       id: "url",
-      header: "Endpoint",
+      header: "端点",
       accessor: (c) => c.url,
       cell: (c) => (
         <span className="text-sm text-muted-foreground truncate block max-w-[300px]">
@@ -356,7 +356,7 @@ export default function MigrationPage() {
     },
     {
       id: "auth_type",
-      header: "Auth Type",
+      header: "认证类型",
       cell: (c) => (
         <Badge variant="secondary" className="text-xs">
           {c.auth_type === "api_token" ? "API Token" : "Basic Auth"}
@@ -365,17 +365,17 @@ export default function MigrationPage() {
     },
     {
       id: "verified",
-      header: "Verified",
+      header: "已验证",
       cell: (c) => (
         <StatusBadge
-          status={c.verified_at ? "Verified" : "Unverified"}
+          status={c.verified_at ? "已验证" : "未验证"}
           color={c.verified_at ? "green" : "default"}
         />
       ),
     },
     {
       id: "created",
-      header: "Created",
+      header: "创建时间",
       accessor: (c) => c.created_at,
       cell: (c) => (
         <span className="text-sm text-muted-foreground">
@@ -402,7 +402,7 @@ export default function MigrationPage() {
                 <Unplug className="size-3.5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Test connection</TooltipContent>
+            <TooltipContent>测试连接</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -415,7 +415,7 @@ export default function MigrationPage() {
                 <Trash2 className="size-3.5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Delete</TooltipContent>
+            <TooltipContent>删除</TooltipContent>
           </Tooltip>
         </div>
       ),
@@ -426,7 +426,7 @@ export default function MigrationPage() {
   const migColumns: DataTableColumn<MigrationJob>[] = [
     {
       id: "id",
-      header: "Job",
+      header: "任务",
       cell: (j) => (
         <button
           className="text-sm font-medium text-primary hover:underline"
@@ -441,7 +441,7 @@ export default function MigrationPage() {
     },
     {
       id: "connection",
-      header: "Source",
+      header: "来源",
       cell: (j) => {
         const conn = connections.find(
           (c) => c.id === j.source_connection_id
@@ -455,7 +455,7 @@ export default function MigrationPage() {
     },
     {
       id: "type",
-      header: "Type",
+      header: "类型",
       cell: (j) => (
         <Badge variant="secondary" className="text-xs capitalize">
           {j.job_type}
@@ -464,12 +464,12 @@ export default function MigrationPage() {
     },
     {
       id: "status",
-      header: "Status",
+      header: "状态",
       cell: (j) => <StatusBadge status={j.status} color={statusColor(j.status)} />,
     },
     {
       id: "progress",
-      header: "Progress",
+      header: "进度",
       cell: (j) => (
         <div className="flex items-center gap-2 min-w-[120px]">
           <Progress
@@ -484,13 +484,13 @@ export default function MigrationPage() {
     },
     {
       id: "items",
-      header: "Items",
+      header: "项目",
       cell: (j) => (
         <span className="text-sm text-muted-foreground">
           {j.completed_items}/{j.total_items}
           {j.failed_items > 0 && (
             <span className="text-red-500 ml-1">
-              ({j.failed_items} failed)
+              ({j.failed_items} 失败)
             </span>
           )}
         </span>
@@ -498,13 +498,13 @@ export default function MigrationPage() {
     },
     {
       id: "started",
-      header: "Started",
+      header: "启动时间",
       accessor: (j) => j.started_at ?? "",
       cell: (j) => (
         <span className="text-sm text-muted-foreground">
           {j.started_at
             ? new Date(j.started_at).toLocaleString()
-            : "Not started"}
+            : "未启动"}
         </span>
       ),
     },
@@ -527,7 +527,7 @@ export default function MigrationPage() {
                   <Play className="size-3.5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Start</TooltipContent>
+              <TooltipContent>启动</TooltipContent>
             </Tooltip>
           )}
           {j.status === "running" && (
@@ -541,7 +541,7 @@ export default function MigrationPage() {
                   <Pause className="size-3.5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Pause</TooltipContent>
+              <TooltipContent>暂停</TooltipContent>
             </Tooltip>
           )}
           {j.status === "paused" && (
@@ -555,7 +555,7 @@ export default function MigrationPage() {
                   <RotateCcw className="size-3.5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Resume</TooltipContent>
+              <TooltipContent>恢复</TooltipContent>
             </Tooltip>
           )}
           {(j.status === "running" || j.status === "paused") && (
@@ -570,7 +570,7 @@ export default function MigrationPage() {
                   <Square className="size-3.5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Cancel</TooltipContent>
+              <TooltipContent>取消</TooltipContent>
             </Tooltip>
           )}
           {(j.status === "completed" ||
@@ -588,7 +588,7 @@ export default function MigrationPage() {
                   <Trash2 className="size-3.5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Delete</TooltipContent>
+              <TooltipContent>删除</TooltipContent>
             </Tooltip>
           )}
         </div>
@@ -600,7 +600,7 @@ export default function MigrationPage() {
   const itemColumns: DataTableColumn<MigrationItem>[] = [
     {
       id: "source_path",
-      header: "Source Path",
+      header: "来源路径",
       accessor: (i) => i.source_path,
       cell: (i) => (
         <code className="text-xs">{i.source_path}</code>
@@ -608,7 +608,7 @@ export default function MigrationPage() {
     },
     {
       id: "target_path",
-      header: "Target Path",
+      header: "目标路径",
       cell: (i) => (
         <code className="text-xs text-muted-foreground">
           {i.target_path ?? "-"}
@@ -617,7 +617,7 @@ export default function MigrationPage() {
     },
     {
       id: "type",
-      header: "Type",
+      header: "类型",
       cell: (i) => (
         <Badge variant="secondary" className="text-xs capitalize">
           {i.item_type}
@@ -626,7 +626,7 @@ export default function MigrationPage() {
     },
     {
       id: "status",
-      header: "Status",
+      header: "状态",
       cell: (i) => {
         const colors: Record<string, "green" | "blue" | "red" | "default"> = {
           completed: "green",
@@ -645,7 +645,7 @@ export default function MigrationPage() {
     },
     {
       id: "size",
-      header: "Size",
+      header: "大小",
       accessor: (i) => i.size_bytes,
       cell: (i) => (
         <span className="text-sm text-muted-foreground">
@@ -655,7 +655,7 @@ export default function MigrationPage() {
     },
     {
       id: "error",
-      header: "Error",
+      header: "错误",
       cell: (i) =>
         i.error_message ? (
           <span className="text-xs text-red-500 truncate block max-w-[200px]">
@@ -668,15 +668,15 @@ export default function MigrationPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Migration"
-        description="Migrate artifacts from Artifactory or Nexus to Artifact Keeper."
+        title="迁移"
+        description="从 Artifactory 或 Nexus 迁移制品到 Artifact Keeper。"
         actions={
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 variant="outline"
                 size="icon"
-                aria-label="Refresh migration data"
+                aria-label="刷新迁移数据"
                 onClick={() => {
                   queryClient.invalidateQueries({
                     queryKey: ["migration"],
@@ -686,7 +686,7 @@ export default function MigrationPage() {
                 <RefreshCw className="size-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Refresh</TooltipContent>
+            <TooltipContent>刷新</TooltipContent>
           </Tooltip>
         }
       />
@@ -695,11 +695,11 @@ export default function MigrationPage() {
         <TabsList>
           <TabsTrigger value="connections">
             <Database className="size-4" />
-            Source Connections
+            来源连接
           </TabsTrigger>
           <TabsTrigger value="jobs">
             <ArrowRight className="size-4" />
-            Migration Jobs
+            迁移任务
           </TabsTrigger>
         </TabsList>
 
@@ -707,26 +707,26 @@ export default function MigrationPage() {
         <TabsContent value="connections" className="mt-6 space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-semibold">Source Connections</h2>
+              <h2 className="text-lg font-semibold">来源连接</h2>
               <p className="text-sm text-muted-foreground">
-                Configure connections to source artifact registries.
+                配置到源制品仓库的连接。
               </p>
             </div>
             <Button onClick={() => setCreateConnOpen(true)}>
               <Plus className="size-4" />
-              Add Connection
+              添加连接
             </Button>
           </div>
 
           {connections.length === 0 && !connectionsLoading ? (
             <EmptyState
               icon={Database}
-              title="No connections"
-              description="Add a connection to an Artifactory or Nexus instance to begin migration."
+              title="暂无连接"
+              description="添加到 Artifactory 或 Nexus 实例的连接以开始迁移。"
               action={
                 <Button onClick={() => setCreateConnOpen(true)}>
                   <Plus className="size-4" />
-                  Add Connection
+                  添加连接
                 </Button>
               }
             />
@@ -736,7 +736,7 @@ export default function MigrationPage() {
               data={connections}
               loading={connectionsLoading}
               rowKey={(c) => c.id}
-              emptyMessage="No connections found."
+              emptyMessage="未找到连接。"
             />
           )}
         </TabsContent>
@@ -745,9 +745,9 @@ export default function MigrationPage() {
         <TabsContent value="jobs" className="mt-6 space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-semibold">Migration Jobs</h2>
+              <h2 className="text-lg font-semibold">迁移任务</h2>
               <p className="text-sm text-muted-foreground">
-                Create and manage migration jobs.
+                创建和管理迁移任务。
               </p>
             </div>
             <Button
@@ -755,22 +755,22 @@ export default function MigrationPage() {
               disabled={connections.length === 0}
             >
               <Plus className="size-4" />
-              Create Migration
+              创建迁移
             </Button>
           </div>
 
           {migrations.length === 0 && !migrationsLoading ? (
             <EmptyState
               icon={ArrowRight}
-              title="No migration jobs"
-              description="Create a migration job to transfer artifacts from a source registry."
+              title="暂无迁移任务"
+              description="创建迁移任务以从源仓库传输制品。"
               action={
                 <Button
                   onClick={() => setCreateMigOpen(true)}
                   disabled={connections.length === 0}
                 >
                   <Plus className="size-4" />
-                  Create Migration
+                  创建迁移
                 </Button>
               }
             />
@@ -780,13 +780,13 @@ export default function MigrationPage() {
               data={migrations}
               loading={migrationsLoading}
               rowKey={(j) => j.id}
-              emptyMessage="No migration jobs found."
+              emptyMessage="未找到迁移任务。"
             />
           )}
         </TabsContent>
       </Tabs>
 
-      {/* -- Create Connection Dialog -- */}
+      {/* -- 创建连接对话框 -- */}
       <Dialog
         open={createConnOpen}
         onOpenChange={(o) => {
@@ -796,9 +796,9 @@ export default function MigrationPage() {
       >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Add Source Connection</DialogTitle>
+            <DialogTitle>添加来源连接</DialogTitle>
             <DialogDescription>
-              Connect to an Artifactory or Nexus instance for migration.
+              连接到 Artifactory 或 Nexus 实例以进行迁移。
             </DialogDescription>
           </DialogHeader>
           <form
@@ -821,19 +821,19 @@ export default function MigrationPage() {
             }}
           >
             <div className="space-y-2">
-              <Label htmlFor="conn-name">Name</Label>
+              <Label htmlFor="conn-name">名称</Label>
               <Input
                 id="conn-name"
                 value={connForm.name}
                 onChange={(e) =>
                   setConnForm((f) => ({ ...f, name: e.target.value }))
                 }
-                placeholder="e.g., Production Artifactory"
+                placeholder="例如，生产环境 Artifactory"
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="conn-url">Endpoint URL</Label>
+              <Label htmlFor="conn-url">端点 URL</Label>
               <Input
                 id="conn-url"
                 type="url"
@@ -846,7 +846,7 @@ export default function MigrationPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="conn-source-type">Source Type</Label>
+              <Label htmlFor="conn-source-type">来源类型</Label>
               <Select
                 value={connForm.source_type}
                 onValueChange={(v) =>
@@ -863,7 +863,7 @@ export default function MigrationPage() {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Authentication Type</Label>
+              <Label>认证类型</Label>
               <Select
                 value={connForm.auth_type}
                 onValueChange={(v) =>
@@ -881,7 +881,7 @@ export default function MigrationPage() {
             </div>
             {connForm.auth_type === "basic_auth" && (
               <div className="space-y-2">
-                <Label htmlFor="conn-username">Username</Label>
+                <Label htmlFor="conn-username">用户名</Label>
                 <Input
                   id="conn-username"
                   value={connForm.username}
@@ -895,7 +895,7 @@ export default function MigrationPage() {
             )}
             <div className="space-y-2">
               <Label htmlFor="conn-token">
-                {connForm.auth_type === "api_token" ? "API Token" : "Password"}
+                {connForm.auth_type === "api_token" ? "API Token" : "密码"}
               </Label>
               <Input
                 id="conn-token"
@@ -906,8 +906,8 @@ export default function MigrationPage() {
                 }
                 placeholder={
                   connForm.auth_type === "api_token"
-                    ? "Enter API token"
-                    : "Enter password"
+                    ? "输入 API Token"
+                    : "输入密码"
                 }
                 required
               />
@@ -918,19 +918,19 @@ export default function MigrationPage() {
                 type="button"
                 onClick={() => setCreateConnOpen(false)}
               >
-                Cancel
+                取消
               </Button>
               <Button type="submit" disabled={createConnMutation.isPending}>
                 {createConnMutation.isPending
-                  ? "Creating..."
-                  : "Add Connection"}
+                  ? "创建中..."
+                  : "添加连接"}
               </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
 
-      {/* -- Create Migration Dialog -- */}
+      {/* -- 创建迁移对话框 -- */}
       <Dialog
         open={createMigOpen}
         onOpenChange={(o) => {
@@ -945,9 +945,9 @@ export default function MigrationPage() {
       >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Create Migration Job</DialogTitle>
+            <DialogTitle>创建迁移任务</DialogTitle>
             <DialogDescription>
-              Configure a new migration from a source connection.
+              从来源连接配置新的迁移。
             </DialogDescription>
           </DialogHeader>
           <form
@@ -964,7 +964,7 @@ export default function MigrationPage() {
             }}
           >
             <div className="space-y-2">
-              <Label>Source Connection</Label>
+              <Label>来源连接</Label>
               <Select
                 value={migForm.source_connection_id}
                 onValueChange={(v) =>
@@ -972,7 +972,7 @@ export default function MigrationPage() {
                 }
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select a connection" />
+                  <SelectValue placeholder="选择连接" />
                 </SelectTrigger>
                 <SelectContent>
                   {connections.map((c) => (
@@ -984,7 +984,7 @@ export default function MigrationPage() {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Job Type</Label>
+              <Label>任务类型</Label>
               <Select
                 value={migForm.job_type}
                 onValueChange={(v) =>
@@ -998,9 +998,9 @@ export default function MigrationPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="full">Full Migration</SelectItem>
-                  <SelectItem value="incremental">Incremental</SelectItem>
-                  <SelectItem value="assessment">Assessment Only</SelectItem>
+                  <SelectItem value="full">完整迁移</SelectItem>
+                  <SelectItem value="incremental">增量迁移</SelectItem>
+                  <SelectItem value="assessment">仅评估</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -1014,7 +1014,7 @@ export default function MigrationPage() {
                   }
                   className="rounded border-input"
                 />
-                Dry run (simulate without transferring)
+                模拟运行（不实际传输）
               </label>
             </div>
             <DialogFooter>
@@ -1023,7 +1023,7 @@ export default function MigrationPage() {
                 type="button"
                 onClick={() => setCreateMigOpen(false)}
               >
-                Cancel
+                取消
               </Button>
               <Button
                 type="submit"
@@ -1033,15 +1033,15 @@ export default function MigrationPage() {
                 }
               >
                 {createMigMutation.isPending
-                  ? "Creating..."
-                  : "Create Migration"}
+                  ? "创建中..."
+                  : "创建迁移"}
               </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
 
-      {/* -- Job Detail Dialog -- */}
+      {/* -- 任务详情对话框 -- */}
       <Dialog
         open={!!detailJob}
         onOpenChange={(o) => {
@@ -1051,36 +1051,36 @@ export default function MigrationPage() {
         <DialogContent className="sm:max-w-4xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              Migration Job: {detailJob?.id.slice(0, 8)}
+              迁移任务：{detailJob?.id.slice(0, 8)}
             </DialogTitle>
             <DialogDescription>
-              View detailed progress and individual item status.
+              查看详细进度和各个项目的状态。
             </DialogDescription>
           </DialogHeader>
           {detailJob && (
             <div className="space-y-4">
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <div>
-                  <p className="text-xs text-muted-foreground">Status</p>
+                  <p className="text-xs text-muted-foreground">状态</p>
                   <StatusBadge
                     status={detailJob.status}
                     color={statusColor(detailJob.status)}
                   />
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">Progress</p>
+                  <p className="text-xs text-muted-foreground">进度</p>
                   <p className="font-semibold">
                     {detailJob.progress_percent ?? 0}%
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">Items</p>
+                  <p className="text-xs text-muted-foreground">项目</p>
                   <p className="font-semibold">
                     {detailJob.completed_items}/{detailJob.total_items}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">Transferred</p>
+                  <p className="text-xs text-muted-foreground">已传输</p>
                   <p className="font-semibold">
                     {formatBytes(detailJob.transferred_bytes)}/{formatBytes(detailJob.total_bytes)}
                   </p>
@@ -1100,7 +1100,7 @@ export default function MigrationPage() {
                 data={detailItems?.items ?? []}
                 loading={!detailItems}
                 rowKey={(i) => i.id}
-                emptyMessage="No items."
+                emptyMessage="暂无项目。"
               />
             </div>
           )}
@@ -1108,15 +1108,15 @@ export default function MigrationPage() {
         </DialogContent>
       </Dialog>
 
-      {/* -- Delete Connection Confirm -- */}
+      {/* -- 删除连接确认 -- */}
       <ConfirmDialog
         open={!!deleteConnId}
         onOpenChange={(o) => {
           if (!o) setDeleteConnId(null);
         }}
-        title="Delete Connection"
-        description="This will permanently remove this source connection. Existing migration jobs referencing it will remain."
-        confirmText="Delete"
+        title="删除连接"
+        description="此操作将永久删除此来源连接。引用它的现有迁移任务将保留。"
+        confirmText="删除"
         danger
         loading={deleteConnMutation.isPending}
         onConfirm={() => {
@@ -1124,15 +1124,15 @@ export default function MigrationPage() {
         }}
       />
 
-      {/* -- Delete Migration Confirm -- */}
+      {/* -- 删除迁移确认 -- */}
       <ConfirmDialog
         open={!!deleteMigId}
         onOpenChange={(o) => {
           if (!o) setDeleteMigId(null);
         }}
-        title="Delete Migration Job"
-        description="This will permanently remove this migration job and its history."
-        confirmText="Delete"
+        title="删除迁移任务"
+        description="此操作将永久删除此迁移任务及其历史记录。"
+        confirmText="删除"
         danger
         loading={deleteMigMutation.isPending}
         onConfirm={() => {

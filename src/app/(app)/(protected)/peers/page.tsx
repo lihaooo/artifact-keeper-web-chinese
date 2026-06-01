@@ -66,13 +66,13 @@ function relativeTime(dateStr: string): string {
   const now = Date.now();
   const then = new Date(dateStr).getTime();
   const diffSec = Math.floor((now - then) / 1000);
-  if (diffSec < 60) return `${diffSec}s ago`;
+  if (diffSec < 60) return `${diffSec}秒前`;
   const diffMin = Math.floor(diffSec / 60);
-  if (diffMin < 60) return `${diffMin}m ago`;
+  if (diffMin < 60) return `${diffMin}分钟前`;
   const diffHr = Math.floor(diffMin / 60);
-  if (diffHr < 24) return `${diffHr}h ago`;
+  if (diffHr < 24) return `${diffHr}小时前`;
   const diffDay = Math.floor(diffHr / 24);
-  return `${diffDay}d ago`;
+  return `${diffDay}天前`;
 }
 
 const STATUS_COLORS: Record<string, "green" | "red" | "blue" | "yellow" | "default"> = {
@@ -121,9 +121,9 @@ export default function PeersPage() {
       queryClient.invalidateQueries({ queryKey: ["peers"] });
       setCreateOpen(false);
       setForm({ name: "", endpoint_url: "", region: "", api_key: "" });
-      toast.success("Peer registered successfully");
+      toast.success("对等节点注册成功");
     },
-    onError: mutationErrorToast("Failed to register peer"),
+    onError: mutationErrorToast("注册对等节点失败"),
   });
 
   const unregisterMutation = useMutation({
@@ -131,25 +131,25 @@ export default function PeersPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["peers"] });
       setDeleteId(null);
-      toast.success("Peer unregistered");
+      toast.success("对等节点已注销");
     },
-    onError: mutationErrorToast("Failed to unregister peer"),
+    onError: mutationErrorToast("注销对等节点失败"),
   });
 
   const syncMutation = useMutation({
     mutationFn: (id: string) => peersApi.triggerSync(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["peers"] });
-      toast.success("Sync triggered");
+      toast.success("同步已触发");
     },
-    onError: mutationErrorToast("Failed to trigger sync"),
+    onError: mutationErrorToast("触发同步失败"),
   });
 
   // -- columns --
   const columns: DataTableColumn<PeerInstance>[] = [
     {
       id: "name",
-      header: "Name",
+      header: "名称",
       accessor: (p) => p.name,
       sortable: true,
       cell: (p) => (
@@ -166,7 +166,7 @@ export default function PeersPage() {
     },
     {
       id: "endpoint",
-      header: "Endpoint",
+      header: "端点",
       accessor: (p) => p.endpoint_url,
       cell: (p) =>
         isSafeUrl(p.endpoint_url) ? (
@@ -186,7 +186,7 @@ export default function PeersPage() {
     },
     {
       id: "status",
-      header: "Status",
+      header: "状态",
       cell: (p) => (
         <StatusBadge
           status={p.status}
@@ -196,7 +196,7 @@ export default function PeersPage() {
     },
     {
       id: "region",
-      header: "Region",
+      header: "区域",
       accessor: (p) => p.region ?? "",
       cell: (p) => (
         <span className="text-sm text-muted-foreground">
@@ -206,7 +206,7 @@ export default function PeersPage() {
     },
     {
       id: "cache",
-      header: "Cache Usage",
+      header: "缓存使用",
       cell: (p) => {
         const pct = cachePercent(p);
         return (
@@ -224,11 +224,11 @@ export default function PeersPage() {
     },
     {
       id: "heartbeat",
-      header: "Last Heartbeat",
+      header: "最后心跳",
       accessor: (p) => p.last_heartbeat_at ?? "",
       cell: (p) => (
         <span className="text-sm text-muted-foreground">
-          {p.last_heartbeat_at ? relativeTime(p.last_heartbeat_at) : "Never"}
+          {p.last_heartbeat_at ? relativeTime(p.last_heartbeat_at) : "从未"}
         </span>
       ),
     },
@@ -251,7 +251,7 @@ export default function PeersPage() {
                 <RefreshCcw className="size-3.5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Trigger Sync</TooltipContent>
+            <TooltipContent>触发同步</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -264,7 +264,7 @@ export default function PeersPage() {
                 <Trash2 className="size-3.5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Unregister</TooltipContent>
+            <TooltipContent>注销</TooltipContent>
           </Tooltip>
         </div>
       ),
@@ -274,8 +274,8 @@ export default function PeersPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Peers"
-        description="Manage peer instances in the mesh network"
+        title="对等节点"
+        description="管理网格网络中的对等节点实例"
         actions={
           <div className="flex items-center gap-2">
             <Tooltip>
@@ -292,11 +292,11 @@ export default function PeersPage() {
                   />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Refresh</TooltipContent>
+              <TooltipContent>刷新</TooltipContent>
             </Tooltip>
             <Button onClick={() => setCreateOpen(true)}>
               <Plus className="size-4" />
-              Register Peer
+              注册对等节点
             </Button>
           </div>
         }
@@ -307,7 +307,7 @@ export default function PeersPage() {
         <Card className="py-4">
           <CardContent className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted-foreground">Total Peers</p>
+              <p className="text-sm text-muted-foreground">总对等节点</p>
               <p className="text-2xl font-semibold">{peers.length}</p>
             </div>
             <Server className="size-8 text-muted-foreground/30" />
@@ -316,7 +316,7 @@ export default function PeersPage() {
         <Card className="py-4">
           <CardContent className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted-foreground">Online</p>
+              <p className="text-sm text-muted-foreground">在线</p>
               <p className="text-2xl font-semibold text-emerald-600">
                 {onlineCount}
               </p>
@@ -327,7 +327,7 @@ export default function PeersPage() {
         <Card className="py-4">
           <CardContent className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted-foreground">Syncing</p>
+              <p className="text-sm text-muted-foreground">同步中</p>
               <p className="text-2xl font-semibold text-blue-600">
                 {syncingCount}
               </p>
@@ -341,14 +341,14 @@ export default function PeersPage() {
       <div className="flex items-center gap-3">
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-[160px]">
-            <SelectValue placeholder="Filter by status" />
+            <SelectValue placeholder="按状态筛选" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="__all__">All statuses</SelectItem>
-            <SelectItem value="online">Online</SelectItem>
-            <SelectItem value="offline">Offline</SelectItem>
-            <SelectItem value="syncing">Syncing</SelectItem>
-            <SelectItem value="degraded">Degraded</SelectItem>
+            <SelectItem value="__all__">所有状态</SelectItem>
+            <SelectItem value="online">在线</SelectItem>
+            <SelectItem value="offline">离线</SelectItem>
+            <SelectItem value="syncing">同步中</SelectItem>
+            <SelectItem value="degraded">降级</SelectItem>
           </SelectContent>
         </Select>
         {statusFilter !== "__all__" && (
@@ -357,7 +357,7 @@ export default function PeersPage() {
             size="sm"
             onClick={() => setStatusFilter("__all__")}
           >
-            Clear filter
+            清除筛选
           </Button>
         )}
       </div>
@@ -366,12 +366,12 @@ export default function PeersPage() {
       {peers.length === 0 && !isLoading ? (
         <EmptyState
           icon={Server}
-          title="No peers"
-          description="Register a peer instance to enable mesh replication."
+          title="暂无对等节点"
+          description="注册一个对等节点实例以启用网格复制。"
           action={
             <Button onClick={() => setCreateOpen(true)}>
               <Plus className="size-4" />
-              Register Peer
+              注册对等节点
             </Button>
           }
         />
@@ -381,7 +381,7 @@ export default function PeersPage() {
           data={peers}
           loading={isLoading}
           rowKey={(p) => p.id}
-          emptyMessage="No peers found."
+          emptyMessage="未找到对等节点。"
         />
       )}
 
@@ -396,9 +396,9 @@ export default function PeersPage() {
       >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Register Peer</DialogTitle>
+            <DialogTitle>注册对等节点</DialogTitle>
             <DialogDescription>
-              Add a new peer instance to the mesh network.
+              向网格网络添加新的对等节点实例。
             </DialogDescription>
           </DialogHeader>
           <form
@@ -414,7 +414,7 @@ export default function PeersPage() {
             }}
           >
             <div className="space-y-2">
-              <Label htmlFor="peer-name">Name</Label>
+              <Label htmlFor="peer-name">名称</Label>
               <Input
                 id="peer-name"
                 value={form.name}
@@ -426,7 +426,7 @@ export default function PeersPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="peer-url">Endpoint URL</Label>
+              <Label htmlFor="peer-url">端点 URL</Label>
               <Input
                 id="peer-url"
                 type="url"
@@ -440,9 +440,9 @@ export default function PeersPage() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="peer-region">
-                Region{" "}
+                区域{" "}
                 <span className="text-muted-foreground font-normal">
-                  (optional)
+                  (可选)
                 </span>
               </Label>
               <Input
@@ -455,7 +455,7 @@ export default function PeersPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="peer-api-key">API Key</Label>
+              <Label htmlFor="peer-api-key">API 密钥</Label>
               <Input
                 id="peer-api-key"
                 type="password"
@@ -463,7 +463,7 @@ export default function PeersPage() {
                 onChange={(e) =>
                   setForm((f) => ({ ...f, api_key: e.target.value }))
                 }
-                placeholder="Enter API key for authentication"
+                placeholder="输入用于身份验证的 API 密钥"
                 required
               />
             </div>
@@ -473,10 +473,10 @@ export default function PeersPage() {
                 type="button"
                 onClick={() => setCreateOpen(false)}
               >
-                Cancel
+                取消
               </Button>
               <Button type="submit" disabled={registerMutation.isPending}>
-                {registerMutation.isPending ? "Registering..." : "Register"}
+                {registerMutation.isPending ? "注册中..." : "注册"}
               </Button>
             </DialogFooter>
           </form>
@@ -489,9 +489,9 @@ export default function PeersPage() {
         onOpenChange={(o) => {
           if (!o) setDeleteId(null);
         }}
-        title="Unregister Peer"
-        description="This will permanently remove this peer from the mesh network. Cached artifacts will no longer be served from this peer."
-        confirmText="Unregister"
+        title="注销对等节点"
+        description="这将永久从网格网络中移除此对等节点。缓存制品将不再从此对等节点提供。"
+        confirmText="注销"
         danger
         loading={unregisterMutation.isPending}
         onConfirm={() => {

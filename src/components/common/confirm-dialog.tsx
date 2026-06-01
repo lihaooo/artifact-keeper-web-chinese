@@ -35,8 +35,8 @@ export function ConfirmDialog({
   onOpenChange,
   title,
   description,
-  confirmText = "Confirm",
-  cancelText = "Cancel",
+  confirmText = "确认",
+  cancelText = "取消",
   typeToConfirm,
   danger = false,
   loading = false,
@@ -62,7 +62,7 @@ export function ConfirmDialog({
         {typeToConfirm && (
           <div className="space-y-2">
             <Label className="text-sm text-muted-foreground">
-              Type <code className="rounded bg-muted px-1.5 py-0.5 text-xs font-semibold text-foreground">{typeToConfirm}</code> to confirm
+              输入 <code className="rounded bg-muted px-1.5 py-0.5 text-xs font-semibold text-foreground">{typeToConfirm}</code> 以确认
             </Label>
             <Input
               value={typed}
@@ -80,7 +80,7 @@ export function ConfirmDialog({
             disabled={!canConfirm || loading}
             onClick={onConfirm}
           >
-            {loading ? "Processing..." : confirmText}
+            {loading ? "处理中..." : confirmText}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

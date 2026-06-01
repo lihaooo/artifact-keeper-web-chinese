@@ -23,26 +23,25 @@ export default function RootError({
           <AlertTriangle className="size-8 text-destructive" />
         </div>
         <h2 className="text-xl font-semibold tracking-tight">
-          Something went wrong
+          出现了问题
         </h2>
         <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-          An unexpected error occurred. You can try again, or go back to the
-          dashboard.
+          发生了意外错误。您可以重试，或返回仪表盘。
         </p>
         {error.digest && (
           <p className="mt-2 text-xs text-muted-foreground font-mono">
-            Error ID: {error.digest}
+            错误 ID: {error.digest}
           </p>
         )}
         <div className="mt-6 flex items-center gap-3">
           <Button onClick={reset} variant="default" size="sm">
             <RefreshCw className="mr-2 size-4" />
-            Try again
+            重试
           </Button>
           <Button asChild variant="outline" size="sm">
             <Link href="/">
               <Home className="mr-2 size-4" />
-              Dashboard
+              仪表盘
             </Link>
           </Button>
         </div>

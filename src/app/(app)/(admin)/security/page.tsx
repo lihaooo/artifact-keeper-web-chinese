@@ -231,14 +231,14 @@ export default function SecurityDashboardPage() {
       setSelectedArtifactId(undefined);
       setScanMode("repo");
     },
-    onError: mutationErrorToast("Failed to trigger scan"),
+    onError: mutationErrorToast("触发扫描失败"),
   });
 
   // -- table columns --
   const columns: DataTableColumn<RepoSecurityScore>[] = [
     {
       id: "repository_id",
-      header: "Repository",
+      header: "仓库",
       accessor: (r) => repoNameMap.get(r.repository_id) ?? r.repository_id,
       cell: (r) => {
         const name = repoNameMap.get(r.repository_id);
@@ -251,14 +251,14 @@ export default function SecurityDashboardPage() {
     },
     {
       id: "grade",
-      header: "Grade",
+      header: "等级",
       accessor: (r) => r.score,
       sortable: true,
       cell: (r) => <GradeBadge grade={r.grade} />,
     },
     {
       id: "score",
-      header: "Score",
+      header: "评分",
       accessor: (r) => r.score,
       sortable: true,
       cell: (r) => (
@@ -267,7 +267,7 @@ export default function SecurityDashboardPage() {
     },
     {
       id: "critical",
-      header: "Critical",
+      header: "严重",
       accessor: (r) => r.critical_count,
       sortable: true,
       cell: (r) => (
@@ -276,28 +276,28 @@ export default function SecurityDashboardPage() {
     },
     {
       id: "high",
-      header: "High",
+      header: "高危",
       accessor: (r) => r.high_count,
       sortable: true,
       cell: (r) => <SeverityPill count={r.high_count} level="high" />,
     },
     {
       id: "medium",
-      header: "Medium",
+      header: "中危",
       accessor: (r) => r.medium_count,
       sortable: true,
       cell: (r) => <SeverityPill count={r.medium_count} level="medium" />,
     },
     {
       id: "low",
-      header: "Low",
+      header: "低危",
       accessor: (r) => r.low_count,
       sortable: true,
       cell: (r) => <SeverityPill count={r.low_count} level="low" />,
     },
     {
       id: "acknowledged",
-      header: "Ack'd",
+      header: "已确认",
       accessor: (r) => r.acknowledged_count,
       sortable: true,
       cell: (r) => (
@@ -308,7 +308,7 @@ export default function SecurityDashboardPage() {
     },
     {
       id: "last_scan",
-      header: "Last Scan",
+      header: "上次扫描",
       accessor: (r) => r.last_scan_at ?? "",
       sortable: true,
       cell: (r) =>
@@ -318,7 +318,7 @@ export default function SecurityDashboardPage() {
           </span>
         ) : (
           <Badge variant="secondary" className="text-xs font-normal">
-            Never
+            从未
           </Badge>
         ),
     },
@@ -327,14 +327,14 @@ export default function SecurityDashboardPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Security"
-        description="Monitor vulnerability scanning, security scores, and policy enforcement across all repositories."
+        title="安全"
+        description="监控漏洞扫描、安全评分和跨所有仓库的策略执行情况。"
         actions={
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="icon"
-              aria-label="Refresh security data"
+              aria-label="刷新安全数据"
               onClick={() =>
                 queryClient.invalidateQueries({ queryKey: ["security"] })
               }
@@ -346,11 +346,11 @@ export default function SecurityDashboardPage() {
               onClick={() => router.push("/security/scans")}
             >
               <ScanSearch className="size-4" />
-              View All Scans
+              查看所有扫描
             </Button>
             <Button onClick={() => setTriggerOpen(true)}>
               <Zap className="size-4" />
-              Trigger Scan
+              触发扫描
             </Button>
           </div>
         }
@@ -361,49 +361,49 @@ export default function SecurityDashboardPage() {
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           <StatCard
             icon={ShieldCheck}
-            label="Repos with Scanning"
+            label="已启用扫描的仓库"
             value={dashboard.repos_with_scanning}
             color="green"
           />
           <StatCard
             icon={ScanSearch}
-            label="Total Scans"
+            label="扫描总数"
             value={dashboard.total_scans}
             color="blue"
           />
           <StatCard
             icon={AlertCircle}
-            label="Critical Findings"
+            label="严重发现"
             value={dashboard.critical_findings}
             color={dashboard.critical_findings > 0 ? "red" : "green"}
           />
           <StatCard
             icon={AlertTriangle}
-            label="High Findings"
+            label="高危发现"
             value={dashboard.high_findings}
             color={dashboard.high_findings > 0 ? "yellow" : "green"}
           />
           <StatCard
             icon={Bug}
-            label="Open Findings"
+            label="未处理发现"
             value={dashboard.total_findings}
             color={dashboard.total_findings > 0 ? "yellow" : "green"}
           />
           <StatCard
             icon={Award}
-            label="Grade A Repos"
+            label="A 级仓库"
             value={dashboard.repos_grade_a}
             color="green"
           />
           <StatCard
             icon={Award}
-            label="Grade F Repos"
+            label="F 级仓库"
             value={dashboard.repos_grade_f}
             color={dashboard.repos_grade_f > 0 ? "red" : "green"}
           />
           <StatCard
             icon={ShieldBan}
-            label="Policy Blocks"
+            label="策略阻止"
             value={dashboard.policy_violations_blocked}
             color="purple"
           />
@@ -437,15 +437,15 @@ export default function SecurityDashboardPage() {
                   onClick={() => router.push("/security/dt-projects")}
                 >
                   <FolderSearch className="size-4" />
-                  View DT Projects
+                  查看 DT 项目
                 </Button>
               )}
               {dtEnabled ? (
                 <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-0">
-                  Connected
+                  已连接
                 </Badge>
               ) : (
-                <Badge variant="secondary">Disconnected</Badge>
+                <Badge variant="secondary">已断开</Badge>
               )}
             </div>
           </CardHeader>
@@ -455,11 +455,11 @@ export default function SecurityDashboardPage() {
                 <AlertTriangle className="size-5 text-yellow-600 dark:text-yellow-500 shrink-0 mt-0.5" />
                 <div>
                   <p className="text-sm font-medium text-yellow-800 dark:text-yellow-400">
-                    Dependency-Track is unavailable
+                    Dependency-Track 当前不可用
                   </p>
                   <p className="text-xs text-yellow-700 dark:text-yellow-500 mt-1">
-                    Portfolio metrics, findings, and policy violations are temporarily offline.
-                    The service will reconnect automatically when the container recovers.
+                    组合指标、发现和策略违规暂时不可用。
+                    当容器恢复时，服务将自动重新连接。
                   </p>
                 </div>
               </div>
@@ -522,7 +522,7 @@ export default function SecurityDashboardPage() {
                 {/* Severity distribution bar */}
                 <div>
                   <h3 className="text-sm font-medium mb-2">
-                    Vulnerability Distribution
+                    漏洞分布
                   </h3>
                   <SeverityBar
                     critical={dtPortfolio.critical}
@@ -536,13 +536,13 @@ export default function SecurityDashboardPage() {
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div className="space-y-4">
                     <ProgressRow
-                      label="Findings Audited"
+                      label="已审计发现"
                       current={dtPortfolio.findingsAudited}
                       total={dtPortfolio.findingsTotal}
                       color="bg-green-500"
                     />
                     <ProgressRow
-                      label="Policy Violations"
+                      label="策略违规"
                       current={
                         dtPortfolio.policyViolationsFail +
                         dtPortfolio.policyViolationsWarn
@@ -551,7 +551,7 @@ export default function SecurityDashboardPage() {
                       color="bg-orange-500"
                     />
                     <ProgressRow
-                      label="Projects Tracked"
+                      label="已跟踪项目"
                       current={dtPortfolio.projects}
                       total={dtPortfolio.projects}
                       color="bg-blue-500"
@@ -566,7 +566,7 @@ export default function SecurityDashboardPage() {
                 {dtHistory && dtHistory.length > 1 && (
                   <div>
                     <h3 className="text-sm font-medium mb-2">
-                      Vulnerability Trend (30 days)
+                      漏洞趋势（30 天）
                     </h3>
                     <TrendChart data={dtHistory} />
                   </div>
@@ -577,17 +577,17 @@ export default function SecurityDashboardPage() {
         </Card>
       )}
 
-      {/* Policy Violations Dashboard */}
+      {/* 策略违规 Dashboard */}
       {dtEnabled && dtPortfolio && (
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-lg font-semibold tracking-tight">
-              Policy Violations
+              策略违规
             </CardTitle>
             <div className="flex items-center gap-2">
               <Scale className="size-4 text-muted-foreground" />
               <span className="text-sm text-muted-foreground">
-                {dtPortfolio.policyViolationsTotal} total
+                {dtPortfolio.policyViolationsTotal} 总计
               </span>
             </div>
           </CardHeader>
@@ -635,10 +635,10 @@ export default function SecurityDashboardPage() {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b bg-muted/50">
-                      <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">Component</th>
-                      <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">Policy</th>
-                      <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">State</th>
-                      <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">Type</th>
+                      <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">组件</th>
+                      <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">策略</th>
+                      <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">状态</th>
+                      <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">类型</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -678,35 +678,35 @@ export default function SecurityDashboardPage() {
                 </table>
                 {dtViolations.length > 20 && (
                   <div className="px-4 py-2 text-xs text-muted-foreground border-t bg-muted/30">
-                    Showing 20 of {dtViolations.length} violations.
-                    View individual projects for the full list.
+                    显示 20 / {dtViolations.length} 个违规。
+                    查看各个项目以获取完整列表。
                   </div>
                 )}
               </div>
             ) : (
               <div className="flex items-center justify-center py-8 text-sm text-muted-foreground">
-                No policy violations found across tracked projects.
+                跟踪的项目中未发现策略违规。
               </div>
             )}
           </CardContent>
         </Card>
       )}
 
-      {/* Repository Security Scores table */}
+      {/* 仓库安全评分 table */}
       <div>
         <h2 className="text-lg font-semibold tracking-tight mb-4">
-          Repository Security Scores
+          仓库安全评分
         </h2>
         <DataTable
           columns={columns}
           data={scores ?? []}
           loading={scoresLoading}
-          emptyMessage="No security scores yet. Enable scanning on a repository to get started."
+          emptyMessage="暂无安全评分。启用仓库扫描以开始使用。"
           rowKey={(r) => r.id}
         />
       </div>
 
-      {/* Trigger Scan Dialog */}
+      {/* 触发扫描 Dialog */}
       <Dialog
         open={triggerOpen}
         onOpenChange={(o) => {
@@ -720,7 +720,7 @@ export default function SecurityDashboardPage() {
       >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Trigger Security Scan</DialogTitle>
+            <DialogTitle>触发安全扫描</DialogTitle>
             <DialogDescription>
               {scanMode === "repo"
                 ? "Select a repository to scan all its artifacts for vulnerabilities."
@@ -728,9 +728,9 @@ export default function SecurityDashboardPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
-            {/* Scan Mode Toggle */}
+            {/* 扫描模式 Toggle */}
             <div className="space-y-2">
-              <Label>Scan Mode</Label>
+              <Label>扫描模式</Label>
               <div className="flex rounded-lg border p-1 gap-1">
                 <button
                   type="button"
@@ -744,7 +744,7 @@ export default function SecurityDashboardPage() {
                     setSelectedArtifactId(undefined);
                   }}
                 >
-                  Entire Repository
+                  整个仓库
                 </button>
                 <button
                   type="button"
@@ -757,13 +757,13 @@ export default function SecurityDashboardPage() {
                     setScanMode("artifact");
                   }}
                 >
-                  Specific Artifact
+                  指定制品
                 </button>
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label>Repository</Label>
+              <Label>仓库</Label>
               <Select
                 value={selectedRepoId ?? ""}
                 onValueChange={(v) => {
@@ -772,7 +772,7 @@ export default function SecurityDashboardPage() {
                 }}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select a repository..." />
+                  <SelectValue placeholder="选择仓库..." />
                 </SelectTrigger>
                 <SelectContent>
                   {(
@@ -791,10 +791,10 @@ export default function SecurityDashboardPage() {
               </Select>
             </div>
 
-            {/* Artifact selector (only in artifact mode) */}
+            {/* 制品 selector (only in artifact mode) */}
             {scanMode === "artifact" && selectedRepoId && (
               <div className="space-y-2">
-                <Label>Artifact</Label>
+                <Label>制品</Label>
                 <Select
                   value={selectedArtifactId ?? ""}
                   onValueChange={(v) => setSelectedArtifactId(v || undefined)}
@@ -803,8 +803,8 @@ export default function SecurityDashboardPage() {
                     <SelectValue
                       placeholder={
                         artifactsLoading
-                          ? "Loading artifacts..."
-                          : "Select an artifact..."
+                          ? "加载制品中..."
+                          : "选择制品..."
                       }
                     />
                   </SelectTrigger>
@@ -817,7 +817,7 @@ export default function SecurityDashboardPage() {
                     {!artifactsLoading &&
                       (artifactsList?.items ?? []).length === 0 && (
                         <SelectItem value="__none__" disabled>
-                          No artifacts found
+                          未找到制品
                         </SelectItem>
                       )}
                   </SelectContent>
@@ -835,7 +835,7 @@ export default function SecurityDashboardPage() {
                 setScanMode("repo");
               }}
             >
-              Cancel
+              取消
             </Button>
             <Button
               disabled={
@@ -854,7 +854,7 @@ export default function SecurityDashboardPage() {
                 }
               }}
             >
-              {triggerScanMutation.isPending ? "Starting..." : "Start Scan"}
+              {triggerScanMutation.isPending ? "启动中..." : "开始扫描"}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -44,7 +44,7 @@ export function ArtifactScansSection({ artifactId }: { artifactId: string }) {
   const columns: DataTableColumn<ScanResult>[] = [
     {
       id: "status",
-      header: "Status",
+      header: "状态",
       accessor: (s) => s.status,
       cell: (s) => (
         <Badge
@@ -57,13 +57,13 @@ export function ArtifactScansSection({ artifactId }: { artifactId: string }) {
     },
     {
       id: "scan_type",
-      header: "Type",
+      header: "类型",
       accessor: (s) => s.scan_type,
       cell: (s) => <span className="text-sm">{s.scan_type}</span>,
     },
     {
       id: "findings",
-      header: "Findings",
+      header: "发现",
       accessor: (s) => s.findings_count,
       sortable: true,
       cell: (s) => (
@@ -71,12 +71,12 @@ export function ArtifactScansSection({ artifactId }: { artifactId: string }) {
           <span className="font-medium">{s.findings_count}</span>
           {s.critical_count > 0 && (
             <Badge className={`${SEVERITY_BADGE.critical} border text-xs`}>
-              {s.critical_count} crit
+              {s.critical_count} 严重
             </Badge>
           )}
           {s.high_count > 0 && (
             <Badge className={`${SEVERITY_BADGE.high} border text-xs`}>
-              {s.high_count} high
+              {s.high_count} 高危
             </Badge>
           )}
         </div>
@@ -84,12 +84,12 @@ export function ArtifactScansSection({ artifactId }: { artifactId: string }) {
     },
     {
       id: "completed_at",
-      header: "Completed",
+      header: "完成时间",
       accessor: (s) => s.completed_at ?? s.created_at,
       sortable: true,
       cell: (s) => (
         <span className="text-xs text-muted-foreground">
-          {s.completed_at ? new Date(s.completed_at).toLocaleString() : "—"}
+          {s.completed_at ? new Date(s.completed_at).toLocaleString("zh-CN") : "—"}
         </span>
       ),
     },
@@ -101,7 +101,7 @@ export function ArtifactScansSection({ artifactId }: { artifactId: string }) {
           href={`/security/scans/${s.id}`}
           className="text-xs text-blue-600 hover:underline dark:text-blue-400"
         >
-          View findings
+          查看发现
         </Link>
       ),
     },
@@ -111,10 +111,10 @@ export function ArtifactScansSection({ artifactId }: { artifactId: string }) {
     <div className="space-y-4" data-testid="artifact-scans-section">
       <div className="flex items-center gap-3">
         <ShieldAlert className="size-5 text-muted-foreground" />
-        <h3 className="text-sm font-medium">Scan Results</h3>
+        <h3 className="text-sm font-medium">扫描结果</h3>
         {scans.length > 0 && (
           <Badge variant="secondary" className="text-xs">
-            {scans.length} scan{scans.length === 1 ? "" : "s"}
+            {scans.length} 次扫描
           </Badge>
         )}
       </div>
@@ -124,12 +124,12 @@ export function ArtifactScansSection({ artifactId }: { artifactId: string }) {
           <AlertTriangle className="size-5 text-red-600 dark:text-red-500 shrink-0 mt-0.5" />
           <div>
             <p className="text-sm font-medium text-red-800 dark:text-red-400">
-              Could not load scan results
+              无法加载扫描结果
             </p>
             <p className="text-xs text-red-700 dark:text-red-500 mt-1">
               {error instanceof Error
                 ? error.message
-                : "Unable to load scan results for this artifact."}
+                : "无法加载此制品的扫描结果。"}
             </p>
           </div>
         </div>
@@ -139,10 +139,10 @@ export function ArtifactScansSection({ artifactId }: { artifactId: string }) {
         <div className="flex flex-col items-center justify-center py-8 text-center">
           <Clock className="size-10 text-muted-foreground/50 mb-3" />
           <p className="text-sm text-muted-foreground">
-            No security scans have been run against this artifact yet.
+            尚未对此制品运行安全扫描。
           </p>
           <p className="text-xs text-muted-foreground mt-1">
-            Trigger a scan from the artifact actions menu to populate this section.
+            从制品操作菜单触发扫描以填充此部分。
           </p>
         </div>
       ) : (
@@ -153,7 +153,7 @@ export function ArtifactScansSection({ artifactId }: { artifactId: string }) {
           pageSize={scans.length}
           total={scans.length}
           onPageChange={() => {}}
-          emptyMessage="No scan results"
+          emptyMessage="暂无扫描结果"
           rowKey={(s) => s.id}
         />
       )}

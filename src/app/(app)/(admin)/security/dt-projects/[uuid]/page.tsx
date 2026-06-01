@@ -124,11 +124,11 @@ function FindingTriageRow({
   const updateMutation = useMutation({
     mutationFn: (req: UpdateAnalysisRequest) => dtApi.updateAnalysis(req),
     onSuccess: () => {
-      toast.success("Analysis state updated");
+      toast.success("分析状态已更新");
       queryClient.invalidateQueries({ queryKey: ["dt", "project-findings", projectUuid] });
       queryClient.invalidateQueries({ queryKey: ["dt", "project-metrics", projectUuid] });
     },
-    onError: mutationErrorToast("Failed to update analysis state"),
+    onError: mutationErrorToast("更新分析状态失败"),
   });
 
   const handleSave = () => {
@@ -261,29 +261,29 @@ function FindingTriageRow({
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 max-w-4xl">
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium text-muted-foreground">
-                  Justification
+                  理由
                 </Label>
                 <Input
                   value={justification}
                   onChange={(e) => setJustification(e.target.value)}
-                  placeholder="e.g., code not reachable"
+                  placeholder="例如，代码不可达"
                   className="h-8 text-xs"
                 />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium text-muted-foreground">
-                  Details
+                  详情
                 </Label>
                 <Input
                   value={details}
                   onChange={(e) => setDetails(e.target.value)}
-                  placeholder="Additional context..."
+                  placeholder="附加上下文..."
                   className="h-8 text-xs"
                 />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium text-muted-foreground">
-                  Suppress
+                  抑制
                 </Label>
                 <div className="flex items-center gap-2 h-8">
                   <Checkbox
@@ -293,7 +293,7 @@ function FindingTriageRow({
                     }
                   />
                   <span className="text-xs text-muted-foreground">
-                    Suppress finding
+                    抑制发现
                   </span>
                 </div>
               </div>
@@ -307,10 +307,10 @@ function FindingTriageRow({
                   {updateMutation.isPending ? (
                     <>
                       <Loader2 className="size-3 animate-spin mr-1" />
-                      Saving...
+                      保存中...
                     </>
                   ) : (
-                    "Save Triage"
+                    "保存分类"
                   )}
                 </Button>
               </div>
@@ -440,9 +440,9 @@ export default function DtProjectDetailPage() {
   const bulkUpdateMutation = useMutation({
     mutationFn: async () => {
       if (!findings || !uuid) return;
-      const selected = findings.filter((f) => selectedFindings.has(findingKey(f)));
+      const 已选择 = findings.filter((f) => selectedFindings.has(findingKey(f)));
       await Promise.all(
-        selected.map((f) =>
+        已选择.map((f) =>
           dtApi.updateAnalysis({
             project_uuid: uuid,
             component_uuid: f.component.uuid,
@@ -456,12 +456,12 @@ export default function DtProjectDetailPage() {
       );
     },
     onSuccess: () => {
-      toast.success(`Updated ${selectedFindings.size} finding(s)`);
+      toast.success(`已更新 ${selectedFindings.size} 个发现`);
       setSelectedFindings(new Set());
       queryClient.invalidateQueries({ queryKey: ["dt", "project-findings", uuid] });
       queryClient.invalidateQueries({ queryKey: ["dt", "project-metrics", uuid] });
     },
-    onError: mutationErrorToast("Failed to update some findings"),
+    onError: mutationErrorToast("更新部分发现失败"),
   });
 
   // -- loading state --
@@ -479,7 +479,7 @@ export default function DtProjectDetailPage() {
   const componentsColumns: DataTableColumn<DtComponentFull>[] = [
     {
       id: "name",
-      header: "Name",
+      header: "名称",
       accessor: (r) => (r.group ? `${r.group}/${r.name}` : r.name),
       sortable: true,
       cell: (r) => (
@@ -489,7 +489,7 @@ export default function DtProjectDetailPage() {
           </p>
           {r.isInternal && (
             <Badge variant="secondary" className="text-xs font-normal mt-0.5">
-              Internal
+              内部
             </Badge>
           )}
         </div>
@@ -497,7 +497,7 @@ export default function DtProjectDetailPage() {
     },
     {
       id: "version",
-      header: "Version",
+      header: "版本",
       accessor: (r) => r.version ?? "",
       sortable: true,
       cell: (r) =>
@@ -509,7 +509,7 @@ export default function DtProjectDetailPage() {
     },
     {
       id: "license",
-      header: "License",
+      header: "许可证",
       accessor: (r) =>
         r.resolvedLicense?.licenseId ?? r.resolvedLicense?.name ?? "",
       sortable: true,
@@ -519,12 +519,12 @@ export default function DtProjectDetailPage() {
             {r.resolvedLicense.licenseId ?? r.resolvedLicense.name}
           </Badge>
         ) : (
-          <span className="text-xs text-muted-foreground">Unknown</span>
+          <span className="text-xs text-muted-foreground">未知</span>
         ),
     },
     {
       id: "purl",
-      header: "Package URL",
+      header: "包 URL",
       accessor: (r) => r.purl ?? "",
       cell: (r) =>
         r.purl ? (
@@ -541,7 +541,7 @@ export default function DtProjectDetailPage() {
   const violationsColumns: DataTableColumn<DtPolicyViolation>[] = [
     {
       id: "state",
-      header: "State",
+      header: "状态",
       accessor: (r) => r.policyCondition.policy.violationState,
       sortable: true,
       cell: (r) => {
@@ -558,7 +558,7 @@ export default function DtProjectDetailPage() {
     },
     {
       id: "policy",
-      header: "Policy",
+      header: "策略",
       accessor: (r) => r.policyCondition.policy.name,
       sortable: true,
       cell: (r) => (
@@ -569,7 +569,7 @@ export default function DtProjectDetailPage() {
     },
     {
       id: "type",
-      header: "Type",
+      header: "类型",
       accessor: (r) => r.type,
       sortable: true,
       cell: (r) => (
@@ -580,7 +580,7 @@ export default function DtProjectDetailPage() {
     },
     {
       id: "condition",
-      header: "Condition",
+      header: "条件",
       accessor: (r) => `${r.policyCondition.subject} ${r.policyCondition.operator}`,
       cell: (r) => (
         <div className="text-xs">
@@ -632,7 +632,7 @@ export default function DtProjectDetailPage() {
           onClick={() => router.push("/security/dt-projects")}
         >
           <ArrowLeft className="size-4 mr-1" />
-          DT Projects
+          DT 项目
         </Button>
         <span>/</span>
         <span className="font-medium text-foreground">
@@ -643,7 +643,7 @@ export default function DtProjectDetailPage() {
       {/* Project header */}
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">
-          {project?.name ?? "Loading..."}
+          {project?.name ?? "加载中..."}
           {project?.version && (
             <Badge variant="secondary" className="ml-2 text-sm font-normal align-middle">
               {project.version}
@@ -657,7 +657,7 @@ export default function DtProjectDetailPage() {
         )}
         {project?.lastBomImport && (
           <p className="text-xs text-muted-foreground mt-1">
-            Last BOM import:{" "}
+            上次 BOM 导入：{" "}
             {new Date(project.lastBomImport).toLocaleString()}
             {project.lastBomImportFormat && (
               <span className="ml-1">({project.lastBomImportFormat})</span>
@@ -681,37 +681,37 @@ export default function DtProjectDetailPage() {
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
             <StatCard
               icon={AlertCircle}
-              label="Critical"
+              label="严重"
               value={metrics.critical}
               color={metrics.critical > 0 ? "red" : "green"}
             />
             <StatCard
               icon={AlertTriangle}
-              label="High"
+              label="高危"
               value={metrics.high}
               color={metrics.high > 0 ? "red" : "green"}
             />
             <StatCard
               icon={ShieldAlert}
-              label="Medium"
+              label="中危"
               value={metrics.medium}
               color={metrics.medium > 0 ? "yellow" : "green"}
             />
             <StatCard
               icon={Info}
-              label="Low"
+              label="低危"
               value={metrics.low}
               color="blue"
             />
             <StatCard
               icon={CheckCircle2}
-              label="Audited"
+              label="已审计"
               value={`${metrics.findingsAudited}/${metrics.findingsTotal}`}
               color="green"
             />
             <StatCard
               icon={Bug}
-              label="Risk Score"
+              label="风险评分"
               value={metrics.inheritedRiskScore}
               color={metrics.inheritedRiskScore >= 70 ? "red" : metrics.inheritedRiskScore >= 40 ? "yellow" : "green"}
             />
@@ -724,7 +724,7 @@ export default function DtProjectDetailPage() {
         <TabsList>
           <TabsTrigger value="findings">
             <Bug className="size-4 mr-1.5" />
-            Findings
+            发现
             {findings && (
               <Badge variant="secondary" className="ml-1.5 text-xs">
                 {findings.length}
@@ -733,7 +733,7 @@ export default function DtProjectDetailPage() {
           </TabsTrigger>
           <TabsTrigger value="components">
             <Package className="size-4 mr-1.5" />
-            Components
+            组件
             {components && (
               <Badge variant="secondary" className="ml-1.5 text-xs">
                 {components.length}
@@ -742,7 +742,7 @@ export default function DtProjectDetailPage() {
           </TabsTrigger>
           <TabsTrigger value="violations">
             <Scale className="size-4 mr-1.5" />
-            Violations
+            违规
             {violations && (
               <Badge variant="secondary" className="ml-1.5 text-xs">
                 {violations.length}
@@ -751,11 +751,11 @@ export default function DtProjectDetailPage() {
           </TabsTrigger>
           <TabsTrigger value="metrics">
             <BarChart3 className="size-4 mr-1.5" />
-            Metrics
+            指标
           </TabsTrigger>
         </TabsList>
 
-        {/* Findings Tab - Enhanced with triage */}
+        {/* 发现 Tab - Enhanced with triage */}
         <TabsContent value="findings" className="mt-4 space-y-4">
           {/* Toolbar: Filter + Bulk operations */}
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -767,7 +767,7 @@ export default function DtProjectDetailPage() {
                   <SelectValue placeholder="Filter by state..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ALL">All States</SelectItem>
+                  <SelectItem value="ALL">全部状态</SelectItem>
                   {ANALYSIS_STATES.map((s) => (
                     <SelectItem key={s} value={s}>
                       <span className={`inline-block size-2 rounded-full mr-1.5 ${
@@ -789,11 +789,11 @@ export default function DtProjectDetailPage() {
                   onClick={() => setFilterState("ALL")}
                 >
                   <X className="size-3 mr-1" />
-                  Clear
+                  清除
                 </Button>
               )}
               <span className="text-xs text-muted-foreground ml-1">
-                {filteredFindings.length} finding(s)
+                {filteredFindings.length} 个发现
               </span>
             </div>
 
@@ -802,7 +802,7 @@ export default function DtProjectDetailPage() {
               <div className="flex items-center gap-2">
                 <CheckSquare className="size-4 text-muted-foreground" />
                 <span className="text-xs text-muted-foreground">
-                  {selectedFindings.size} selected
+                  {selectedFindings.size} 已选择
                 </span>
                 <Button
                   variant="ghost"
@@ -810,7 +810,7 @@ export default function DtProjectDetailPage() {
                   className="h-7 px-2 text-xs"
                   onClick={() => setSelectedFindings(new Set())}
                 >
-                  Deselect all
+                  取消全选
                 </Button>
               </div>
             )}
@@ -822,7 +822,7 @@ export default function DtProjectDetailPage() {
               <CardContent className="py-4">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-medium">Set State</Label>
+                    <Label className="text-xs font-medium">设置状态</Label>
                     <Select value={bulkState} onValueChange={setBulkState}>
                       <SelectTrigger size="sm" className="w-[160px] h-8 text-xs">
                         <SelectValue />
@@ -837,20 +837,20 @@ export default function DtProjectDetailPage() {
                     </Select>
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-medium">Justification</Label>
+                    <Label className="text-xs font-medium">理由</Label>
                     <Input
                       value={bulkJustification}
                       onChange={(e) => setBulkJustification(e.target.value)}
-                      placeholder="Optional..."
+                      placeholder="可选..."
                       className="h-8 text-xs w-[180px]"
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-medium">Details</Label>
+                    <Label className="text-xs font-medium">详情</Label>
                     <Input
                       value={bulkDetails}
                       onChange={(e) => setBulkDetails(e.target.value)}
-                      placeholder="Optional..."
+                      placeholder="可选..."
                       className="h-8 text-xs w-[180px]"
                     />
                   </div>
@@ -859,7 +859,7 @@ export default function DtProjectDetailPage() {
                       checked={bulkSuppressed}
                       onCheckedChange={(c) => setBulkSuppressed(c === true)}
                     />
-                    <span className="text-xs">Suppress</span>
+                    <span className="text-xs">抑制</span>
                   </div>
                   <Button
                     size="sm"
@@ -870,12 +870,12 @@ export default function DtProjectDetailPage() {
                     {bulkUpdateMutation.isPending ? (
                       <>
                         <Loader2 className="size-3 animate-spin mr-1" />
-                        Updating...
+                        更新中...
                       </>
                     ) : (
                       <>
                         <CheckSquare className="size-3 mr-1" />
-                        Update {selectedFindings.size} Finding(s)
+                        更新 {selectedFindings.size} 个发现
                       </>
                     )}
                   </Button>
@@ -884,7 +884,7 @@ export default function DtProjectDetailPage() {
             </Card>
           )}
 
-          {/* Findings table with triage */}
+          {/* 发现 table with triage */}
           {findingsLoading ? (
             <div className="space-y-3">
               <div className="rounded-md border">
@@ -893,11 +893,11 @@ export default function DtProjectDetailPage() {
                     <tr className="border-b bg-muted/50">
                       <th className="px-3 py-2.5 w-10" />
                       <th className="px-2 py-2.5 w-8" />
-                      <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">Severity</th>
-                      <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">Vulnerability</th>
+                      <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">严重性</th>
+                      <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">漏洞</th>
                       <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">CVSS</th>
-                      <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">Component</th>
-                      <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">Analysis</th>
+                      <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">组件</th>
+                      <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">分析</th>
                       <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">CWE</th>
                     </tr>
                   </thead>
@@ -922,19 +922,19 @@ export default function DtProjectDetailPage() {
                   <tr className="border-b bg-muted/50">
                     <th className="px-3 py-2.5 w-10" />
                     <th className="px-2 py-2.5 w-8" />
-                    <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">Severity</th>
-                    <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">Vulnerability</th>
+                    <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">严重性</th>
+                    <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">漏洞</th>
                     <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">CVSS</th>
-                    <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">Component</th>
-                    <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">Analysis</th>
+                    <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">组件</th>
+                    <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">分析</th>
                     <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">CWE</th>
                   </tr>
                 </thead>
               </table>
               <div className="flex items-center justify-center py-16 text-sm text-muted-foreground">
                 {filterState !== "ALL"
-                  ? `No findings with state "${formatAnalysisState(filterState)}".`
-                  : "No findings for this project."}
+                  ? `没有状态为 "${formatAnalysisState(filterState)}".`
+                  : "此项目暂无发现。"}
               </div>
             </div>
           ) : (
@@ -949,11 +949,11 @@ export default function DtProjectDetailPage() {
                       />
                     </th>
                     <th className="px-2 py-2.5 w-8" />
-                    <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">Severity</th>
-                    <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">Vulnerability</th>
+                    <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">严重性</th>
+                    <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">漏洞</th>
                     <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">CVSS</th>
-                    <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">Component</th>
-                    <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">Analysis</th>
+                    <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">组件</th>
+                    <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">分析</th>
                     <th className="px-3 py-2.5 text-left font-medium text-muted-foreground">CWE</th>
                   </tr>
                 </thead>
@@ -978,29 +978,29 @@ export default function DtProjectDetailPage() {
           )}
         </TabsContent>
 
-        {/* Components Tab */}
+        {/* 组件 Tab */}
         <TabsContent value="components" className="mt-4">
           <DataTable
             columns={componentsColumns}
             data={components ?? []}
             loading={componentsLoading}
-            emptyMessage="No components found in this project."
+            emptyMessage="此项目暂无组件。"
             rowKey={(r) => r.uuid}
           />
         </TabsContent>
 
-        {/* Violations Tab */}
+        {/* 违规 Tab */}
         <TabsContent value="violations" className="mt-4">
           <DataTable
             columns={violationsColumns}
             data={violations ?? []}
             loading={violationsLoading}
-            emptyMessage="No policy violations for this project."
+            emptyMessage="此项目暂无策略违规。"
             rowKey={(r) => r.uuid}
           />
         </TabsContent>
 
-        {/* Metrics Tab */}
+        {/* 指标 Tab */}
         <TabsContent value="metrics" className="mt-4">
           <div className="space-y-6">
             {metricsLoading ? (
@@ -1015,7 +1015,7 @@ export default function DtProjectDetailPage() {
                   <Card>
                     <CardHeader>
                       <CardTitle className="text-base">
-                        Vulnerability Distribution
+                        漏洞分布
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -1033,18 +1033,18 @@ export default function DtProjectDetailPage() {
                     <Card>
                       <CardHeader>
                         <CardTitle className="text-base">
-                          Audit Progress
+                          审计进度
                         </CardTitle>
                       </CardHeader>
                       <CardContent className="space-y-4">
                         <ProgressRow
-                          label="Findings Audited"
+                          label="已审计发现"
                           current={metrics.findingsAudited}
                           total={metrics.findingsTotal}
                           color="bg-green-500"
                         />
                         <ProgressRow
-                          label="Policy Violations"
+                          label="策略违规"
                           current={
                             metrics.policyViolationsFail +
                             metrics.policyViolationsWarn
@@ -1053,7 +1053,7 @@ export default function DtProjectDetailPage() {
                           color="bg-orange-500"
                         />
                         <ProgressRow
-                          label="Suppressions"
+                          label="抑制数"
                           current={metrics.suppressions}
                           total={metrics.findingsTotal}
                           color="bg-slate-500"
@@ -1063,7 +1063,7 @@ export default function DtProjectDetailPage() {
                     <Card>
                       <CardHeader>
                         <CardTitle className="text-base">
-                          Inherited Risk Score
+                          继承风险评分
                         </CardTitle>
                       </CardHeader>
                       <CardContent className="flex items-center justify-center">
@@ -1077,7 +1077,7 @@ export default function DtProjectDetailPage() {
                     <Card>
                       <CardHeader>
                         <CardTitle className="text-base">
-                          Vulnerability Trend (30 days)
+                          漏洞趋势（30 天）
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
@@ -1086,18 +1086,18 @@ export default function DtProjectDetailPage() {
                     </Card>
                   )}
 
-                  {/* Detailed metrics grid */}
+                  {/* 详细指标网格 */}
                   <Card>
                     <CardHeader>
                       <CardTitle className="text-base">
-                        Detailed Metrics
+                        详细指标
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="grid grid-cols-2 gap-x-8 gap-y-4 sm:grid-cols-3 lg:grid-cols-4">
                         <div>
                           <p className="text-xs text-muted-foreground mb-1">
-                            Total Vulnerabilities
+                            漏洞总数
                           </p>
                           <p className="text-lg font-semibold tabular-nums">
                             {metrics.vulnerabilities ?? (metrics.critical + metrics.high + metrics.medium + metrics.low + metrics.unassigned)}
@@ -1105,7 +1105,7 @@ export default function DtProjectDetailPage() {
                         </div>
                         <div>
                           <p className="text-xs text-muted-foreground mb-1">
-                            Findings Total
+                            发现总数
                           </p>
                           <p className="text-lg font-semibold tabular-nums">
                             {metrics.findingsTotal}
@@ -1113,7 +1113,7 @@ export default function DtProjectDetailPage() {
                         </div>
                         <div>
                           <p className="text-xs text-muted-foreground mb-1">
-                            Findings Audited
+                            已审计发现
                           </p>
                           <p className="text-lg font-semibold tabular-nums">
                             {metrics.findingsAudited}
@@ -1121,7 +1121,7 @@ export default function DtProjectDetailPage() {
                         </div>
                         <div>
                           <p className="text-xs text-muted-foreground mb-1">
-                            Findings Unaudited
+                            未审计发现
                           </p>
                           <p className="text-lg font-semibold tabular-nums">
                             {metrics.findingsUnaudited}
@@ -1129,7 +1129,7 @@ export default function DtProjectDetailPage() {
                         </div>
                         <div>
                           <p className="text-xs text-muted-foreground mb-1">
-                            Suppressions
+                            抑制数
                           </p>
                           <p className="text-lg font-semibold tabular-nums">
                             {metrics.suppressions}
@@ -1137,7 +1137,7 @@ export default function DtProjectDetailPage() {
                         </div>
                         <div>
                           <p className="text-xs text-muted-foreground mb-1">
-                            Policy Violations (Fail)
+                            策略违规（失败）
                           </p>
                           <p className="text-lg font-semibold tabular-nums text-red-600 dark:text-red-400">
                             {metrics.policyViolationsFail}
@@ -1145,7 +1145,7 @@ export default function DtProjectDetailPage() {
                         </div>
                         <div>
                           <p className="text-xs text-muted-foreground mb-1">
-                            Policy Violations (Warn)
+                            策略违规（警告）
                           </p>
                           <p className="text-lg font-semibold tabular-nums text-amber-600 dark:text-amber-400">
                             {metrics.policyViolationsWarn}
@@ -1153,7 +1153,7 @@ export default function DtProjectDetailPage() {
                         </div>
                         <div>
                           <p className="text-xs text-muted-foreground mb-1">
-                            Policy Violations (Info)
+                            策略违规（信息）
                           </p>
                           <p className="text-lg font-semibold tabular-nums text-blue-600 dark:text-blue-400">
                             {metrics.policyViolationsInfo}
@@ -1162,7 +1162,7 @@ export default function DtProjectDetailPage() {
                         {metrics.firstOccurrence && (
                           <div>
                             <p className="text-xs text-muted-foreground mb-1">
-                              First Occurrence
+                              首次出现
                             </p>
                             <p className="text-sm">
                               {new Date(metrics.firstOccurrence).toLocaleDateString()}
@@ -1172,7 +1172,7 @@ export default function DtProjectDetailPage() {
                         {metrics.lastOccurrence && (
                           <div>
                             <p className="text-xs text-muted-foreground mb-1">
-                              Last Occurrence
+                              最近出现
                             </p>
                             <p className="text-sm">
                               {new Date(metrics.lastOccurrence).toLocaleDateString()}

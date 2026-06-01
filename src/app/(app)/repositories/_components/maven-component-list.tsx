@@ -37,7 +37,7 @@ export function MavenComponentList({
   components,
   loading = false,
   // M7: actionable default — tells the user what to do, not just that it's empty.
-  emptyMessage = "No Maven components found. Switch to Flat to see raw files, or push an artifact with valid GAV coordinates.",
+  emptyMessage = "未找到 Maven 组件。切换到平铺视图查看原始文件，或推送具有有效 GAV 坐标的制品。",
   total,
 }: MavenComponentListProps) {
   if (loading) {
@@ -51,7 +51,7 @@ export function MavenComponentList({
         className="space-y-2"
         data-testid="maven-component-list-loading"
       >
-        <span className="sr-only">Loading Maven components…</span>
+        <span className="sr-only">加载 Maven 组件中…</span>
         {Array.from({ length: 4 }).map((_, i) => (
           <Skeleton key={i} className="h-12 w-full" />
         ))}
@@ -79,7 +79,7 @@ export function MavenComponentList({
       </ul>
       {typeof total === "number" && total > components.length && (
         <div className="border-t px-4 py-2 text-xs text-muted-foreground">
-          Showing {components.length} of {total} components
+          显示 {components.length} / {total} 个组件
         </div>
       )}
     </div>
@@ -144,15 +144,15 @@ function MavenComponentRow({ component }: MavenComponentRowProps) {
                 same data — the layout reorders via flex/grid.
               */}
               <span className="text-xs text-muted-foreground">
-                {fileCount} {fileCount === 1 ? "file" : "files"}
+                {fileCount} 个文件
                 <span className="mx-1.5" aria-hidden="true">·</span>
                 {formatBytes(component.size_bytes)}
                 <span className="mx-1.5" aria-hidden="true">·</span>
-                {component.download_count.toLocaleString()} downloads
+                {component.download_count.toLocaleString()} 次下载
               </span>
             </div>
             <Badge variant="outline" className="font-normal" aria-hidden="true">
-              {fileCount} {fileCount === 1 ? "file" : "files"}
+              {fileCount} 个文件
             </Badge>
           </Button>
         </CollapsibleTrigger>

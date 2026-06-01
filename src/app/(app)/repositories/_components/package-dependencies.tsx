@@ -184,10 +184,10 @@ export function PackageDependencies({ format, metadata }: PackageDependenciesPro
       <div className="flex flex-col items-center justify-center py-12 text-center">
         <AlertCircle className="size-8 text-muted-foreground/40 mb-2" />
         <p className="text-sm text-muted-foreground">
-          No dependency information available
+          暂无依赖信息
         </p>
         <p className="text-xs text-muted-foreground mt-1">
-          Dependencies are extracted from package metadata when available.
+          当包元数据可用时，依赖信息将从元数据中提取。
         </p>
       </div>
     );
@@ -201,17 +201,17 @@ export function PackageDependencies({ format, metadata }: PackageDependenciesPro
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <PackageIcon className="size-4" />
         <span>
-          {deps.length} dependenc{deps.length === 1 ? "y" : "ies"}
-          {scopes.length > 1 && ` across ${scopes.length} scopes`}
+          {deps.length} 个依赖
+          {scopes.length > 1 && `，跨 ${scopes.length} 个范围`}
         </span>
       </div>
 
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Package</TableHead>
-            <TableHead>Version</TableHead>
-            <TableHead>Scope</TableHead>
+            <TableHead>包</TableHead>
+            <TableHead>版本</TableHead>
+            <TableHead>范围</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

@@ -31,7 +31,7 @@ const TRUNCATE_CAP = 240;
 function truncateForToast(s: string): string {
   if (s.length <= TRUNCATE_CAP) return s;
   const dropped = s.length - TRUNCATE_CAP;
-  return `${s.slice(0, TRUNCATE_CAP)}… [truncated, ${dropped} more chars]`;
+  return `${s.slice(0, TRUNCATE_CAP)}… [已截断，还有${dropped}个字符]`;
 }
 
 /** Check whether a value is a non-null object (not an array). */
@@ -179,7 +179,7 @@ const PASSWORD_REUSE_PATTERNS = [
  * password history rules.
  */
 export const PASSWORD_REUSE_MESSAGE =
-  'This password was used recently. Please choose a different password.';
+  '此密码最近使用过，请选择一个不同的密码。';
 
 /**
  * Check whether an error from the backend indicates the submitted password

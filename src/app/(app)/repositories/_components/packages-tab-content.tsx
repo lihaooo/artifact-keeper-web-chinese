@@ -115,7 +115,7 @@ export function PackagesTabContent({
   const columns: DataTableColumn<Package>[] = [
     {
       id: "name",
-      header: "Name",
+      header: "名称",
       accessor: (p) => p.name,
       sortable: true,
       cell: (p) => (
@@ -133,7 +133,7 @@ export function PackagesTabContent({
     },
     {
       id: "version",
-      header: "Latest Version",
+      header: "最新版本",
       accessor: (p) => p.version ?? "",
       cell: (p) =>
         p.version ? (
@@ -146,7 +146,7 @@ export function PackagesTabContent({
     },
     {
       id: "downloads",
-      header: "Downloads",
+      header: "下载次数",
       accessor: (p) => p.download_count,
       sortable: true,
       cell: (p) => (
@@ -158,7 +158,7 @@ export function PackagesTabContent({
     },
     {
       id: "size",
-      header: "Size",
+      header: "大小",
       accessor: (p) => p.size_bytes,
       sortable: true,
       cell: (p) => (
@@ -169,7 +169,7 @@ export function PackagesTabContent({
     },
     {
       id: "updated",
-      header: "Updated",
+      header: "更新时间",
       accessor: (p) => p.updated_at,
       sortable: true,
       cell: (p) => (
@@ -186,7 +186,7 @@ export function PackagesTabContent({
         <div className="relative max-w-sm flex-1">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
           <Input
-            placeholder="Search packages..."
+            placeholder="搜索包..."
             className="pl-8"
             value={search}
             onChange={(e) => {
@@ -209,7 +209,7 @@ export function PackagesTabContent({
           setPage(1);
         }}
         loading={packagesLoading}
-        emptyMessage="No packages in this repository yet."
+        emptyMessage="此仓库中暂无包。"
         rowKey={(p) => p.id}
         onRowClick={handleSelectPackage}
       />
@@ -246,7 +246,7 @@ function PackageDetailView({
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="sm" onClick={onBack} className="gap-1">
           <ArrowLeft className="size-4" />
-          Back
+          返回
         </Button>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
@@ -257,7 +257,7 @@ function PackageDetailView({
           </div>
           {pkg.version && (
             <p className="text-sm text-muted-foreground mt-0.5">
-              Latest: v{pkg.version}
+              最新版本: v{pkg.version}
             </p>
           )}
         </div>
@@ -270,21 +270,21 @@ function PackageDetailView({
       {/* Sub-tabs */}
       <Tabs defaultValue="overview">
         <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="overview">概览</TabsTrigger>
           <TabsTrigger value="versions">
-            Versions{versions.length > 0 ? ` (${versions.length})` : ""}
+            版本{versions.length > 0 ? ` (${versions.length})` : ""}
           </TabsTrigger>
           <TabsTrigger value="files" className="gap-1">
             <FolderTree className="size-3.5" />
-            Files
+            文件
           </TabsTrigger>
           <TabsTrigger value="dependencies" className="gap-1">
             <GitBranch className="size-3.5" />
-            Dependencies
+            依赖
           </TabsTrigger>
           <TabsTrigger value="metadata" className="gap-1">
             <FileJson className="size-3.5" />
-            Metadata
+            元数据
           </TabsTrigger>
         </TabsList>
 
@@ -292,7 +292,7 @@ function PackageDetailView({
         <TabsContent value="overview" className="mt-4 space-y-6">
           {/* Install command */}
           <div>
-            <h4 className="text-sm font-medium mb-2">Install</h4>
+            <h4 className="text-sm font-medium mb-2">安装</h4>
             <div className="relative">
               <pre className="rounded-lg bg-muted p-3 text-xs font-mono overflow-x-auto pr-10">
                 {installCmd}
@@ -305,22 +305,22 @@ function PackageDetailView({
 
           {/* Metadata grid */}
           <div>
-            <h4 className="text-sm font-medium mb-2">Details</h4>
+            <h4 className="text-sm font-medium mb-2">详情</h4>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              <MetadataItem label="Format" value={repositoryFormat} />
-              <MetadataItem label="Repository" value={pkg.repository_key} />
+              <MetadataItem label="格式" value={repositoryFormat} />
+              <MetadataItem label="仓库" value={pkg.repository_key} />
               <MetadataItem
-                label="Size"
+                label="大小"
                 value={pkg.size_bytes ? formatBytes(pkg.size_bytes) : "--"}
               />
               <MetadataItem
-                label="Downloads"
+                label="下载次数"
                 value={formatNumber(pkg.download_count)}
               />
-              {license && <MetadataItem label="License" value={license} />}
-              {author && <MetadataItem label="Author" value={author} />}
-              <MetadataItem label="Created" value={formatDate(pkg.created_at)} />
-              <MetadataItem label="Updated" value={formatDate(pkg.updated_at)} />
+              {license && <MetadataItem label="许可证" value={license} />}
+              {author && <MetadataItem label="作者" value={author} />}
+              <MetadataItem label="创建时间" value={formatDate(pkg.created_at)} />
+              <MetadataItem label="更新时间" value={formatDate(pkg.updated_at)} />
             </div>
           </div>
         </TabsContent>
@@ -335,17 +335,17 @@ function PackageDetailView({
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <Tag className="size-8 text-muted-foreground/40 mb-2" />
               <p className="text-sm text-muted-foreground">
-                No version information available
+                暂无版本信息
               </p>
             </div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Version</TableHead>
-                  <TableHead className="text-right">Size</TableHead>
-                  <TableHead className="text-right">Downloads</TableHead>
-                  <TableHead>Date</TableHead>
+                  <TableHead>版本</TableHead>
+                  <TableHead className="text-right">大小</TableHead>
+                  <TableHead className="text-right">下载次数</TableHead>
+                  <TableHead>日期</TableHead>
                   <TableHead className="w-10" />
                 </TableRow>
               </TableHeader>
@@ -369,7 +369,7 @@ function PackageDetailView({
                     <TableCell>
                       <CopyButton
                         value={getInstallCommand(pkg.name, v.version, repositoryFormat)}
-                        label="Copy install command"
+                        label="复制安装命令"
                       />
                     </TableCell>
                   </TableRow>

@@ -59,52 +59,52 @@ interface NavItem {
 }
 
 const overviewItems: NavItem[] = [
-  { title: "Dashboard", href: "/", icon: LayoutDashboard },
+  { title: "仪表盘", href: "/", icon: LayoutDashboard },
 ];
 
 const artifactItems: NavItem[] = [
-  { title: "Repositories", href: "/repositories", icon: Database },
-  { title: "Packages", href: "/packages", icon: Boxes },
-  { title: "Builds", href: "/builds", icon: Hammer },
-  { title: "Staging", href: "/staging", icon: GitPullRequestArrow },
-  { title: "Setup Guide", href: "/setup", icon: BookOpen },
+  { title: "仓库", href: "/repositories", icon: Database },
+  { title: "包", href: "/packages", icon: Boxes },
+  { title: "构建", href: "/builds", icon: Hammer },
+  { title: "暂存", href: "/staging", icon: GitPullRequestArrow },
+  { title: "安装指南", href: "/setup", icon: BookOpen },
 ];
 
 const integrationItems: NavItem[] = [
-  { title: "Peers", href: "/peers", icon: Globe },
-  { title: "Replication", href: "/replication", icon: RefreshCw },
-  { title: "Plugins", href: "/plugins", icon: Puzzle },
-  { title: "Webhooks", href: "/webhooks", icon: Webhook },
-  { title: "Access Tokens", href: "/access-tokens", icon: Key },
-  { title: "Migration", href: "/migration", icon: ArrowRightLeft },
+  { title: "对等节点", href: "/peers", icon: Globe },
+  { title: "复制", href: "/replication", icon: RefreshCw },
+  { title: "插件", href: "/plugins", icon: Puzzle },
+  { title: "Webhook", href: "/webhooks", icon: Webhook },
+  { title: "访问令牌", href: "/access-tokens", icon: Key },
+  { title: "迁移", href: "/migration", icon: ArrowRightLeft },
 ];
 
 const securityItems: NavItem[] = [
-  { title: "Dashboard", href: "/security", icon: Shield },
-  { title: "Scan Results", href: "/security/scans", icon: Search },
-  { title: "DT Projects", href: "/security/dt-projects", icon: FolderSearch },
-  { title: "Quality Gates", href: "/quality-gates", icon: ShieldCheck },
-  { title: "Policies", href: "/security/policies", icon: FileCheck },
-  { title: "License Policies", href: "/license-policies", icon: Scale },
-  { title: "Permissions", href: "/permissions", icon: Lock },
+  { title: "仪表盘", href: "/security", icon: Shield },
+  { title: "扫描结果", href: "/security/scans", icon: Search },
+  { title: "DT 项目", href: "/security/dt-projects", icon: FolderSearch },
+  { title: "质量门", href: "/quality-gates", icon: ShieldCheck },
+  { title: "策略", href: "/security/policies", icon: FileCheck },
+  { title: "许可证策略", href: "/license-policies", icon: Scale },
+  { title: "权限", href: "/permissions", icon: Lock },
 ];
 
 const operationsItems: NavItem[] = [
-  { title: "Analytics", href: "/analytics", icon: BarChart3 },
-  { title: "Approvals", href: "/approvals", icon: ClipboardCheck },
-  { title: "Health", href: "/system-health", icon: HeartPulse },
-  { title: "Lifecycle", href: "/lifecycle", icon: Recycle },
-  { title: "Monitoring", href: "/monitoring", icon: Activity },
-  { title: "Telemetry", href: "/telemetry", icon: Radio },
+  { title: "分析", href: "/analytics", icon: BarChart3 },
+  { title: "审批", href: "/approvals", icon: ClipboardCheck },
+  { title: "健康状态", href: "/system-health", icon: HeartPulse },
+  { title: "生命周期", href: "/lifecycle", icon: Recycle },
+  { title: "监控", href: "/monitoring", icon: Activity },
+  { title: "遥测", href: "/telemetry", icon: Radio },
 ];
 
 const adminItems: NavItem[] = [
-  { title: "Users", href: "/users", icon: Users },
-  { title: "Groups", href: "/groups", icon: UsersRound },
-  { title: "Service Accounts", href: "/service-accounts", icon: Bot },
-  { title: "Backups", href: "/backups", icon: HardDrive },
-  { title: "SSO Providers", href: "/settings/sso", icon: KeyRound },
-  { title: "Settings", href: "/settings", icon: Settings },
+  { title: "用户", href: "/users", icon: Users },
+  { title: "用户组", href: "/groups", icon: UsersRound },
+  { title: "服务账号", href: "/service-accounts", icon: Bot },
+  { title: "备份", href: "/backups", icon: HardDrive },
+  { title: "SSO 提供商", href: "/settings/sso", icon: KeyRound },
+  { title: "设置", href: "/settings", icon: Settings },
 ];
 
 function NavGroup({
@@ -179,7 +179,7 @@ export function AppSidebar() {
                     process.env.NEXT_PUBLIC_GIT_SHA !== "unknown"
                       ? ` (${process.env.NEXT_PUBLIC_GIT_SHA.slice(0, 7)})`
                       : ""}
-                    {health?.version ? ` / Server ${health.version}` : ""}
+                    {health?.version ? ` / 服务器 ${health.version}` : ""}
                     {health?.dirty && health?.commit
                       ? ` (${health.commit.slice(0, 7)})`
                       : ""}
@@ -191,11 +191,11 @@ export function AppSidebar() {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent className="pb-4">
-        <NavGroup label="Overview" items={overviewItems} pathname={pathname} />
-        <NavGroup label="Artifacts" items={artifactItems} pathname={pathname} />
+        <NavGroup label="概览" items={overviewItems} pathname={pathname} />
+        <NavGroup label="制品" items={artifactItems} pathname={pathname} />
         {isAuthenticated && (
           <NavGroup
-            label="Integration"
+            label="集成"
             items={visibleIntegrationItems}
             pathname={pathname}
           />
@@ -203,17 +203,17 @@ export function AppSidebar() {
         {isAdmin && (
           <>
             <NavGroup
-              label="Security"
+              label="安全"
               items={securityItems}
               pathname={pathname}
             />
             <NavGroup
-              label="Operations"
+              label="运维"
               items={operationsItems}
               pathname={pathname}
             />
             <NavGroup
-              label="Administration"
+              label="管理"
               items={adminItems}
               pathname={pathname}
             />

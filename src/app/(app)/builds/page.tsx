@@ -75,7 +75,7 @@ function formatDuration(ms: number | undefined): string {
 
 function formatDateTime(dateStr: string | undefined): string {
   if (!dateStr) return "--";
-  return new Date(dateStr).toLocaleDateString("en-US", {
+  return new Date(dateStr).toLocaleDateString("zh-CN", {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -116,11 +116,11 @@ function statusBadgeVariant(
 }
 
 const STATUS_OPTIONS: { value: BuildStatus; label: string }[] = [
-  { value: "success", label: "Success" },
-  { value: "failed", label: "Failed" },
-  { value: "running", label: "Running" },
-  { value: "pending", label: "Pending" },
-  { value: "cancelled", label: "Cancelled" },
+  { value: "success", label: "成功" },
+  { value: "failed", label: "失败" },
+  { value: "running", label: "运行中" },
+  { value: "pending", label: "等待中" },
+  { value: "cancelled", label: "已取消" },
 ];
 
 // ---- Build Detail Dialog ----
@@ -150,7 +150,7 @@ function BuildDetailDialog({
 
         <Tabs defaultValue="overview" className="flex-1 overflow-hidden flex flex-col">
           <TabsList>
-            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="overview">概览</TabsTrigger>
             <TabsTrigger value="modules">
               Modules ({build.modules?.length ?? 0})
             </TabsTrigger>
@@ -220,14 +220,14 @@ function BuildDetailDialog({
 
               {build.vcs_message && (
                 <div className="text-sm text-muted-foreground">
-                  <span className="font-medium text-foreground">Commit:</span>{" "}
+                  <span className="font-medium text-foreground">提交:</span>{" "}
                   {build.vcs_message}
                 </div>
               )}
 
               {build.agent && (
                 <div className="text-sm text-muted-foreground">
-                  Triggered by{" "}
+                  触发者{" "}
                   <span className="font-medium text-foreground">
                     {build.agent}
                   </span>
@@ -242,7 +242,7 @@ function BuildDetailDialog({
                   className="gap-1.5"
                 >
                   <ArrowRightLeft className="size-3.5" />
-                  Compare with another build
+                  与另一个构建对比
                 </Button>
               </div>
             </div>
@@ -346,11 +346,11 @@ function BuildDiffDialog({
             {/* Build IDs */}
             <div className="grid grid-cols-2 gap-4">
               <div className="rounded-lg border p-3">
-                <p className="text-xs text-muted-foreground mb-1">Build A</p>
+                <p className="text-xs text-muted-foreground mb-1">构建 A</p>
                 <code className="text-xs">{diff.build_a.slice(0, 8)}</code>
               </div>
               <div className="rounded-lg border p-3">
-                <p className="text-xs text-muted-foreground mb-1">Build B</p>
+                <p className="text-xs text-muted-foreground mb-1">构建 B</p>
                 <code className="text-xs">{diff.build_b.slice(0, 8)}</code>
               </div>
             </div>
@@ -359,7 +359,7 @@ function BuildDiffDialog({
             {diff.added.length > 0 && (
               <div>
                 <h3 className="text-sm font-medium mb-2">
-                  Added ({diff.added.length})
+                  新增 ({diff.added.length})
                 </h3>
                 <div className="space-y-1">
                   {diff.added.map((art) => (
@@ -384,7 +384,7 @@ function BuildDiffDialog({
             {diff.removed.length > 0 && (
               <div>
                 <h3 className="text-sm font-medium mb-2">
-                  Removed ({diff.removed.length})
+                  移除 ({diff.removed.length})
                 </h3>
                 <div className="space-y-1">
                   {diff.removed.map((art) => (
@@ -409,14 +409,14 @@ function BuildDiffDialog({
             {diff.modified.length > 0 && (
               <div>
                 <h3 className="text-sm font-medium mb-2">
-                  Modified ({diff.modified.length})
+                  修改 ({diff.modified.length})
                 </h3>
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead className="text-right">Old Size</TableHead>
-                      <TableHead className="text-right">New Size</TableHead>
+                      <TableHead>名称</TableHead>
+                      <TableHead className="text-right">旧大小</TableHead>
+                      <TableHead className="text-right">新大小</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -441,7 +441,7 @@ function BuildDiffDialog({
             {diff.added.length === 0 && diff.removed.length === 0 && diff.modified.length === 0 && (
               <div className="flex flex-col items-center justify-center py-12 text-center">
                 <p className="text-sm text-muted-foreground">
-                  No differences found between these builds
+                  这两个构建之间没有差异
                 </p>
               </div>
             )}
@@ -543,9 +543,9 @@ export default function BuildsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Builds</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">构建</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            View build history, details, and comparisons
+            查看构建历史、详情和对比
           </p>
         </div>
         {comparisonMode && (
@@ -567,8 +567,8 @@ export default function BuildsPage() {
           <ArrowRightLeft className="size-4 text-primary shrink-0" />
           <p className="text-sm">
             {compareBuildA && !compareBuildB
-              ? "Select another build to compare"
-              : "Select the first build to compare"}
+              ? "选择另一个构建进行对比"
+              : "选择第一个构建进行对比"}
           </p>
         </div>
       )}
@@ -580,7 +580,7 @@ export default function BuildsPage() {
             <div className="relative flex-1 min-w-[200px]">
               <SearchIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
               <Input
-                placeholder="Search builds..."
+                placeholder="搜索构建..."
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value);
@@ -601,7 +601,7 @@ export default function BuildsPage() {
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="__all__">All statuses</SelectItem>
+                <SelectItem value="__all__">所有状态</SelectItem>
                 {STATUS_OPTIONS.map((opt) => (
                   <SelectItem key={opt.value} value={opt.value}>
                     {opt.label}
@@ -617,7 +617,7 @@ export default function BuildsPage() {
               <SelectContent>
                 <SelectItem value="created_at">Date</SelectItem>
                 <SelectItem value="build_number">Build Number</SelectItem>
-                <SelectItem value="duration">Duration</SelectItem>
+                <SelectItem value="duration">持续时间</SelectItem>
               </SelectContent>
             </Select>
 
@@ -655,20 +655,20 @@ export default function BuildsPage() {
           ) : builds.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <Hammer className="size-10 text-muted-foreground/40 mb-3" />
-              <p className="text-sm text-muted-foreground">No builds found</p>
+              <p className="text-sm text-muted-foreground">未找到构建</p>
             </div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-10" />
-                  <TableHead>Build</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Started</TableHead>
-                  <TableHead>Duration</TableHead>
-                  <TableHead>Branch</TableHead>
-                  <TableHead className="text-right">Modules</TableHead>
-                  <TableHead className="text-right">Artifacts</TableHead>
+                  <TableHead>构建</TableHead>
+                  <TableHead>状态</TableHead>
+                  <TableHead>开始时间</TableHead>
+                  <TableHead>持续时间</TableHead>
+                  <TableHead>分支</TableHead>
+                  <TableHead className="text-right">模块</TableHead>
+                  <TableHead className="text-right">制品</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -700,7 +700,7 @@ export default function BuildsPage() {
                         </div>
                         {build.agent && (
                           <p className="text-xs text-muted-foreground">
-                            by {build.agent}
+                            由 {build.agent}
                           </p>
                         )}
                       </TableCell>

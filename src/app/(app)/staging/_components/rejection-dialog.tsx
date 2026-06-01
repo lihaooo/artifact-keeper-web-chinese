@@ -60,7 +60,7 @@ export function RejectionDialog({
     onSuccess: (results) => {
       const count = results.length;
       toast.success(
-        `Successfully rejected ${count} artifact${count !== 1 ? "s" : ""}`
+        `成功拒绝 ${count} 个制品${count !== 1 ? "s" : ""}`
       );
       queryClient.invalidateQueries({
         queryKey: ["staging-artifacts", sourceRepoKey],
@@ -94,8 +94,8 @@ export function RejectionDialog({
           </DialogTitle>
           <DialogDescription>
             Reject {selectedArtifacts.length} artifact
-            {selectedArtifacts.length !== 1 ? "s" : ""} from staging. This
-            action will mark them as rejected and prevent promotion.
+            {selectedArtifacts.length !== 1 ? "s" : ""} 从暂存中。此
+            操作将标记它们为已拒绝并阻止提升。.
           </DialogDescription>
         </DialogHeader>
 
@@ -109,7 +109,7 @@ export function RejectionDialog({
             </Label>
             <Textarea
               id="reject-reason"
-              placeholder="Provide a reason for rejecting these artifacts..."
+              placeholder="提供拒绝这些制品的原因..."
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               rows={3}
@@ -118,10 +118,10 @@ export function RejectionDialog({
 
           {/* Notes (optional) */}
           <div className="space-y-2">
-            <Label htmlFor="reject-notes">Notes (optional)</Label>
+            <Label htmlFor="reject-notes">备注（可选）</Label>
             <Textarea
               id="reject-notes"
-              placeholder="Add any additional notes..."
+              placeholder="添加任何附加备注..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={2}
@@ -138,7 +138,7 @@ export function RejectionDialog({
             onClick={handleReject}
             disabled={rejectMutation.isPending || !reason.trim()}
           >
-            {rejectMutation.isPending ? "Rejecting..." : "Reject Artifact"}
+            {rejectMutation.isPending ? "拒绝中..." : "拒绝制品"}
           </Button>
         </DialogFooter>
       </DialogContent>

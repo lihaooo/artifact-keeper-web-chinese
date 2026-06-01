@@ -162,22 +162,22 @@ export default function ApprovalsPage() {
     mutationFn: ({ id, notes }: { id: string; notes?: string }) =>
       approvalsApi.approve(id, notes),
     onSuccess: () => {
-      toast.success("Approval request approved");
+      toast.success("审批请求已批准");
       queryClient.invalidateQueries({ queryKey: ["approvals"] });
       resetActionDialog();
     },
-    onError: mutationErrorToast("Failed to approve request"),
+    onError: mutationErrorToast("批准请求失败"),
   });
 
   const rejectMutation = useMutation({
     mutationFn: ({ id, notes }: { id: string; notes?: string }) =>
       approvalsApi.reject(id, notes),
     onSuccess: () => {
-      toast.success("Approval request rejected");
+      toast.success("审批请求已拒绝");
       queryClient.invalidateQueries({ queryKey: ["approvals"] });
       resetActionDialog();
     },
-    onError: mutationErrorToast("Failed to reject request"),
+    onError: mutationErrorToast("拒绝请求失败"),
   });
 
   const isActioning = approveMutation.isPending || rejectMutation.isPending;
@@ -200,9 +200,9 @@ export default function ApprovalsPage() {
   if (!user?.is_admin) {
     return (
       <div className="space-y-6">
-        <PageHeader title="Approval Queue" />
+        <PageHeader title="审批队列" />
         <Alert variant="destructive">
-          <AlertTitle>Access Denied</AlertTitle>
+          <AlertTitle>访问被拒绝</AlertTitle>
         </Alert>
       </div>
     );
@@ -355,8 +355,8 @@ export default function ApprovalsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Approval Queue"
-        description="Review and manage pending artifact promotion approval requests."
+        title="审批队列"
+        description="审核和管理待处理的制品晋升审批请求。"
         actions={
           <Button
             variant="outline"
@@ -382,19 +382,19 @@ export default function ApprovalsPage() {
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
           <StatCard
             icon={Clock}
-            label="Pending Requests"
+            label="待处理请求"
             value={pendingTotal}
             color={pendingTotal > 0 ? "yellow" : "green"}
           />
           <StatCard
             icon={CheckCircle2}
-            label="Approved"
+            label="已批准"
             value={historyData?.items?.filter((i) => i.status === "approved").length ?? 0}
             color="green"
           />
           <StatCard
             icon={XCircle}
-            label="Rejected"
+            label="已拒绝"
             value={historyData?.items?.filter((i) => i.status === "rejected").length ?? 0}
             color="red"
           />
@@ -418,7 +418,7 @@ export default function ApprovalsPage() {
               </Badge>
             )}
           </TabsTrigger>
-          <TabsTrigger value="history">History</TabsTrigger>
+          <TabsTrigger value="history">历史</TabsTrigger>
         </TabsList>
 
         {/* Pending Tab */}
@@ -432,7 +432,7 @@ export default function ApprovalsPage() {
           ) : pendingItems.length === 0 ? (
             <EmptyState
               icon={Inbox}
-              title="No pending approvals"
+              title="暂无待审批项"
               description="All promotion requests have been reviewed. New requests will appear here when artifacts are submitted for promotion."
             />
           ) : (
@@ -467,8 +467,8 @@ export default function ApprovalsPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="__all__">All</SelectItem>
-                <SelectItem value="approved">Approved</SelectItem>
-                <SelectItem value="rejected">Rejected</SelectItem>
+                <SelectItem value="approved">已批准</SelectItem>
+                <SelectItem value="rejected">已拒绝</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -482,7 +482,7 @@ export default function ApprovalsPage() {
           ) : historyItems.length === 0 ? (
             <EmptyState
               icon={ClipboardCheck}
-              title="No approval history"
+              title="暂无审批历史"
               description="Completed approval reviews will appear here once requests have been approved or rejected."
             />
           ) : (

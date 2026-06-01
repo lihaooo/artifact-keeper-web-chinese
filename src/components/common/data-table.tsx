@@ -59,7 +59,7 @@ export function DataTable<T>({
   onPageSizeChange,
   pageSizeOptions = [10, 20, 50, 100],
   loading = false,
-  emptyMessage = "No data found.",
+  emptyMessage = "暂无数据。",
   onRowClick,
   rowKey,
 }: DataTableProps<T>) {
@@ -91,8 +91,8 @@ export function DataTable<T>({
       if (bVal == null) return -1;
       if (typeof aVal === "string" && typeof bVal === "string") {
         return sortDir === "asc"
-          ? aVal.localeCompare(bVal)
-          : bVal.localeCompare(aVal);
+          ? aVal.localeCompare(bVal, "zh-CN")
+          : bVal.localeCompare(aVal, "zh-CN");
       }
       if (typeof aVal === "number" && typeof bVal === "number") {
         return sortDir === "asc" ? aVal - bVal : bVal - aVal;
@@ -107,7 +107,7 @@ export function DataTable<T>({
   if (loading) {
     return (
       <div className="space-y-3" role="status" aria-busy="true" aria-live="polite">
-        <span className="sr-only">Loading data</span>
+        <span className="sr-only">正在加载数据</span>
         <div className="rounded-md border">
           <Table>
             <TableHeader>
@@ -183,7 +183,7 @@ export function DataTable<T>({
                       <button
                         className="inline-flex items-center gap-1.5 hover:text-foreground transition-colors -ml-2 px-2 py-1 rounded-md hover:bg-accent"
                         onClick={() => handleSort(col.id)}
-                        aria-label={`Sort by ${col.header}`}
+                        aria-label={`按${col.header}排序`}
                       >
                         {col.header}
                         {isSorted ? (
@@ -242,7 +242,7 @@ export function DataTable<T>({
       {(onPageChange || onPageSizeChange) && (
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <span>Rows per page</span>
+            <span>每页行数</span>
             <Select
               value={String(pageSize)}
               onValueChange={(v) => onPageSizeChange?.(Number(v))}
@@ -260,8 +260,8 @@ export function DataTable<T>({
             </Select>
             <span className="ml-2">
               {totalItems > 0
-                ? `${(page - 1) * pageSize + 1}-${Math.min(page * pageSize, totalItems)} of ${totalItems}`
-                : "0 results"}
+                ? `${(page - 1) * pageSize + 1}-${Math.min(page * pageSize, totalItems)} / ${totalItems} 条结果`
+                : "0 条结果"}
             </span>
           </div>
           <div className="flex items-center gap-1">
@@ -270,19 +270,19 @@ export function DataTable<T>({
               size="icon-sm"
               disabled={page <= 1}
               onClick={() => onPageChange?.(page - 1)}
-              aria-label="Previous page"
+              aria-label="上一页"
             >
               <ChevronLeft className="size-4" />
             </Button>
             <span className="px-2 text-sm text-muted-foreground">
-              Page {page} of {totalPages}
+              第 {page} 页，共 {totalPages} 页
             </span>
             <Button
               variant="outline"
               size="icon-sm"
               disabled={page >= totalPages}
               onClick={() => onPageChange?.(page + 1)}
-              aria-label="Next page"
+              aria-label="下一页"
             >
               <ChevronRight className="size-4" />
             </Button>

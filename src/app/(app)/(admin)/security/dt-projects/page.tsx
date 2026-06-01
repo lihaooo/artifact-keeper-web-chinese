@@ -123,7 +123,7 @@ export default function DtProjectsPage() {
   const columns: DataTableColumn<ProjectRow>[] = [
     {
       id: "name",
-      header: "Name",
+      header: "名称",
       accessor: (r) => r.project.name,
       sortable: true,
       cell: (r) => (
@@ -139,7 +139,7 @@ export default function DtProjectsPage() {
     },
     {
       id: "version",
-      header: "Version",
+      header: "版本",
       accessor: (r) => r.project.version ?? "",
       sortable: true,
       cell: (r) =>
@@ -153,7 +153,7 @@ export default function DtProjectsPage() {
     },
     {
       id: "lastBomImport",
-      header: "Last BOM Import",
+      header: "上次 BOM 导入",
       accessor: (r) => r.project.lastBomImport ?? 0,
       sortable: true,
       cell: (r) =>
@@ -163,13 +163,13 @@ export default function DtProjectsPage() {
           </span>
         ) : (
           <Badge variant="secondary" className="text-xs font-normal">
-            Never
+            从未
           </Badge>
         ),
     },
     {
       id: "critical",
-      header: "Critical",
+      header: "严重",
       accessor: (r) => r.metrics?.critical ?? 0,
       sortable: true,
       cell: (r) =>
@@ -181,7 +181,7 @@ export default function DtProjectsPage() {
     },
     {
       id: "high",
-      header: "High",
+      header: "高危",
       accessor: (r) => r.metrics?.high ?? 0,
       sortable: true,
       cell: (r) =>
@@ -193,7 +193,7 @@ export default function DtProjectsPage() {
     },
     {
       id: "medium",
-      header: "Medium",
+      header: "中危",
       accessor: (r) => r.metrics?.medium ?? 0,
       sortable: true,
       cell: (r) =>
@@ -205,7 +205,7 @@ export default function DtProjectsPage() {
     },
     {
       id: "low",
-      header: "Low",
+      header: "低危",
       accessor: (r) => r.metrics?.low ?? 0,
       sortable: true,
       cell: (r) =>
@@ -217,7 +217,7 @@ export default function DtProjectsPage() {
     },
     {
       id: "risk",
-      header: "Risk Score",
+      header: "风险评分",
       accessor: (r) => r.metrics?.inheritedRiskScore ?? 0,
       sortable: true,
       cell: (r) =>
@@ -240,8 +240,8 @@ export default function DtProjectsPage() {
     return (
       <div className="space-y-6">
         <PageHeader
-          title="DT Projects"
-          description="Browse Dependency-Track projects and their vulnerability metrics."
+          title="DT 项目"
+          description="浏览 Dependency-Track 项目及其漏洞指标。"
           actions={
             <Button
               variant="outline"
@@ -249,7 +249,7 @@ export default function DtProjectsPage() {
               onClick={() => router.push("/security")}
             >
               <ArrowLeft className="size-4" />
-              Back to Security
+              返回安全
             </Button>
           }
         />
@@ -257,11 +257,10 @@ export default function DtProjectsPage() {
           <AlertTriangle className="size-5 text-yellow-600 dark:text-yellow-500 shrink-0 mt-0.5" />
           <div>
             <p className="text-sm font-medium text-yellow-800 dark:text-yellow-400">
-              Dependency-Track is unavailable
+              Dependency-Track 当前不可用
             </p>
             <p className="text-xs text-yellow-700 dark:text-yellow-500 mt-1">
-              The Dependency-Track integration is currently disconnected.
-              Projects cannot be displayed until the service recovers.
+              Dependency-Track 集成当前已断开。在服务恢复之前无法显示项目。
             </p>
           </div>
         </div>
@@ -272,8 +271,8 @@ export default function DtProjectsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="DT Projects"
-        description="Browse Dependency-Track projects and their vulnerability metrics."
+        title="DT 项目"
+        description="浏览 Dependency-Track 项目及其漏洞指标。"
         actions={
           <Button
             variant="outline"
@@ -281,7 +280,7 @@ export default function DtProjectsPage() {
             onClick={() => router.push("/security")}
           >
             <ArrowLeft className="size-4" />
-            Back to Security
+            返回安全
           </Button>
         }
       />
@@ -290,7 +289,7 @@ export default function DtProjectsPage() {
       <div className="relative max-w-sm">
         <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          placeholder="Search projects..."
+          placeholder="搜索项目..."
           className="pl-9"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -304,8 +303,8 @@ export default function DtProjectsPage() {
         loading={projectsLoading}
         emptyMessage={
           searchQuery.trim()
-            ? "No projects match your search."
-            : "No Dependency-Track projects found."
+            ? "没有项目匹配您的搜索。"
+            : "未找到 Dependency-Track 项目。"
         }
         onRowClick={(r) =>
           router.push(`/security/dt-projects/${r.project.uuid}`)

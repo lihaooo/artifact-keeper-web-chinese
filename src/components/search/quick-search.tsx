@@ -115,11 +115,11 @@ export function QuickSearch({ open, onOpenChange }: QuickSearchProps) {
     <CommandDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Quick Search"
-      description="Search for repositories, packages, and artifacts"
+      title="快速搜索"
+      description="搜索仓库、包和制品"
     >
       <CommandInput
-        placeholder="Search repositories, packages, artifacts..."
+        placeholder="搜索仓库、包、制品..."
         value={query}
         onValueChange={setQuery}
       />
@@ -131,15 +131,15 @@ export function QuickSearch({ open, onOpenChange }: QuickSearchProps) {
         )}
 
         {!isLoading && query.length >= 2 && results.length === 0 && (
-          <CommandEmpty>No results found for &ldquo;{query}&rdquo;</CommandEmpty>
+          <CommandEmpty>未找到关于 &ldquo;{query}&rdquo; 的结果</CommandEmpty>
         )}
 
         {!isLoading && query.length < 2 && (
-          <CommandEmpty>Type at least 2 characters to search...</CommandEmpty>
+          <CommandEmpty>至少输入 2 个字符进行搜索...</CommandEmpty>
         )}
 
         {repositories.length > 0 && (
-          <CommandGroup heading="Repositories">
+          <CommandGroup heading="仓库">
             {repositories.map((result) => (
               <CommandItem
                 key={`repo-${result.id}`}
@@ -161,7 +161,7 @@ export function QuickSearch({ open, onOpenChange }: QuickSearchProps) {
         {packages.length > 0 && (
           <>
             {repositories.length > 0 && <CommandSeparator />}
-            <CommandGroup heading="Packages">
+            <CommandGroup heading="包">
               {packages.map((result) => (
                 <CommandItem
                   key={`pkg-${result.id}`}
@@ -193,7 +193,7 @@ export function QuickSearch({ open, onOpenChange }: QuickSearchProps) {
             {(repositories.length > 0 || packages.length > 0) && (
               <CommandSeparator />
             )}
-            <CommandGroup heading="Artifacts">
+            <CommandGroup heading="制品">
               {artifacts.map((result) => (
                 <CommandItem
                   key={`art-${result.id}`}
@@ -221,7 +221,7 @@ export function QuickSearch({ open, onOpenChange }: QuickSearchProps) {
             <CommandGroup>
               <CommandItem onSelect={handleSearchMore}>
                 <ArrowRight className="size-4 text-muted-foreground" />
-                <span>Search for more results...</span>
+                <span>搜索更多结果...</span>
               </CommandItem>
             </CommandGroup>
           </>

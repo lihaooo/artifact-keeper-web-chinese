@@ -37,10 +37,10 @@ export function QuarantineBadge({
         "border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-700 dark:bg-amber-950/40 dark:text-amber-400 gap-1",
         className
       )}
-      aria-label="Quarantined"
+      aria-label="已隔离"
     >
       <ShieldAlert className="size-3" aria-hidden="true" />
-      Quarantined
+      已隔离
     </Badge>
   );
 

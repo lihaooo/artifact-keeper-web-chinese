@@ -34,12 +34,12 @@ import { PasswordPolicyHint } from "@/components/common/password-policy-hint";
 
 const changePasswordSchema = z
   .object({
-    currentPassword: z.string().min(1, "Current password is required"),
-    newPassword: z.string().min(8, "Password must be at least 8 characters"),
-    confirmPassword: z.string().min(1, "Please confirm your new password"),
+    currentPassword: z.string().min(1, "请输入当前密码"),
+    newPassword: z.string().min(8, "密码至少需要 8 个字符"),
+    confirmPassword: z.string().min(1, "请确认新密码"),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Passwords do not match",
+    message: "两次输入的密码不一致",
     path: ["confirmPassword"],
   });
 
@@ -63,14 +63,14 @@ export default function ChangePasswordPage() {
     setIsLoading(true);
     try {
       await changePassword(values.currentPassword, values.newPassword);
-      toast.success("Password changed successfully!");
+      toast.success("密码修改成功！");
       router.push("/");
     } catch (err) {
       if (isPasswordReuseError(err)) {
         form.setError("newPassword", { message: PASSWORD_REUSE_MESSAGE });
         toast.error(PASSWORD_REUSE_MESSAGE);
       } else {
-        toast.error(toUserMessage(err, "Failed to change password."));
+        toast.error(toUserMessage(err, "修改密码失败。"));
       }
     } finally {
       setIsLoading(false);
@@ -92,16 +92,16 @@ export default function ChangePasswordPage() {
             <Lock className="size-7 text-amber-600 dark:text-amber-400" />
           )}
         </div>
-        <CardTitle className="text-xl">{setupRequired ? "Complete Setup" : "Change Password"}</CardTitle>
+        <CardTitle className="text-xl">{setupRequired ? "完成设置" : "修改密码"}</CardTitle>
         <CardDescription>
           {setupRequired
-            ? "Set a secure admin password to unlock the API and complete first-time setup."
-            : "Your password was auto-generated or has been reset. Please set a new password to continue."}
+            ? "设置一个安全的管理员密码以解锁 API 并完成首次设置。"
+            : "您的密码是自动生成的或已被重置。请设置新密码以继续。"}
         </CardDescription>
         {setupRequired && (
           <div className="mt-3 flex items-start gap-2 rounded-lg bg-blue-50 px-3 py-2 text-left text-xs text-blue-700 dark:bg-blue-950/30 dark:text-blue-300">
             <Info className="mt-0.5 size-3.5 shrink-0" />
-            <span>All API endpoints are locked until this step is completed.</span>
+            <span>在此步骤完成之前，所有 API 端点将被锁定。</span>
           </div>
         )}
       </CardHeader>
@@ -113,11 +113,11 @@ export default function ChangePasswordPage() {
               name="currentPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Current Password</FormLabel>
+                  <FormLabel>当前密码</FormLabel>
                   <FormControl>
                     <Input
                       type="password"
-                      placeholder="Enter current password"
+                      placeholder="请输入当前密码"
                       autoComplete="current-password"
                       disabled={isLoading}
                       {...field}
@@ -132,11 +132,11 @@ export default function ChangePasswordPage() {
               name="newPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>New Password</FormLabel>
+                  <FormLabel>新密码</FormLabel>
                   <FormControl>
                     <Input
                       type="password"
-                      placeholder="Enter new password"
+                      placeholder="请输入新密码"
                       autoComplete="new-password"
                       disabled={isLoading}
                       {...field}
@@ -152,11 +152,11 @@ export default function ChangePasswordPage() {
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Confirm New Password</FormLabel>
+                  <FormLabel>确认新密码</FormLabel>
                   <FormControl>
                     <Input
                       type="password"
-                      placeholder="Confirm new password"
+                      placeholder="请确认新密码"
                       autoComplete="new-password"
                       disabled={isLoading}
                       {...field}
@@ -175,10 +175,10 @@ export default function ChangePasswordPage() {
               {isLoading ? (
                 <>
                   <Loader2 className="size-4 animate-spin" />
-                  Changing password...
+                  修改密码中...
                 </>
               ) : (
-                "Change Password"
+                "修改密码"
               )}
             </Button>
             <Button
@@ -188,7 +188,7 @@ export default function ChangePasswordPage() {
               onClick={handleLogout}
               disabled={isLoading}
             >
-              Logout instead
+              退出登录
             </Button>
           </form>
         </Form>

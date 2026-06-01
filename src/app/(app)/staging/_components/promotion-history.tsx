@@ -49,10 +49,10 @@ const STATUS_OPTIONS: Array<{
   value: string;
   label: string;
 }> = [
-  { value: "__all__", label: "All statuses" },
-  { value: "promoted", label: "Promoted" },
-  { value: "rejected", label: "Rejected" },
-  { value: "pending_approval", label: "Pending Approval" },
+  { value: "__all__", label: "所有状态" },
+  { value: "promoted", label: "已提升" },
+  { value: "rejected", label: "已拒绝" },
+  { value: "pending_approval", label: "待审批" },
 ];
 
 export function PromotionHistory({ repoKey }: PromotionHistoryProps) {
@@ -101,7 +101,7 @@ export function PromotionHistory({ repoKey }: PromotionHistoryProps) {
           }}
         >
           <SelectTrigger className="h-8 w-[180px] text-xs">
-            <SelectValue placeholder="Filter by status" />
+            <SelectValue placeholder="按状态筛选" />
           </SelectTrigger>
           <SelectContent>
             {STATUS_OPTIONS.map((o) => (
@@ -116,9 +116,9 @@ export function PromotionHistory({ repoKey }: PromotionHistoryProps) {
       {entries.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
           <ArrowRight className="size-8 mb-2 opacity-50" />
-          <p className="text-sm">No promotion history yet.</p>
+          <p className="text-sm">暂无提升历史。</p>
           <p className="text-xs mt-1">
-            Promotions from this staging repository will appear here.
+            此暂存仓库的提升记录将显示在这里。
           </p>
         </div>
       ) : (
@@ -183,9 +183,9 @@ const STATUS_ICON: Record<
 };
 
 const STATUS_LABEL: Record<PromotionHistoryStatus, string> = {
-  promoted: "Promoted",
-  rejected: "Rejected",
-  pending_approval: "Pending Approval",
+  promoted: "已提升",
+  rejected: "已拒绝",
+  pending_approval: "待审批",
 };
 
 function PromotionHistoryItem({ entry }: { entry: PromotionHistoryEntry }) {
@@ -252,7 +252,7 @@ function PromotionHistoryItem({ entry }: { entry: PromotionHistoryEntry }) {
                   )}
                   <span className="flex items-center gap-1">
                     <Calendar className="size-3" />
-                    {new Date(entry.created_at).toLocaleDateString("en-US", {
+                    {new Date(entry.created_at).toLocaleDateString("zh-CN", {
                       month: "short",
                       day: "numeric",
                       year: "numeric",
@@ -272,7 +272,7 @@ function PromotionHistoryItem({ entry }: { entry: PromotionHistoryEntry }) {
             {status === "rejected" && entry.rejection_reason && (
               <div className="pt-3">
                 <p className="text-xs font-medium text-red-600 dark:text-red-400 mb-1">
-                  Rejection Reason
+                  拒绝原因
                 </p>
                 <p className="text-sm">{entry.rejection_reason}</p>
               </div>
@@ -292,7 +292,7 @@ function PromotionHistoryItem({ entry }: { entry: PromotionHistoryEntry }) {
             {hasViolations && (
               <div className="pt-3">
                 <p className="text-xs font-medium text-muted-foreground mb-2">
-                  Policy Violations
+                  策略违规
                 </p>
                 <div className="space-y-1">
                   {entry.policy_result?.violations.map(
@@ -324,22 +324,22 @@ function PromotionHistoryItem({ entry }: { entry: PromotionHistoryEntry }) {
                   {entry.policy_result.cve_summary.critical_count > 0 && (
                     <span className="text-red-600 dark:text-red-400">
                       <XCircle className="size-3 inline mr-0.5" />
-                      {entry.policy_result.cve_summary.critical_count} critical
+                      {entry.policy_result.cve_summary.critical_count} 严重
                     </span>
                   )}
                   {entry.policy_result.cve_summary.high_count > 0 && (
                     <span className="text-orange-600 dark:text-orange-400">
-                      {entry.policy_result.cve_summary.high_count} high
+                      {entry.policy_result.cve_summary.high_count} 高
                     </span>
                   )}
                   {entry.policy_result.cve_summary.medium_count > 0 && (
                     <span className="text-yellow-600 dark:text-yellow-400">
-                      {entry.policy_result.cve_summary.medium_count} medium
+                      {entry.policy_result.cve_summary.medium_count} 中
                     </span>
                   )}
                   {entry.policy_result.cve_summary.low_count > 0 && (
                     <span className="text-blue-600 dark:text-blue-400">
-                      {entry.policy_result.cve_summary.low_count} low
+                      {entry.policy_result.cve_summary.low_count} 低
                     </span>
                   )}
                 </div>
@@ -354,12 +354,12 @@ function PromotionHistoryItem({ entry }: { entry: PromotionHistoryEntry }) {
                 <div className="text-xs">
                   {entry.policy_result.license_summary.denied_licenses.length > 0 && (
                     <p className="text-red-600 dark:text-red-400">
-                      Denied: {entry.policy_result.license_summary.denied_licenses.join(", ")}
+                      已拒绝：{entry.policy_result.license_summary.denied_licenses.join(", ")}
                     </p>
                   )}
                   {entry.policy_result.license_summary.licenses_found.length > 0 && (
                     <p className="text-muted-foreground">
-                      Found: {entry.policy_result.license_summary.licenses_found.slice(0, 5).join(", ")}
+                      已找到：{entry.policy_result.license_summary.licenses_found.slice(0, 5).join(", ")}
                       {entry.policy_result.license_summary.licenses_found.length > 5 && " ..."}
                     </p>
                   )}

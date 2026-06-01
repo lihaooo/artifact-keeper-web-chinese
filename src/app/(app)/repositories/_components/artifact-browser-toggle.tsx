@@ -47,12 +47,12 @@ export function ArtifactBrowserToggle({
 }: ArtifactBrowserToggleProps) {
   if (!supportsGrouping(format)) return null;
 
-  const groupedLabel = format === "docker" ? "Group by tag" : "Group by component";
+  const groupedLabel = format === "docker" ? "按标签分组" : "按组件分组";
 
   return (
     <div
       role="group"
-      aria-label="Artifact view mode"
+      aria-label="制品查看模式"
       className={cn(
         "inline-flex items-center rounded-md border bg-background p-0.5",
         className,
@@ -65,12 +65,12 @@ export function ArtifactBrowserToggle({
         size="sm"
         className="h-8 px-3 text-xs"
         aria-pressed={value === "flat"}
-        aria-label="Flat list view"
+        aria-label="平铺列表视图"
         data-testid="toggle-flat"
         onClick={() => onChange("flat")}
       >
         <List className="size-3.5" aria-hidden="true" />
-        Flat
+        平铺
       </Button>
       <Button
         type="button"
@@ -83,7 +83,7 @@ export function ArtifactBrowserToggle({
         onClick={() => onChange("grouped")}
       >
         <Boxes className="size-3.5" aria-hidden="true" />
-        Grouped
+        分组
       </Button>
     </div>
   );
