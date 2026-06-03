@@ -45,9 +45,27 @@ function adaptCheck(c: CheckStatus | null | undefined): { status: string; messag
   return { status: c.status, message: c.message ?? undefined };
 }
 
+// On a non-2xx /health response the SDK returns the parsed body as `error`.
+// A degraded backend still includes the version and check details, so detect
+// the HealthResponse shape and use it rather than discarding the version.
+function isSdkHealthResponse(value: unknown): value is SdkHealthResponse {
+  if (typeof value !== 'object' || value === null) return false;
+  const v = value as Record<string, unknown>;
+  return typeof v.version === 'string' && typeof v.checks === 'object' && v.checks !== null;
+}
+
 function adaptHealth(sdk: SdkHealthResponse): HealthResponse {
   const database = adaptCheck(sdk.checks.database) ?? { status: 'unknown' };
   const storage = adaptCheck(sdk.checks.storage) ?? { status: 'unknown' };
+  // Backend 1.2.0 renamed the search-engine health check from `meilisearch`
+  // to `opensearch`. The pinned SDK types only model `meilisearch`, so read
+  // the new field via passthrough and prefer it when present. Either field
+  // maps onto the single local `opensearch` check so the dashboard "Search
+  // Engine" card keeps rendering across both backend versions.
+  const checks = sdk.checks as typeof sdk.checks & {
+    opensearch?: CheckStatus | null;
+  };
+  const searchEngine = adaptCheck(checks.opensearch ?? checks.meilisearch);
   return {
     status: sdk.status,
     version: sdk.version,
@@ -57,7 +75,8 @@ function adaptHealth(sdk: SdkHealthResponse): HealthResponse {
       database,
       storage,
       security_scanner: adaptCheck(sdk.checks.security_scanner),
-      meilisearch: adaptCheck(sdk.checks.meilisearch),
+      opensearch: searchEngine,
+      meilisearch: searchEngine,
     },
   };
 }
@@ -92,7 +111,16 @@ export const adminApi = {
 
   getHealth: async (): Promise<HealthResponse> => {
     const { data, error } = await healthCheck();
-    if (error) throw error;
+    // The backend returns 503 with a full HealthResponse body (including the
+    // version) when a dependency is degraded. The SDK surfaces that body as
+    // `error`. Adapt it so the reported version stays visible even when the
+    // service is unhealthy (#456).
+    if (error) {
+      if (isSdkHealthResponse(error)) {
+        return adaptHealth(error);
+      }
+      throw error;
+    }
     return adaptHealth(assertData(data, 'adminApi.getHealth'));
   },
 

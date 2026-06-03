@@ -37,10 +37,22 @@ vi.mock("sonner", () => ({
 
 // Mock repositories API
 const mockUpdate = vi.fn();
+const mockUpdateAgePolicy = vi.fn();
+const mockGetCacheTtl = vi.fn();
+const mockSetCacheTtl = vi.fn();
 vi.mock("@/lib/api/repositories", () => ({
   repositoriesApi: {
     update: (...args: unknown[]) => mockUpdate(...args),
+    updateAgePolicy: (...args: unknown[]) => mockUpdateAgePolicy(...args),
+    getCacheTtl: (...args: unknown[]) => mockGetCacheTtl(...args),
+    setCacheTtl: (...args: unknown[]) => mockSetCacheTtl(...args),
   },
+}));
+
+// Mock the shared admin-settings hook (used for the read-only upload limit, #189)
+const mockUseAdminSettings = vi.fn();
+vi.mock("@/hooks/use-admin-settings", () => ({
+  useAdminSettings: () => mockUseAdminSettings(),
 }));
 
 // Mock lifecycle API
@@ -207,6 +219,19 @@ const baseRepo: Repository = {
   created_at: "2024-01-15T10:00:00Z",
   updated_at: "2024-06-20T14:30:00Z",
 };
+
+// Default admin-settings return: upload limit available. Individual tests can
+// override. clearAllMocks() preserves this implementation (it only clears
+// call history), so it survives the per-describe beforeEach hooks.
+mockUseAdminSettings.mockReturnValue({
+  data: {
+    storageSettings: {
+      storage_backend: "filesystem",
+      storage_path: "/data",
+      max_upload_size_bytes: 1073741824,
+    },
+  },
+});
 
 function createWrapper() {
   const client = new QueryClient({
@@ -749,5 +774,361 @@ describe("RepoSettingsTab - Quota unit switching", () => {
     // Should now show unsaved changes since unit changed
     // (the actual bytes value differs because 10 GB != 10 MB)
     expect(screen.getByText("You have unsaved changes")).toBeTruthy();
+  });
+});
+
+import { ageToMinutes } from "./repo-settings-tab";
+
+describe("ageToMinutes helper", () => {
+  it("converts days to minutes", () => {
+    expect(ageToMinutes("3", "days")).toBe(4320);
+  });
+
+  it("converts hours to minutes", () => {
+    expect(ageToMinutes("12", "hours")).toBe(720);
+  });
+
+  it("returns 0 for empty, zero, or negative input", () => {
+    expect(ageToMinutes("", "days")).toBe(0);
+    expect(ageToMinutes("0", "hours")).toBe(0);
+    expect(ageToMinutes("-5", "days")).toBe(0);
+  });
+
+  it("rounds fractional values to whole minutes", () => {
+    expect(ageToMinutes("1.5", "hours")).toBe(90);
+  });
+});
+
+describe("RepoSettingsTab - Package Age Policy (#265)", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockListPolicies.mockResolvedValue([]);
+  });
+
+  it("renders the age policy section with an enable toggle", () => {
+    render(<RepoSettingsTab repository={baseRepo} />, {
+      wrapper: createWrapper(),
+    });
+
+    expect(screen.getByText("Package Age Policy")).toBeTruthy();
+    expect(screen.getByLabelText("Enable age policy")).toBeTruthy();
+  });
+
+  it("keeps the cooldown input disabled until the policy is enabled", () => {
+    render(<RepoSettingsTab repository={baseRepo} />, {
+      wrapper: createWrapper(),
+    });
+
+    const duration = screen.getByLabelText("Cooldown period") as HTMLInputElement;
+    expect(duration.disabled).toBe(true);
+  });
+
+  it("saves the age policy with the configured duration in minutes", async () => {
+    mockUpdateAgePolicy.mockResolvedValue(undefined);
+    const user = userEvent.setup();
+
+    render(<RepoSettingsTab repository={baseRepo} />, {
+      wrapper: createWrapper(),
+    });
+
+    await user.click(screen.getByLabelText("Enable age policy"));
+
+    const duration = screen.getByLabelText("Cooldown period");
+    await user.clear(duration);
+    await user.type(duration, "7");
+
+    await user.click(screen.getByRole("button", { name: /save age policy/i }));
+
+    await waitFor(() => {
+      expect(mockUpdateAgePolicy).toHaveBeenCalledWith("maven-releases", {
+        enabled: true,
+        duration_minutes: 10080,
+      });
+    });
+  });
+
+  it("disables save and shows an error when the duration is invalid", async () => {
+    const user = userEvent.setup();
+
+    render(<RepoSettingsTab repository={baseRepo} />, {
+      wrapper: createWrapper(),
+    });
+
+    await user.click(screen.getByLabelText("Enable age policy"));
+
+    const duration = screen.getByLabelText("Cooldown period");
+    await user.clear(duration);
+
+    const saveBtn = screen.getByRole("button", { name: /save age policy/i });
+    expect((saveBtn as HTMLButtonElement).disabled).toBe(true);
+    expect(mockUpdateAgePolicy).not.toHaveBeenCalled();
+  });
+});
+
+describe("RepoSettingsTab - Upload size limit display (#189)", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockListPolicies.mockResolvedValue([]);
+    mockUseAdminSettings.mockReturnValue({
+      data: {
+        storageSettings: {
+          storage_backend: "filesystem",
+          storage_path: "/data",
+          max_upload_size_bytes: 1073741824,
+        },
+      },
+    });
+  });
+
+  it("shows the effective upload size limit read-only", () => {
+    render(<RepoSettingsTab repository={baseRepo} />, {
+      wrapper: createWrapper(),
+    });
+
+    const limit = screen.getByLabelText("Upload size limit") as HTMLInputElement;
+    expect(limit.value).toBe("1.0 GB");
+    expect(limit.disabled).toBe(true);
+  });
+
+  it("shows 'No limit' when the configured limit is zero", () => {
+    mockUseAdminSettings.mockReturnValue({
+      data: {
+        storageSettings: {
+          storage_backend: "filesystem",
+          storage_path: "/data",
+          max_upload_size_bytes: 0,
+        },
+      },
+    });
+
+    render(<RepoSettingsTab repository={baseRepo} />, {
+      wrapper: createWrapper(),
+    });
+
+    const limit = screen.getByLabelText("Upload size limit") as HTMLInputElement;
+    expect(limit.value).toBe("No limit");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Proxy Cache section (#448) -- shown only for Remote (proxy) repos. Pin
+// the visibility gate, the editing flow that plugs into the existing
+// hasChanges / Save / Discard workflow, and the inline-validation that
+// mirrors the backend's validate_cache_ttl range (1..=2_592_000).
+// ---------------------------------------------------------------------------
+
+const remoteRepo: Repository = {
+  ...baseRepo,
+  id: "repo-2",
+  key: "pypi-remote",
+  name: "PyPI Remote",
+  repo_type: "remote",
+  upstream_url: "https://pypi.org",
+};
+
+describe("RepoSettingsTab - Proxy Cache section (#448)", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockListPolicies.mockResolvedValue([]);
+    // Default to a stable success response so the Proxy Cache section
+    // can render its initial value -- per-test overrides via
+    // .mockResolvedValueOnce / .mockRejectedValueOnce.
+    mockGetCacheTtl.mockResolvedValue({
+      repository_key: "pypi-remote",
+      cache_ttl_seconds: 86400,
+    });
+  });
+
+  it("hides the Proxy Cache section for Local repos", () => {
+    render(<RepoSettingsTab repository={baseRepo} />, {
+      wrapper: createWrapper(),
+    });
+    expect(screen.queryByText("Proxy Cache")).toBeNull();
+    expect(screen.queryByLabelText("Cache TTL (seconds)")).toBeNull();
+    // No GET should be issued for non-Remote repos -- the useQuery is
+    // gated on `enabled: isRemote` to avoid wasted round-trips.
+    expect(mockGetCacheTtl).not.toHaveBeenCalled();
+  });
+
+  it("hides the Proxy Cache section for Virtual / Staging repos", () => {
+    const virtualRepo: Repository = { ...baseRepo, repo_type: "virtual" };
+    render(<RepoSettingsTab repository={virtualRepo} />, {
+      wrapper: createWrapper(),
+    });
+    expect(screen.queryByText("Proxy Cache")).toBeNull();
+    expect(mockGetCacheTtl).not.toHaveBeenCalled();
+  });
+
+  it("renders the Proxy Cache section with the TTL fetched from the backend on Remote repos", async () => {
+    render(<RepoSettingsTab repository={remoteRepo} />, {
+      wrapper: createWrapper(),
+    });
+    expect(screen.getByText("Proxy Cache")).toBeTruthy();
+    await waitFor(() => {
+      expect(screen.getByLabelText("Cache TTL (seconds)")).toHaveProperty(
+        "value",
+        "86400"
+      );
+    });
+    expect(mockGetCacheTtl).toHaveBeenCalledWith("pypi-remote");
+    // The human-readable hint should display alongside the input -- 86400s
+    // is the backend's default fallback (artifact-keeper#917) and the
+    // helper picks the largest unit that gives an integer magnitude, so
+    // "1 day" rather than "24 hours".
+    expect(screen.getByText(/1 day/)).toBeTruthy();
+  });
+
+  it("triggers the unsaved-changes bar when the TTL is edited", async () => {
+    const user = userEvent.setup();
+    render(<RepoSettingsTab repository={remoteRepo} />, {
+      wrapper: createWrapper(),
+    });
+    await waitFor(() => {
+      expect(screen.getByLabelText("Cache TTL (seconds)")).toHaveProperty(
+        "value",
+        "86400"
+      );
+    });
+
+    const input = screen.getByLabelText("Cache TTL (seconds)");
+    await user.clear(input);
+    await user.type(input, "3600");
+
+    expect(screen.getByText("You have unsaved changes")).toBeTruthy();
+  });
+
+  it("calls setCacheTtl on save and shows a success toast", async () => {
+    mockSetCacheTtl.mockResolvedValue({
+      repository_key: "pypi-remote",
+      cache_ttl_seconds: 3600,
+    });
+    const { toast } = await import("sonner");
+
+    const user = userEvent.setup();
+    render(<RepoSettingsTab repository={remoteRepo} />, {
+      wrapper: createWrapper(),
+    });
+    await waitFor(() => {
+      expect(screen.getByLabelText("Cache TTL (seconds)")).toHaveProperty(
+        "value",
+        "86400"
+      );
+    });
+
+    const input = screen.getByLabelText("Cache TTL (seconds)");
+    await user.clear(input);
+    await user.type(input, "3600");
+
+    await user.click(screen.getByRole("button", { name: /save changes/i }));
+
+    await waitFor(() => {
+      expect(mockSetCacheTtl).toHaveBeenCalledWith("pypi-remote", 3600);
+    });
+    expect(toast.success).toHaveBeenCalledWith("Cache TTL saved");
+    // The general-fields update mutation must NOT fire when only the
+    // TTL changed -- the two endpoints are independent and we don't want
+    // to send an empty PATCH that the audit log would record as a no-op
+    // edit.
+    expect(mockUpdate).not.toHaveBeenCalled();
+  });
+
+  it("shows the inline error and disables Save for out-of-range TTL", async () => {
+    const user = userEvent.setup();
+    render(<RepoSettingsTab repository={remoteRepo} />, {
+      wrapper: createWrapper(),
+    });
+    await waitFor(() => {
+      expect(screen.getByLabelText("Cache TTL (seconds)")).toHaveProperty(
+        "value",
+        "86400"
+      );
+    });
+
+    const input = screen.getByLabelText("Cache TTL (seconds)");
+    await user.clear(input);
+    // Above the backend max of 2,592,000 (30 days).
+    await user.type(input, "9999999");
+
+    expect(
+      screen.getByText(
+        /Must be a whole number between 1 and 2,592,000/i
+      )
+    ).toBeTruthy();
+    expect(input).toHaveProperty("ariaInvalid", "true");
+    const save = screen.getByRole("button", { name: /save changes/i });
+    expect(save).toHaveProperty("disabled", true);
+  });
+
+  it("zero is rejected as out-of-range (backend min is 1)", async () => {
+    const user = userEvent.setup();
+    render(<RepoSettingsTab repository={remoteRepo} />, {
+      wrapper: createWrapper(),
+    });
+    await waitFor(() => {
+      expect(screen.getByLabelText("Cache TTL (seconds)")).toHaveProperty(
+        "value",
+        "86400"
+      );
+    });
+
+    const input = screen.getByLabelText("Cache TTL (seconds)");
+    await user.clear(input);
+    await user.type(input, "0");
+
+    expect(
+      screen.getByText(
+        /Must be a whole number between 1 and 2,592,000/i
+      )
+    ).toBeTruthy();
+  });
+
+  it("Discard reverts the TTL override back to the fetched value", async () => {
+    const user = userEvent.setup();
+    render(<RepoSettingsTab repository={remoteRepo} />, {
+      wrapper: createWrapper(),
+    });
+    await waitFor(() => {
+      expect(screen.getByLabelText("Cache TTL (seconds)")).toHaveProperty(
+        "value",
+        "86400"
+      );
+    });
+
+    const input = screen.getByLabelText("Cache TTL (seconds)");
+    await user.clear(input);
+    await user.type(input, "3600");
+    expect(screen.getByText("You have unsaved changes")).toBeTruthy();
+
+    await user.click(screen.getByRole("button", { name: /discard/i }));
+
+    expect(screen.queryByText("You have unsaved changes")).toBeNull();
+    expect(input).toHaveProperty("value", "86400");
+  });
+
+  it("shows an error toast when setCacheTtl fails (e.g. 503 from a misconfigured proxy)", async () => {
+    mockSetCacheTtl.mockRejectedValue(
+      new Error("proxy service not configured")
+    );
+    const { toast } = await import("sonner");
+
+    const user = userEvent.setup();
+    render(<RepoSettingsTab repository={remoteRepo} />, {
+      wrapper: createWrapper(),
+    });
+    await waitFor(() => {
+      expect(screen.getByLabelText("Cache TTL (seconds)")).toHaveProperty(
+        "value",
+        "86400"
+      );
+    });
+
+    const input = screen.getByLabelText("Cache TTL (seconds)");
+    await user.clear(input);
+    await user.type(input, "3600");
+    await user.click(screen.getByRole("button", { name: /save changes/i }));
+
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith("Failed to save cache TTL");
+    });
   });
 });
