@@ -177,6 +177,21 @@ export interface Artifact {
   quarantine_reason?: string | null;
   created_at: string;
   metadata?: Record<string, unknown>;
+  /**
+   * When the proxy cache entry for this artifact was last written. Only
+   * populated for Remote (proxy) repositories whose backend has been
+   * upgraded with artifact-keeper#1541 (the new optional fields on
+   * `ArtifactResponse`). Renders the "Cached" row in the artifact details
+   * dialog when present.
+   */
+  cache_cached_at?: string | null;
+  /**
+   * When the proxy cache entry for this artifact will expire and be
+   * re-validated against upstream. Same gating as `cache_cached_at`.
+   * Renders the "Cache expires" row in the artifact details dialog when
+   * present.
+   */
+  cache_expires_at?: string | null;
 }
 
 export interface PaginatedResponse<T> {
@@ -236,6 +251,13 @@ export interface HealthResponse {
     database: { status: string; message?: string };
     storage: { status: string; message?: string };
     security_scanner?: { status: string; message?: string };
+    /**
+     * Search backend health. As of backend 1.2.0 the search index migrated
+     * from Meilisearch to OpenSearch and the health payload exposes this under
+     * `opensearch`. Older backends used `meilisearch`. Both are kept here so the
+     * UI renders the "Search Engine" card regardless of which backend answers.
+     */
+    opensearch?: { status: string; message?: string };
     meilisearch?: { status: string; message?: string };
   };
 }

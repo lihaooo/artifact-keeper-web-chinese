@@ -10,6 +10,7 @@ import {
   Trash2,
   Search,
   FileIcon,
+  FileArchive,
   Info,
   Shield,
   ExternalLink,
@@ -17,6 +18,10 @@ import {
   Layers,
   Package as PackageIcon,
   Settings,
+  RotateCcw,
+  Link2,
+  Upload,
+  Tag,
 } from "lucide-react";
 
 import { repositoriesApi } from "@/lib/api/repositories";
@@ -24,6 +29,8 @@ import { artifactsApi } from "@/lib/api/artifacts";
 import securityApi from "@/lib/api/security";
 import { mutationErrorToast } from "@/lib/error-utils";
 import { isActivelyQuarantined } from "@/lib/quarantine";
+import { buildPomDependencySnippet, parseMavenGav } from "@/lib/maven";
+import { formatRelativeTimestamp, formatCacheExpiry } from "@/lib/cache-time";
 import type { Artifact } from "@/types";
 import type { UpsertScanConfigRequest } from "@/types/security";
 import { SbomTabContent } from "./sbom-tab-content";
@@ -31,6 +38,9 @@ import { SecurityTabContent } from "./security-tab-content";
 import { HealthTabContent } from "./health-tab-content";
 import { NotificationsTabContent } from "./notifications-tab-content";
 import { VirtualMembersPanel } from "./virtual-members-panel";
+import { PypiTracksPanel } from "./pypi-tracks-panel";
+import { RepoLabelsPanel } from "./repo-labels-panel";
+import { PackagesTabContent } from "./packages-tab-content";
 import {
   ArtifactBrowserToggle,
   supportsGrouping,
@@ -40,10 +50,10 @@ import { MavenComponentList } from "./maven-component-list";
 import { DockerTagList } from "./docker-tag-list";
 import { QuarantineBadge } from "@/components/common/quarantine-badge";
 import { QuarantineBanner } from "@/components/common/quarantine-banner";
-import { PackagesTabContent } from "./packages-tab-content";
 import { RepoSettingsTab } from "./repo-settings-tab";
 import { formatBytes, REPO_TYPE_COLORS } from "@/lib/utils";
 import { useAuth } from "@/providers/auth-provider";
+import { useSystemConfig } from "@/providers/system-config-provider";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -80,6 +90,17 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 import { DataTable, type DataTableColumn } from "@/components/common/data-table";
 import { CopyButton } from "@/components/common/copy-button";
@@ -95,6 +116,7 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
   const { isAuthenticated, user } = useAuth();
+  const { config: systemConfig } = useSystemConfig();
 
   // artifact search / pagination
   const [searchQuery, setSearchQuery] = useState("");
@@ -112,6 +134,12 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
   // artifact detail dialog
   const [detailOpen, setDetailOpen] = useState(false);
   const [selectedArtifact, setSelectedArtifact] = useState<Artifact | null>(null);
+
+  // Polite live region for destructive-action outcomes (delete / cache
+  // invalidate). Toasts alone are not reliably announced by screen readers,
+  // so the result is also written here. Kept separate from the view-mode
+  // status region below, whose content is derived from `viewMode`.
+  const [actionAnnounce, setActionAnnounce] = useState("");
 
   // security form local state
   const [secForm, setSecForm] = useState<UpsertScanConfigRequest | null>(null);
@@ -197,6 +225,7 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
       setDetailOpen(false);
       setSelectedArtifact(null);
       toast.success("制品已删除");
+      setActionAnnounce("制品已删除。");
     },
     onError: mutationErrorToast("删除制品失败"),
   });
@@ -208,6 +237,33 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
       toast.success(`已为 ${res.artifacts_queued} 个制品排队扫描。`);
     },
     onError: mutationErrorToast("触发扫描失败"),
+  });
+
+  // Invalidate a single cached entry on a Remote (proxy) repository
+  // (artifact-keeper#1539 / artifact-keeper-web#446). Backend rejects this on
+  // non-Remote repos with 400, but we also gate the button below on
+  // `repository.repo_type === "remote"` so the operation is never offered
+  // for repos without a cache.
+  const invalidateCacheMutation = useMutation({
+    mutationFn: (path: string) => artifactsApi.invalidateCache(repoKey, path),
+    onSuccess: () => {
+      // Drop the artifacts list and repo summary from the cache so the next
+      // fetch goes back to upstream (the underlying download endpoint will
+      // re-populate the proxy cache on the next access).
+      queryClient.invalidateQueries({ queryKey: ["artifacts", repoKey] });
+      queryClient.invalidateQueries({ queryKey: ["repository", repoKey] });
+      // The open dialog holds a stale copy of the artifact whose
+      // cache_cached_at / cache_expires_at fields no longer reflect reality.
+      // Close it rather than show outdated freshness fields; the artifacts
+      // list refetch above gives the operator the current state.
+      setDetailOpen(false);
+      setSelectedArtifact(null);
+      const message =
+        "Cache entry invalidated; next download will re-fetch from upstream.";
+      toast.success(message);
+      setActionAnnounce(message);
+    },
+    onError: mutationErrorToast("Failed to invalidate cache"),
   });
 
   const scanRepoMutation = useMutation({
@@ -273,6 +329,22 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
     setSelectedArtifact(artifact);
     setDetailOpen(true);
   }, []);
+
+  // Grouped (Maven) view only knows a file's path, not its full Artifact
+  // record.  Fetch the detail on demand so clicking a file row inside a GAV
+  // group opens the same dialog as the flat list (issues #444, #445).
+  const showDetailByPath = useCallback(
+    async (filePath: string, filename: string) => {
+      try {
+        const artifact = await artifactsApi.get(repoKey, filePath);
+        setSelectedArtifact(artifact);
+        setDetailOpen(true);
+      } catch {
+        toast.error(`Could not load details for ${filename}`);
+      }
+    },
+    [repoKey],
+  );
 
   // --- artifact columns ---
   const artifactColumns: DataTableColumn<Artifact>[] = [
@@ -559,18 +631,34 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
       {/* Tabs */}
       <Tabs defaultValue="artifacts">
         <TabsList variant="line">
-          <TabsTrigger value="artifacts">制品</TabsTrigger>
+          <TabsTrigger value="artifacts">
+            <FileArchive className="size-3.5 mr-1" />
+            制品
+          </TabsTrigger>
           <TabsTrigger value="packages">
             <PackageIcon className="size-3.5 mr-1" />
             包
           </TabsTrigger>
-          {isAuthenticated && <TabsTrigger value="upload">上传</TabsTrigger>}
+          {isAuthenticated && (
+            <TabsTrigger value="upload">
+              <Upload className="size-3.5 mr-1" />
+              上传
+            </TabsTrigger>
+          )}
           {repository.repo_type === "virtual" && (
             <TabsTrigger value="members">
               <Layers className="size-3.5 mr-1" />
               成员
             </TabsTrigger>
           )}
+          {user?.is_admin &&
+            repository.format === "pypi" &&
+            repository.repo_type === "virtual" && (
+              <TabsTrigger value="pypi-tracks">
+                <Link2 className="size-3.5 mr-1" />
+                Tracks
+              </TabsTrigger>
+            )}
           {user?.is_admin && (
             <TabsTrigger value="security">
               <Shield className="size-3.5 mr-1" />
@@ -587,6 +675,12 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
             <TabsTrigger value="settings">
               <Settings className="size-3.5 mr-1" />
               设置
+            </TabsTrigger>
+          )}
+          {user?.is_admin && (
+            <TabsTrigger value="labels">
+              <Tag className="size-3.5 mr-1" />
+              Labels
             </TabsTrigger>
           )}
         </TabsList>
@@ -638,11 +732,26 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
               : "正在显示平铺列表视图"}
           </div>
 
+          {/* Outcome announcements for destructive actions (delete / cache
+              invalidate). Polite so it does not interrupt; sr-only because the
+              same text is shown visually via toast. */}
+          <div role="status" aria-live="polite" className="sr-only">
+            {actionAnnounce}
+          </div>
+
           {useServerGrouping ? (
             <MavenComponentList
               components={artifactsData?.components ?? []}
               loading={artifactsLoading}
               total={artifactsData?.pagination?.total}
+              page={page}
+              pageSize={pageSize}
+              onPageChange={setPage}
+              onPageSizeChange={(s) => {
+                setPageSize(s);
+                setPage(1);
+              }}
+              onFileSelect={showDetailByPath}
               emptyMessage="无法分组 Maven 组件 — 切换到平铺视图查看原始文件。"
             />
           ) : isDockerGrouped ? (
@@ -696,6 +805,7 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
                 showPathInput
                 repositoryKey={repoKey}
                 onChunkedComplete={handleChunkedComplete}
+                maxUploadSizeBytes={systemConfig.max_upload_size_bytes}
               />
             </div>
           </TabsContent>
@@ -707,6 +817,15 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
             <VirtualMembersPanel repository={repository} />
           </TabsContent>
         )}
+
+        {/* --- PyPI Tracks Tab (PEP 708, virtual PyPI repos) --- */}
+        {user?.is_admin &&
+          repository.format === "pypi" &&
+          repository.repo_type === "virtual" && (
+            <TabsContent value="pypi-tracks" className="mt-4">
+              <PypiTracksPanel repository={repository} />
+            </TabsContent>
+          )}
 
         {/* --- Security Tab --- */}
         {user?.is_admin && (
@@ -813,6 +932,13 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
             <RepoSettingsTab repository={repository} />
           </TabsContent>
         )}
+
+        {/* --- Labels Tab --- */}
+        {user?.is_admin && (
+          <TabsContent value="labels" className="mt-4">
+            <RepoLabelsPanel repository={repository} />
+          </TabsContent>
+        )}
       </Tabs>
 
       {/* --- Artifact Detail Dialog --- */}
@@ -888,6 +1014,30 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
                     label="创建时间"
                     value={new Date(selectedArtifact.created_at).toLocaleString("zh-CN")}
                   />
+                  {repository.repo_type === "remote" &&
+                    selectedArtifact.cache_cached_at && (
+                      <DetailRow
+                        label="Cached"
+                        value={formatRelativeTimestamp(
+                          selectedArtifact.cache_cached_at
+                        )}
+                        title={new Date(
+                          selectedArtifact.cache_cached_at
+                        ).toLocaleString()}
+                      />
+                    )}
+                  {repository.repo_type === "remote" &&
+                    selectedArtifact.cache_expires_at && (
+                      <DetailRow
+                        label="Cache expires"
+                        value={formatCacheExpiry(
+                          selectedArtifact.cache_expires_at
+                        )}
+                        title={new Date(
+                          selectedArtifact.cache_expires_at
+                        ).toLocaleString()}
+                      />
+                    )}
                   <DetailRow
                     label="SHA-256"
                     value={selectedArtifact.checksum_sha256}
@@ -896,10 +1046,13 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
                   />
                   <DetailRow
                     label="下载 URL"
-                    value={artifactsApi.getDownloadUrl(repoKey, selectedArtifact.path)}
+                    value={artifactsApi.getAbsoluteDownloadUrl(repoKey, selectedArtifact.path)}
                     copy
                     mono
                   />
+                  {(repoFormat === "maven" || repoFormat === "gradle") && (
+                    <MavenGavSection path={selectedArtifact.path} />
+                  )}
                   {selectedArtifact.metadata &&
                     Object.keys(selectedArtifact.metadata).length > 0 && (
                       <div>
@@ -956,6 +1109,50 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
                   <Trash2 className="size-4" />
                   Delete
                 </Button>
+                {repository.repo_type === "remote" && (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        disabled={invalidateCacheMutation.isPending}
+                        title="Evict this artifact from the proxy cache; next download re-fetches from upstream"
+                      >
+                        <RotateCcw className="size-4" />
+                        {invalidateCacheMutation.isPending
+                          ? "Invalidating..."
+                          : "Invalidate cache"}
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Invalidate cache entry?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This evicts{" "}
+                          <span className="font-medium">
+                            {selectedArtifact.name}
+                          </span>{" "}
+                          from the proxy cache. The next download re-fetches it
+                          from upstream, which may be slower and could return a
+                          different artifact if upstream has changed.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => {
+                            if (selectedArtifact) {
+                              invalidateCacheMutation.mutate(
+                                selectedArtifact.path
+                              );
+                            }
+                          }}
+                        >
+                          Invalidate
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                )}
                 <Button onClick={() => selectedArtifact && handleDownload(selectedArtifact)}>
                   <Download className="size-4" />
                   下载
@@ -971,16 +1168,57 @@ export function RepoDetailContent({ repoKey, standalone = false }: RepoDetailCon
 
 // -- detail row helper --
 
+/**
+ * Maven GAV coordinates plus a copy/paste pom.xml dependency snippet, derived
+ * from the artifact path. Shown in the artifact detail view for maven/gradle
+ * repositories so users can identify the GAV and reuse it. (issue #442)
+ */
+function MavenGavSection({ path }: { path: string }) {
+  const gav = parseMavenGav(path);
+  if (!gav) return null;
+  const snippet = buildPomDependencySnippet(gav);
+  return (
+    <div data-testid="maven-gav-section" className="space-y-3">
+      <DetailRow label="Group ID" value={gav.groupId} copy mono />
+      <DetailRow label="Artifact ID" value={gav.artifactId} copy mono />
+      <DetailRow label="Version" value={gav.version} copy mono />
+      <div>
+        <div className="mb-1 flex items-center justify-between">
+          <p className="text-xs font-medium text-muted-foreground">
+            pom.xml dependency
+          </p>
+          <CopyButton value={snippet} />
+        </div>
+        <pre
+          data-testid="maven-pom-snippet"
+          className="overflow-auto rounded-md bg-muted p-3 text-xs"
+        >
+          {snippet}
+        </pre>
+      </div>
+    </div>
+  );
+}
+
 function DetailRow({
   label,
   value,
   copy,
   mono,
+  title,
 }: {
   label: string;
   value: string;
   copy?: boolean;
   mono?: boolean;
+  /**
+   * Override the hover-tooltip text. Defaults to `value` when omitted.
+   * Useful for rows where the visible text is a derived/abbreviated form
+   * (e.g. "in 4 hours") and the full ISO-8601 timestamp belongs in the
+   * tooltip rather than the visible cell — see the cache_cached_at /
+   * cache_expires_at rows added in #449.
+   */
+  title?: string;
 }) {
   return (
     <div className="grid grid-cols-[100px_1fr] gap-2 items-start">
@@ -988,7 +1226,7 @@ function DetailRow({
       <div className="flex items-center gap-1 min-w-0">
         <span
           className={`break-all ${mono ? "font-mono text-xs" : ""}`}
-          title={value}
+          title={title ?? value}
         >
           {value}
         </span>

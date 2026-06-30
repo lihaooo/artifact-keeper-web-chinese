@@ -11,14 +11,19 @@ import {
   Globe,
   RefreshCw,
   Puzzle,
+  Blocks,
   Webhook,
   ArrowRightLeft,
   Bot,
   BookOpen,
   GitPullRequestArrow,
+  Workflow,
   Key,
+  PackageCheck,
+  FileSignature,
   Shield,
   ShieldCheck,
+  ListChecks,
   Search,
   FileCheck,
   Lock,
@@ -35,9 +40,12 @@ import {
   Scale,
   FolderSearch,
   ClipboardCheck,
+  Filter,
+  Gauge,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/providers/auth-provider";
+import { useFeatureFlags } from "@/providers/system-config-provider";
 import { adminApi } from "@/lib/api/admin";
 import {
   Sidebar,
@@ -73,7 +81,9 @@ const artifactItems: NavItem[] = [
 const integrationItems: NavItem[] = [
   { title: "对等节点", href: "/peers", icon: Globe },
   { title: "复制", href: "/replication", icon: RefreshCw },
+  { title: "同步策略", href: "/sync-policies", icon: Workflow },
   { title: "插件", href: "/plugins", icon: Puzzle },
+  { title: "格式处理器", href: "/format-handlers", icon: Blocks },
   { title: "Webhook", href: "/webhooks", icon: Webhook },
   { title: "访问令牌", href: "/access-tokens", icon: Key },
   { title: "迁移", href: "/migration", icon: ArrowRightLeft },
@@ -84,14 +94,18 @@ const securityItems: NavItem[] = [
   { title: "扫描结果", href: "/security/scans", icon: Search },
   { title: "DT 项目", href: "/security/dt-projects", icon: FolderSearch },
   { title: "质量门", href: "/quality-gates", icon: ShieldCheck },
+  { title: "质量检查", href: "/quality-checks", icon: ListChecks },
   { title: "策略", href: "/security/policies", icon: FileCheck },
   { title: "许可证策略", href: "/license-policies", icon: Scale },
+  { title: "包审核", href: "/curation", icon: PackageCheck },
+  { title: "制品签名", href: "/signing", icon: FileSignature },
   { title: "权限", href: "/permissions", icon: Lock },
 ];
 
 const operationsItems: NavItem[] = [
   { title: "分析", href: "/analytics", icon: BarChart3 },
   { title: "审批", href: "/approvals", icon: ClipboardCheck },
+  { title: "晋升规则", href: "/promotion-rules", icon: Filter },
   { title: "健康状态", href: "/system-health", icon: HeartPulse },
   { title: "生命周期", href: "/lifecycle", icon: Recycle },
   { title: "监控", href: "/monitoring", icon: Activity },
@@ -102,6 +116,7 @@ const adminItems: NavItem[] = [
   { title: "用户", href: "/users", icon: Users },
   { title: "用户组", href: "/groups", icon: UsersRound },
   { title: "服务账号", href: "/service-accounts", icon: Bot },
+  { title: "速率限制", href: "/rate-limits", icon: Gauge },
   { title: "备份", href: "/backups", icon: HardDrive },
   { title: "SSO 提供商", href: "/settings/sso", icon: KeyRound },
   { title: "设置", href: "/settings", icon: Settings },
@@ -143,6 +158,7 @@ export function AppSidebar() {
   const pathname = usePathname();
   const { isAuthenticated, user } = useAuth();
   const isAdmin = user?.is_admin ?? false;
+  const flags = useFeatureFlags();
 
   const { data: health } = useQuery({
     queryKey: ["health"],
@@ -155,6 +171,21 @@ export function AppSidebar() {
   const visibleIntegrationItems = isAdmin
     ? integrationItems
     : integrationItems.filter((item) => item.href !== "/migration");
+
+  // Hide scanner-dependent security entries when the backend reports no
+  // scanner configured (#271). "Scan Results" needs Trivy or OpenSCAP;
+  // "DT Projects" needs the Dependency-Track integration. The rest of the
+  // Security group (policies, permissions, quality gates) is always shown
+  // since it doesn't depend on a scanner being wired up.
+  const visibleSecurityItems = securityItems.filter((item) => {
+    if (item.href === "/security/scans") {
+      return flags.trivyEnabled || flags.openscapEnabled;
+    }
+    if (item.href === "/security/dt-projects") {
+      return flags.dependencyTrackEnabled;
+    }
+    return true;
+  });
 
   return (
     <Sidebar collapsible="icon">
@@ -204,7 +235,7 @@ export function AppSidebar() {
           <>
             <NavGroup
               label="安全"
-              items={securityItems}
+              items={visibleSecurityItems}
               pathname={pathname}
             />
             <NavGroup

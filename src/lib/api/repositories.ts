@@ -9,6 +9,8 @@ import {
   addVirtualMember,
   removeVirtualMember,
   updateVirtualMembers,
+  getCacheTtl,
+  setCacheTtl,
 } from '@artifact-keeper/sdk';
 import type {
   RepositoryResponse,
@@ -17,6 +19,7 @@ import type {
   UpdateRepositoryRequest as SdkUpdateRepositoryRequest,
   VirtualMemberResponse,
   VirtualMembersListResponse,
+  CacheTtlResponse,
 } from '@artifact-keeper/sdk';
 import { apiFetch, assertData, narrowEnum } from '@/lib/api/fetch';
 import type {
@@ -45,6 +48,41 @@ export interface UpstreamAuthPayload {
   auth_type: string;
   username?: string;
   password?: string;
+}
+
+/**
+ * A single routing rule for path rewriting on remote/proxy repositories.
+ * Mirrors the backend `RoutingRule` struct: a regex `path_pattern` matched
+ * against the request path and a `rewrite_to` template that may reference
+ * capture groups with `$1`, `$2`, and so on.
+ */
+export interface RoutingRule {
+  path_pattern: string;
+  rewrite_to: string;
+}
+
+export interface RoutingRulesResponse {
+  repository_key: string;
+  rules: RoutingRule[];
+}
+
+/**
+ * Package age policy for a repository (issue #265, backend
+ * artifact-keeper/artifact-keeper#709).
+ *
+ * When enabled, freshly published artifacts pulled through a remote repository
+ * are held in quarantine for `duration_minutes` after their release. This gives
+ * a window for a compromised upstream release to be flagged before it can be
+ * served, mitigating supply-chain attacks (e.g. the Trivy incident).
+ *
+ * Stored server-side in `repository_config` under `quarantine_enabled` and
+ * `quarantine_duration_minutes`. These fields are written via the repository
+ * update endpoint but are not part of the SDK-generated `UpdateRepositoryRequest`
+ * yet, so this module sends them through `apiFetch` directly.
+ */
+export interface AgePolicyPayload {
+  enabled: boolean;
+  duration_minutes: number;
 }
 
 const REPO_TYPES = new Set<RepositoryType>(['local', 'remote', 'virtual', 'staging']);
@@ -253,6 +291,108 @@ export const repositoriesApi = {
     return apiFetch(`/api/v1/repositories/${encodeURIComponent(repoKey)}/test-upstream`, {
       method: 'POST',
     });
+  },
+
+  // Routing rules management (issue #263). The generated SDK does not yet expose
+  // these endpoints, so they go through the shared apiFetch wrapper, the same
+  // pattern used for upstream-auth and test-upstream above.
+  getRoutingRules: async (repoKey: string): Promise<RoutingRulesResponse> => {
+    return apiFetch<RoutingRulesResponse>(
+      `/api/v1/repositories/${encodeURIComponent(repoKey)}/routing-rules`
+    );
+  },
+
+  setRoutingRules: async (
+    repoKey: string,
+    rules: RoutingRule[]
+  ): Promise<RoutingRulesResponse> => {
+    return apiFetch<RoutingRulesResponse>(
+      `/api/v1/repositories/${encodeURIComponent(repoKey)}/routing-rules`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ rules }),
+      }
+    );
+  },
+
+  deleteRoutingRules: async (repoKey: string): Promise<void> => {
+    await apiFetch<void>(
+      `/api/v1/repositories/${encodeURIComponent(repoKey)}/routing-rules`,
+      { method: 'DELETE' }
+    );
+  },
+
+  // Release target configuration for staging repositories (issue #260).
+  // Persisted via PATCH /repositories/{key} with the `release_repository_key`
+  // field. Pass an empty string to remove an existing link. The generated SDK's
+  // UpdateRepositoryRequest may not carry this field yet, so it is sent through
+  // apiFetch to guarantee it reaches the backend.
+  setReleaseTarget: async (
+    repoKey: string,
+    releaseRepositoryKey: string
+  ): Promise<Repository> => {
+    const sdk = await apiFetch<RepositoryResponse>(
+      `/api/v1/repositories/${encodeURIComponent(repoKey)}`,
+      {
+        method: 'PATCH',
+        body: JSON.stringify({ release_repository_key: releaseRepositoryKey }),
+      }
+    );
+    return adaptRepository(sdk);
+  },
+
+  /**
+   * Configure the package age policy (quarantine-on-release) for a repository.
+   *
+   * Sends `quarantine_enabled` and `quarantine_duration_minutes` to the
+   * repository update endpoint. Uses `apiFetch` rather than the SDK because
+   * those fields are not in the generated `UpdateRepositoryRequest` yet.
+   *
+   * When `enabled` is false, the duration is still sent so the stored value is
+   * preserved and re-enabling does not lose the previously configured window.
+   */
+  updateAgePolicy: async (repoKey: string, payload: AgePolicyPayload): Promise<void> => {
+    await apiFetch<void>(`/api/v1/repositories/${encodeURIComponent(repoKey)}`, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        quarantine_enabled: payload.enabled,
+        quarantine_duration_minutes: payload.duration_minutes,
+      }),
+    });
+  },
+
+  /**
+   * Read the proxy cache TTL for a repository (#448).
+   *
+   * The backend's GET endpoint is permissive: it returns 200 with the
+   * effective TTL (falling back to the default of 86400s = 24h when no value
+   * is stored) for *any* repo type, even though writes are gated to Remote.
+   * The UI gates the section on `repository.repo_type === 'remote'`, but
+   * keeping the read here unconditional preserves the contract documented in
+   * artifact-keeper#917 and matches what the existing UI probes already do
+   * for other repo types.
+   */
+  getCacheTtl: async (repoKey: string): Promise<CacheTtlResponse> => {
+    const { data, error } = await getCacheTtl({ path: { key: repoKey } });
+    if (error) throw error;
+    return assertData(data, 'repositoriesApi.getCacheTtl');
+  },
+
+  /**
+   * Set the proxy cache TTL for a Remote (proxy) repository (#448).
+   *
+   * Backend rejects writes against non-Remote repos with 400; callers should
+   * gate the UI on `repository.repo_type === 'remote'` rather than relying
+   * on the server-side rejection alone, so operators don't compose changes
+   * that fail at save time.
+   */
+  setCacheTtl: async (repoKey: string, cacheTtlSeconds: number): Promise<CacheTtlResponse> => {
+    const { data, error } = await setCacheTtl({
+      path: { key: repoKey },
+      body: { cache_ttl_seconds: cacheTtlSeconds },
+    });
+    if (error) throw error;
+    return assertData(data, 'repositoriesApi.setCacheTtl');
   },
 };
 
