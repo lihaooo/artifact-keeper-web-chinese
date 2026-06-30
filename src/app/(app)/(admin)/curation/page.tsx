@@ -77,18 +77,18 @@ export default function CurationPage() {
     mutationFn: (id: string) => curationApi.approve(id),
     onSuccess: () => {
       invalidate();
-      toast.success("Package approved");
+      toast.success("包已批准");
     },
-    onError: mutationErrorToast("Failed to approve package"),
+    onError: mutationErrorToast("批准包失败"),
   });
 
   const blockMutation = useMutation({
     mutationFn: (id: string) => curationApi.block(id),
     onSuccess: () => {
       invalidate();
-      toast.success("Package blocked");
+      toast.success("包已屏蔽");
     },
-    onError: mutationErrorToast("Failed to block package"),
+    onError: mutationErrorToast("屏蔽包失败"),
   });
 
   const bulkMutation = useMutation({
@@ -98,25 +98,25 @@ export default function CurationPage() {
       invalidate();
       setBulkAction(null);
       setReason("");
-      toast.success(`${count} package${count === 1 ? "" : "s"} ${action === "approve" ? "approved" : "blocked"}`);
+      toast.success(`已${action === "approve" ? "批准" : "屏蔽"} ${count} 个包`);
     },
-    onError: mutationErrorToast("Bulk action failed"),
+    onError: mutationErrorToast("批量操作失败"),
   });
 
   const reEvaluateMutation = useMutation({
     mutationFn: () => curationApi.reEvaluate(repoId, "block"),
     onSuccess: (count) => {
       invalidate();
-      toast.success(`Re-evaluated ${count} package${count === 1 ? "" : "s"}`);
+      toast.success(`已重新评估 ${count} 个包`);
     },
-    onError: mutationErrorToast("Re-evaluation failed"),
+    onError: mutationErrorToast("重新评估失败"),
   });
 
   if (!user?.is_admin) {
     return (
       <div className="p-8 text-center text-muted-foreground" role="alert">
         <PackageCheck className="mx-auto mb-2 size-8 opacity-50" />
-        <p className="text-sm">Package curation requires administrator access.</p>
+        <p className="text-sm">包审核需要管理员权限。</p>
       </div>
     );
   }
@@ -146,17 +146,17 @@ export default function CurationPage() {
       <div className="flex items-center gap-2">
         <PackageCheck className="size-6" />
         <div>
-          <h1 className="text-xl font-semibold">Package Curation</h1>
+          <h1 className="text-xl font-semibold">包审核</h1>
           <p className="text-sm text-muted-foreground">
-            Review and approve or block packages staged from upstream repositories.
+            审核并批准或屏蔽从上游仓库暂存的包。
           </p>
         </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
         <Select value={repoId} onValueChange={(v) => { setRepoId(v); setSelected(new Set()); }}>
-          <SelectTrigger className="w-64" aria-label="Staging repository">
-            <SelectValue placeholder="Select a staging repository" />
+          <SelectTrigger className="w-64" aria-label="暂存仓库">
+            <SelectValue placeholder="选择暂存仓库" />
           </SelectTrigger>
           <SelectContent>
             {stagingRepos.map((r) => (
@@ -166,7 +166,7 @@ export default function CurationPage() {
         </Select>
 
         <Select value={status} onValueChange={(v) => { setStatus(v); setSelected(new Set()); }}>
-          <SelectTrigger className="w-40" aria-label="Status filter">
+          <SelectTrigger className="w-40" aria-label="状态筛选">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -181,23 +181,23 @@ export default function CurationPage() {
           size="sm"
           disabled={!repoId || reEvaluateMutation.isPending}
           onClick={() => reEvaluateMutation.mutate()}
-          title="Re-run curation rules. Packages not matched by any rule are blocked by default."
+          title="重新运行审核规则。未被任何规则匹配的包默认被屏蔽。"
         >
           <RefreshCw className={`size-4 ${reEvaluateMutation.isPending ? "animate-spin" : ""}`} />
-          Re-evaluate
+          重新评估
         </Button>
 
         {selected.size > 0 && (
           <div className="ml-auto flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">{selected.size} selected</span>
+            <span className="text-sm text-muted-foreground">已选 {selected.size} 项</span>
             {canApprove && (
               <Button size="sm" onClick={() => setBulkAction("approve")}>
-                <Check className="size-4" /> Approve
+                <Check className="size-4" /> 批准
               </Button>
             )}
             {canBlock && (
               <Button size="sm" variant="destructive" onClick={() => setBulkAction("block")}>
-                <Ban className="size-4" /> Block
+                <Ban className="size-4" /> 屏蔽
               </Button>
             )}
           </div>
@@ -206,7 +206,7 @@ export default function CurationPage() {
 
       {!repoId && (
         <div className="rounded-md border border-dashed py-12 text-center text-sm text-muted-foreground">
-          Select a staging repository to review its curation queue.
+          选择一个暂存仓库以审核其审核队列。
         </div>
       )}
 
@@ -220,18 +220,18 @@ export default function CurationPage() {
       {repoId && !isLoading && isError && (
         <div className="flex flex-col items-center justify-center py-12 text-center" role="alert">
           <AlertCircle className="size-8 mb-2 text-destructive opacity-80" />
-          <p className="text-sm font-medium">Couldn&apos;t load the curation queue</p>
-          <p className="mt-1 text-xs text-muted-foreground">{toUserMessage(error, "Unknown error")}</p>
+          <p className="text-sm font-medium">无法加载审核队列</p>
+          <p className="mt-1 text-xs text-muted-foreground">{toUserMessage(error, "未知错误")}</p>
           <Button variant="outline" size="sm" className="mt-4" onClick={() => refetch()} disabled={isFetching}>
             <RefreshCw className={`size-4 ${isFetching ? "animate-spin" : ""}`} />
-            Retry
+            重试
           </Button>
         </div>
       )}
 
       {repoId && !isLoading && !isError && rows.length === 0 && (
         <div className="rounded-md border border-dashed py-12 text-center text-sm text-muted-foreground">
-          No {status} packages in this queue.
+          此队列中没有 {status} 状态的包。
         </div>
       )}
 
@@ -241,13 +241,13 @@ export default function CurationPage() {
             <thead className="border-b bg-muted/50 text-left">
               <tr>
                 <th className="w-10 px-3 py-2">
-                  <Checkbox checked={allSelected} onCheckedChange={toggleAll} aria-label="Select all" />
+                  <Checkbox checked={allSelected} onCheckedChange={toggleAll} aria-label="全选" />
                 </th>
-                <th className="px-3 py-2 font-medium">Package</th>
-                <th className="px-3 py-2 font-medium">Version</th>
-                <th className="px-3 py-2 font-medium">Format</th>
-                <th className="px-3 py-2 font-medium">Size</th>
-                <th className="px-3 py-2 font-medium">Status</th>
+                <th className="px-3 py-2 font-medium">包</th>
+                <th className="px-3 py-2 font-medium">版本</th>
+                <th className="px-3 py-2 font-medium">格式</th>
+                <th className="px-3 py-2 font-medium">大小</th>
+                <th className="px-3 py-2 font-medium">状态</th>
                 <th className="px-3 py-2" />
               </tr>
             </thead>
@@ -258,7 +258,7 @@ export default function CurationPage() {
                     <Checkbox
                       checked={selected.has(p.id)}
                       onCheckedChange={() => toggle(p.id)}
-                      aria-label={`Select ${p.name}`}
+                      aria-label={`选择 ${p.name}`}
                     />
                   </td>
                   <td className="px-3 py-2 font-medium">{p.name}</td>
@@ -276,12 +276,12 @@ export default function CurationPage() {
                   <td className="px-3 py-2">
                     <div className="flex justify-end gap-1">
                       {canApprove && (
-                        <Button variant="ghost" size="icon-sm" aria-label={`Approve ${p.name}`} onClick={() => approveMutation.mutate(p.id)}>
+                        <Button variant="ghost" size="icon-sm" aria-label={`批准 ${p.name}`} onClick={() => approveMutation.mutate(p.id)}>
                           <Check className="size-4 text-emerald-600" />
                         </Button>
                       )}
                       {canBlock && (
-                        <Button variant="ghost" size="icon-sm" aria-label={`Block ${p.name}`} onClick={() => blockMutation.mutate(p.id)}>
+                        <Button variant="ghost" size="icon-sm" aria-label={`屏蔽 ${p.name}`} onClick={() => blockMutation.mutate(p.id)}>
                           <Ban className="size-4 text-destructive" />
                         </Button>
                       )}
@@ -299,22 +299,22 @@ export default function CurationPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {bulkAction === "approve" ? "Approve" : "Block"} {selected.size} package{selected.size === 1 ? "" : "s"}
+              {bulkAction === "approve" ? "批准" : "屏蔽"} {selected.size} 个包
             </DialogTitle>
             <DialogDescription>
-              A reason is recorded in the audit log for this bulk action.
+              此批量操作的原因将记录到审计日志中。
             </DialogDescription>
           </DialogHeader>
           <div className="py-2">
             <Input
-              placeholder="Reason (e.g. CVE-free, license OK)"
+              placeholder="原因（例如：无 CVE、许可证合规）"
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              aria-label="Reason"
+              aria-label="原因"
             />
           </div>
           <DialogFooter>
-            <Button variant="ghost" onClick={() => { setBulkAction(null); setReason(""); }}>Cancel</Button>
+            <Button variant="ghost" onClick={() => { setBulkAction(null); setReason(""); }}>取消</Button>
             <Button
               variant={bulkAction === "block" ? "destructive" : "default"}
               disabled={reason.trim() === "" || bulkMutation.isPending}
@@ -324,7 +324,7 @@ export default function CurationPage() {
               }
             >
               {bulkMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : null}
-              Confirm
+              确认
             </Button>
           </DialogFooter>
         </DialogContent>

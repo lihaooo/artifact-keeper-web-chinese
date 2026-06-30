@@ -64,14 +64,14 @@ const TYPE_META: Record<
   ExemptionType,
   { label: string; icon: React.ComponentType<{ className?: string }>; placeholder: string }
 > = {
-  username: { label: "Username", icon: User, placeholder: "ci-bot" },
-  service_account: { label: "Service account", icon: Bot, placeholder: "deploy-sa" },
-  cidr: { label: "CIDR range", icon: Network, placeholder: "10.0.0.0/8" },
+  username: { label: "用户名", icon: User, placeholder: "ci-bot" },
+  service_account: { label: "服务账号", icon: Bot, placeholder: "deploy-sa" },
+  cidr: { label: "CIDR 范围", icon: Network, placeholder: "10.0.0.0/8" },
 };
 
 function rate(window: { limit: number; window_secs: number }): string {
-  if (window.window_secs <= 0) return `${window.limit} requests`;
-  return `${window.limit} requests / ${window.window_secs}s`;
+  if (window.window_secs <= 0) return `${window.limit} 个请求`;
+  return `${window.limit} 个请求 / ${window.window_secs}s`;
 }
 
 // -- Current configuration card --
@@ -88,10 +88,9 @@ function ConfigCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">Current Rate Limits</CardTitle>
+        <CardTitle className="text-base">当前速率限制</CardTitle>
         <CardDescription>
-          Effective per-window request limits. Configured via environment
-          variables and shown read-only.
+          每个时间窗口的有效请求限制。通过环境变量配置，此处只读展示。
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -102,13 +101,13 @@ function ConfigCard({
         )}
         {!isLoading && (isError || !config) && (
           <p className="text-sm text-muted-foreground">
-            Rate-limit configuration is not available from this server.
+            此服务器未提供速率限制配置。
           </p>
         )}
         {!isLoading && config && (
           <dl className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <div>
-              <dt className="text-xs text-muted-foreground">Authentication</dt>
+              <dt className="text-xs text-muted-foreground">认证</dt>
               <dd className="text-sm font-medium">{rate(config.auth)}</dd>
             </div>
             <div>
@@ -116,15 +115,15 @@ function ConfigCard({
               <dd className="text-sm font-medium">{rate(config.api)}</dd>
             </div>
             <div>
-              <dt className="text-xs text-muted-foreground">Search</dt>
+              <dt className="text-xs text-muted-foreground">搜索</dt>
               <dd className="text-sm font-medium">{rate(config.search)}</dd>
             </div>
             <div className="sm:col-span-3">
               <dt className="text-xs text-muted-foreground">
-                Service accounts globally exempt
+                服务账号全局豁免
               </dt>
               <dd className="text-sm font-medium">
-                {config.exempt_service_accounts ? "Yes" : "No"}
+                {config.exempt_service_accounts ? "是" : "否"}
               </dd>
             </div>
           </dl>
@@ -149,7 +148,7 @@ function AddExemptionDialog() {
   const addMutation = useMutation({
     mutationFn: () => rateLimitsApi.addExemption({ type, value, note }),
     onSuccess: () => {
-      toast.success("Exemption added");
+      toast.success("豁免已添加");
       queryClient.invalidateQueries({ queryKey: RATE_LIMIT_EXEMPTIONS_QUERY_KEY });
       setOpen(false);
       setValue("");
@@ -157,7 +156,7 @@ function AddExemptionDialog() {
       setType("username");
       setValueError(null);
     },
-    onError: mutationErrorToast("Failed to add exemption"),
+    onError: mutationErrorToast("添加豁免失败"),
   });
 
   function handleSubmit() {
@@ -177,28 +176,27 @@ function AddExemptionDialog() {
       <DialogTrigger asChild>
         <Button>
           <Plus className="size-4 mr-1.5" />
-          Add Exemption
+          添加豁免
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add Rate-Limit Exemption</DialogTitle>
+          <DialogTitle>添加速率限制豁免</DialogTitle>
           <DialogDescription>
-            Exempt a user, service account, or network range from rate limiting.
-            Use sparingly, exemptions weaken abuse protection.
+            豁免用户、服务账号或网络范围的速率限制。请谨慎使用，豁免会削弱滥用防护。
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-2">
           <div className="space-y-2">
-            <Label htmlFor="exemption-type">Type</Label>
+            <Label htmlFor="exemption-type">类型</Label>
             <Select value={type} onValueChange={(v) => setType(v as ExemptionType)}>
               <SelectTrigger id="exemption-type">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="username">Username</SelectItem>
-                <SelectItem value="service_account">Service account</SelectItem>
-                <SelectItem value="cidr">CIDR range</SelectItem>
+                <SelectItem value="username">用户名</SelectItem>
+                <SelectItem value="service_account">服务账号</SelectItem>
+                <SelectItem value="cidr">CIDR 范围</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -226,10 +224,10 @@ function AddExemptionDialog() {
             </p>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="exemption-note">Note (optional)</Label>
+            <Label htmlFor="exemption-note">备注（可选）</Label>
             <Input
               id="exemption-note"
-              placeholder="Why is this exempt?"
+              placeholder="为什么豁免此项？"
               value={note}
               onChange={(e) => setNote(e.target.value)}
             />
@@ -241,13 +239,13 @@ function AddExemptionDialog() {
             onClick={() => setOpen(false)}
             disabled={addMutation.isPending}
           >
-            Cancel
+            取消
           </Button>
           <Button onClick={handleSubmit} disabled={addMutation.isPending}>
             {addMutation.isPending && (
               <Loader2 className="size-4 mr-2 animate-spin" />
             )}
-            Add Exemption
+            添加豁免
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -272,11 +270,11 @@ function ExemptionsTable({
   const removeMutation = useMutation({
     mutationFn: (id: string) => rateLimitsApi.removeExemption(id),
     onSuccess: () => {
-      toast.success("Exemption removed");
+      toast.success("豁免已移除");
       queryClient.invalidateQueries({ queryKey: RATE_LIMIT_EXEMPTIONS_QUERY_KEY });
       setPendingDelete(null);
     },
-    onError: mutationErrorToast("Failed to remove exemption"),
+    onError: mutationErrorToast("移除豁免失败"),
   });
 
   if (isLoading) {
@@ -290,10 +288,9 @@ function ExemptionsTable({
   if (isError) {
     return (
       <Alert variant="destructive">
-        <AlertTitle>Exemptions unavailable</AlertTitle>
+        <AlertTitle>豁免不可用</AlertTitle>
         <AlertDescription>
-          Unable to load rate-limit exemptions. This server may not support
-          managing exemptions through the UI yet.
+          无法加载速率限制豁免。此服务器可能尚不支持通过界面管理豁免。
         </AlertDescription>
       </Alert>
     );
@@ -302,7 +299,7 @@ function ExemptionsTable({
   if (!exemptions || exemptions.length === 0) {
     return (
       <p className="py-8 text-center text-sm text-muted-foreground">
-        No rate-limit exemptions configured.
+        尚未配置速率限制豁免。
       </p>
     );
   }
@@ -312,10 +309,10 @@ function ExemptionsTable({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Type</TableHead>
-            <TableHead>Value</TableHead>
-            <TableHead>Note</TableHead>
-            <TableHead>Source</TableHead>
+            <TableHead>类型</TableHead>
+            <TableHead>值</TableHead>
+            <TableHead>备注</TableHead>
+            <TableHead>来源</TableHead>
             <TableHead className="w-[1%]" />
           </TableRow>
         </TableHeader>
@@ -337,21 +334,21 @@ function ExemptionsTable({
                 </TableCell>
                 <TableCell>
                   {ex.source_env ? (
-                    <Badge variant="secondary">Environment</Badge>
+                    <Badge variant="secondary">环境</Badge>
                   ) : (
-                    <Badge variant="outline">Manual</Badge>
+                    <Badge variant="outline">手动</Badge>
                   )}
                 </TableCell>
                 <TableCell>
                   <Button
                     variant="ghost"
                     size="icon-xs"
-                    aria-label={`Remove exemption ${ex.value}`}
+                    aria-label={`移除豁免 ${ex.value}`}
                     disabled={ex.source_env}
                     title={
                       ex.source_env
-                        ? "Configured via environment variable, edit server config to change"
-                        : "Remove exemption"
+                        ? "通过环境变量配置，编辑服务器配置以更改"
+                        : "移除豁免"
                     }
                     onClick={() => setPendingDelete(ex)}
                   >
@@ -370,15 +367,15 @@ function ExemptionsTable({
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Remove exemption?</AlertDialogTitle>
+            <AlertDialogTitle>移除豁免？</AlertDialogTitle>
             <AlertDialogDescription>
               {pendingDelete &&
-                `${TYPE_META[pendingDelete.type].label} "${pendingDelete.value}" will be subject to rate limits again.`}
+                `${TYPE_META[pendingDelete.type].label} "${pendingDelete.value}" 将重新受到速率限制。`}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={removeMutation.isPending}>
-              Cancel
+              取消
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={(e) => {
@@ -390,7 +387,7 @@ function ExemptionsTable({
               {removeMutation.isPending && (
                 <Loader2 className="size-4 mr-2 animate-spin" />
               )}
-              Remove
+              移除
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -421,11 +418,11 @@ export default function RateLimitsPage() {
   if (!user?.is_admin) {
     return (
       <div className="space-y-6">
-        <PageHeader title="Rate Limits" />
+        <PageHeader title="速率限制" />
         <Alert variant="destructive">
-          <AlertTitle>Access Denied</AlertTitle>
+          <AlertTitle>拒绝访问</AlertTitle>
           <AlertDescription>
-            You must be an administrator to manage rate-limit exemptions.
+            你必须是管理员才能管理速率限制豁免。
           </AlertDescription>
         </Alert>
       </div>
@@ -435,8 +432,8 @@ export default function RateLimitsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Rate Limits"
-        description="View request rate limits and manage exemptions for trusted users, service accounts, and networks."
+        title="速率限制"
+        description="查看请求速率限制，并管理受信任用户、服务账号和网络的豁免。"
         actions={
           <span className="flex items-center gap-2 text-muted-foreground">
             <Gauge className="size-5" />
@@ -446,11 +443,10 @@ export default function RateLimitsPage() {
 
       <Alert>
         <Info className="size-4" />
-        <AlertTitle>About exemptions</AlertTitle>
+        <AlertTitle>关于豁免</AlertTitle>
         <AlertDescription>
-          Exempt principals bypass rate limiting entirely. Entries marked
-          Environment come from server configuration and are read-only here.
-          Manual entries can be added and removed below.
+          被豁免的主体完全绕过速率限制。标记为“环境”的条目来自服务器配置，此处只读。
+          手动添加的条目可在下方添加和移除。
         </AlertDescription>
       </Alert>
 
@@ -463,9 +459,9 @@ export default function RateLimitsPage() {
       <Card>
         <CardHeader className="flex-row items-center justify-between space-y-0">
           <div className="space-y-1.5">
-            <CardTitle className="text-base">Exemptions</CardTitle>
+            <CardTitle className="text-base">豁免</CardTitle>
             <CardDescription>
-              Users, service accounts, and CIDR ranges that bypass rate limiting.
+              绕过速率限制的用户、服务账号和 CIDR 范围。
             </CardDescription>
           </div>
           <AddExemptionDialog />

@@ -85,11 +85,11 @@ export function ReleaseTargetSettings({ repository }: ReleaseTargetSettingsProps
       setDirty(false);
       toast.success(
         selected === NONE_VALUE
-          ? "Release target link removed"
-          : "Release target saved"
+          ? "已移除发布目标链接"
+          : "发布目标已保存"
       );
     },
-    onError: mutationErrorToast("Failed to save release target"),
+    onError: mutationErrorToast("保存发布目标失败"),
   });
 
   if (!isStaging) {
@@ -101,19 +101,18 @@ export function ReleaseTargetSettings({ repository }: ReleaseTargetSettingsProps
             id="settings-release-target-heading"
             className="text-base font-semibold"
           >
-            Release Target
+            发布目标
           </h3>
         </div>
         <p className="text-xs text-muted-foreground mb-3">
-          Release-target promotion links artifacts from a staging repository to a
-          release repository.
+          发布目标晋升将制品从暂存仓库链接到发布仓库。
         </p>
         <Alert>
           <Info className="size-4" />
           <AlertDescription>
-            Release targets are only available for staging repositories. This
-            repository is a <span className="capitalize">{repository.repo_type}</span>{" "}
-            repository.
+            发布目标仅适用于暂存仓库。此仓库是{" "}
+            <span className="capitalize">{repository.repo_type}</span>{" "}
+            仓库。
           </AlertDescription>
         </Alert>
       </section>
@@ -129,35 +128,34 @@ export function ReleaseTargetSettings({ repository }: ReleaseTargetSettingsProps
     <section aria-labelledby="settings-release-target-heading">
       <div className="flex items-center gap-2 mb-2">
         <Target className="size-4 text-muted-foreground" />
-        <h3
-          id="settings-release-target-heading"
-          className="text-base font-semibold"
-        >
-          Release Target
-        </h3>
+          <h3
+            id="settings-release-target-heading"
+            className="text-base font-semibold"
+          >
+            发布目标
+          </h3>
         <Badge variant="secondary" className="text-xs">
-          Staging
+          暂存
         </Badge>
       </div>
       <p className="text-xs text-muted-foreground mb-4">
-        Link this staging repository to a release repository. Promotions from
-        here default to the linked target, and promotions elsewhere are rejected.
-        The target must be a local repository using the same{" "}
-        <span className="font-medium uppercase">{repository.format}</span> format.
+        将此暂存仓库链接到发布仓库。从此处的晋升默认指向链接的目标，晋升到其他仓库将被拒绝。目标必须是使用相同{" "}
+        <span className="font-medium uppercase">{repository.format}</span>{" "}
+        格式的本地仓库。
       </p>
 
       <div className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="release-target-select">Release repository</Label>
+          <Label htmlFor="release-target-select">发布仓库</Label>
           {candidatesLoading ? (
             <Skeleton className="h-10 w-full" />
           ) : (
             <Select value={selected} onValueChange={handleSelect}>
               <SelectTrigger id="release-target-select" className="w-full">
-                <SelectValue placeholder="Select a release repository" />
+                <SelectValue placeholder="选择发布仓库" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={NONE_VALUE}>No release target (unlink)</SelectItem>
+                <SelectItem value={NONE_VALUE}>无发布目标（取消链接）</SelectItem>
                 {candidates.map((repo) => (
                   <SelectItem key={repo.id} value={repo.key}>
                     {repo.name} ({repo.key})
@@ -168,9 +166,9 @@ export function ReleaseTargetSettings({ repository }: ReleaseTargetSettingsProps
           )}
           {!candidatesLoading && candidates.length === 0 && (
             <p className="text-xs text-muted-foreground">
-              No eligible release repositories found. Create a local{" "}
-              <span className="uppercase">{repository.format}</span> repository to
-              use as a release target.
+              未找到符合条件的发布仓库。请创建一个本地{" "}
+              <span className="uppercase">{repository.format}</span>{" "}
+              仓库作为发布目标。
             </p>
           )}
         </div>
@@ -183,10 +181,10 @@ export function ReleaseTargetSettings({ repository }: ReleaseTargetSettingsProps
           {saveMutation.isPending ? (
             <>
               <Loader2 className="size-4 animate-spin" />
-              Saving...
+              保存中…
             </>
           ) : (
-            "Save release target"
+            "保存发布目标"
           )}
         </Button>
       </div>

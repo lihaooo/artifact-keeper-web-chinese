@@ -47,9 +47,9 @@ export function PypiTracksPanel({ repository }: PypiTracksPanelProps) {
       invalidate();
       setProject("");
       setTracksUrl("");
-      toast.success(`Tracking declared for "${proj}"`);
+      toast.success(`已为"${proj}"声明跟踪关系`);
     },
-    onError: mutationErrorToast("Failed to declare tracks relationship"),
+    onError: mutationErrorToast("声明 tracks 关系失败"),
   });
 
   const removeMutation = useMutation({
@@ -57,9 +57,9 @@ export function PypiTracksPanel({ repository }: PypiTracksPanelProps) {
     onSuccess: () => {
       invalidate();
       setTrackToRemove(null);
-      toast.success("Tracks declaration removed");
+      toast.success("已移除 tracks 声明");
     },
-    onError: mutationErrorToast("Failed to remove tracks relationship"),
+    onError: mutationErrorToast("移除 tracks 关系失败"),
   });
 
   const trimmedProject = project.trim();
@@ -77,10 +77,9 @@ export function PypiTracksPanel({ repository }: PypiTracksPanelProps) {
       <div className="flex items-start gap-2 text-sm text-muted-foreground">
         <ShieldCheck className="size-4 mt-0.5 shrink-0 text-emerald-500" />
         <p>
-          PyPI virtual repositories isolate locally-owned project names from the same name
-          upstream by default (PEP 708, dependency-confusion mitigation). Declare a{" "}
-          <span className="font-medium text-foreground">tracks</span> relationship to re-union a
-          local project&apos;s versions with a named upstream Simple index.
+          PyPI 虚拟仓库默认将本地拥有的项目名与上游同名项目隔离（PEP 708，依赖混淆缓解措施）。声明一个{" "}
+          <span className="font-medium text-foreground">tracks</span>{" "}
+          关系，可将本地项目的版本与指定的上游 Simple 索引重新合并。
         </p>
       </div>
 
@@ -88,20 +87,20 @@ export function PypiTracksPanel({ repository }: PypiTracksPanelProps) {
       <form
         onSubmit={handleSubmit}
         className="flex flex-col gap-2 sm:flex-row sm:items-center"
-        aria-label="Declare a tracks relationship"
+        aria-label="声明 tracks 关系"
       >
         <Input
-          placeholder="Project name (e.g. acme-sdk)"
+          placeholder="项目名（例如 acme-sdk）"
           value={project}
           onChange={(e) => setProject(e.target.value)}
-          aria-label="Project name"
+          aria-label="项目名"
           className="sm:max-w-xs"
         />
         <Input
           placeholder="https://pypi.org/simple/acme-sdk/"
           value={tracksUrl}
           onChange={(e) => setTracksUrl(e.target.value)}
-          aria-label="Upstream Simple index URL"
+          aria-label="上游 Simple 索引 URL"
           inputMode="url"
         />
         <Button type="submit" disabled={!canSubmit}>
@@ -110,7 +109,7 @@ export function PypiTracksPanel({ repository }: PypiTracksPanelProps) {
           ) : (
             <Plus className="size-4" />
           )}
-          Add
+          添加
         </Button>
       </form>
 
@@ -125,8 +124,8 @@ export function PypiTracksPanel({ repository }: PypiTracksPanelProps) {
       {!isLoading && (tracks?.length ?? 0) === 0 && (
         <div className="flex flex-col items-center justify-center rounded-md border border-dashed py-10 text-center text-muted-foreground">
           <Link2 className="size-7 mb-2 opacity-50" />
-          <p className="text-sm">No tracks declarations.</p>
-          <p className="text-xs">Locally-owned project names are fully isolated from upstream.</p>
+          <p className="text-sm">暂无 tracks 声明。</p>
+          <p className="text-xs">本地拥有的项目名与上游完全隔离。</p>
         </div>
       )}
 
@@ -144,7 +143,7 @@ export function PypiTracksPanel({ repository }: PypiTracksPanelProps) {
               <Button
                 variant="ghost"
                 size="icon-sm"
-                aria-label={`Remove tracks declaration for ${t.normalized_name}`}
+                aria-label={`移除 ${t.normalized_name} 的 tracks 声明`}
                 onClick={() => setTrackToRemove(t)}
               >
                 <Trash2 className="size-4 text-destructive" />
@@ -157,13 +156,13 @@ export function PypiTracksPanel({ repository }: PypiTracksPanelProps) {
       <ConfirmDialog
         open={trackToRemove !== null}
         onOpenChange={(open) => !open && setTrackToRemove(null)}
-        title="Remove tracks declaration?"
+        title="移除 tracks 声明？"
         description={
           trackToRemove
-            ? `"${trackToRemove.normalized_name}" will be isolated from upstream again. Unpinned installs will resolve only the local project's versions.`
+            ? `"${trackToRemove.normalized_name}"将再次与上游隔离。未固定的安装将仅解析本地项目的版本。`
             : ""
         }
-        confirmText="Remove"
+        confirmText="移除"
         danger
         loading={removeMutation.isPending}
         onConfirm={() => {

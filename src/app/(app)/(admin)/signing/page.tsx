@@ -73,9 +73,9 @@ export default function SigningPage() {
       invalidate();
       setCreateOpen(false);
       setForm(emptyForm);
-      toast.success(`Signing key "${key.name}" created`);
+      toast.success(`签名密钥"${key.name}"已创建`);
     },
-    onError: mutationErrorToast("Failed to create signing key"),
+    onError: mutationErrorToast("创建签名密钥失败"),
   });
 
   const rotateMutation = useMutation({
@@ -83,9 +83,9 @@ export default function SigningPage() {
     onSuccess: () => {
       invalidate();
       setRotateTarget(null);
-      toast.success("Signing key rotated");
+      toast.success("签名密钥已轮换");
     },
-    onError: mutationErrorToast("Failed to rotate signing key"),
+    onError: mutationErrorToast("轮换签名密钥失败"),
   });
 
   const revokeMutation = useMutation({
@@ -93,9 +93,9 @@ export default function SigningPage() {
     onSuccess: () => {
       invalidate();
       setRevokeTarget(null);
-      toast.success("Signing key revoked");
+      toast.success("签名密钥已吊销");
     },
-    onError: mutationErrorToast("Failed to revoke signing key"),
+    onError: mutationErrorToast("吊销签名密钥失败"),
   });
 
   const deleteMutation = useMutation({
@@ -103,16 +103,16 @@ export default function SigningPage() {
     onSuccess: () => {
       invalidate();
       setDeleteTarget(null);
-      toast.success("Signing key deleted");
+      toast.success("签名密钥已删除");
     },
-    onError: mutationErrorToast("Failed to delete signing key"),
+    onError: mutationErrorToast("删除签名密钥失败"),
   });
 
   if (!user?.is_admin) {
     return (
       <div className="p-8 text-center text-muted-foreground" role="alert">
         <FileSignature className="mx-auto mb-2 size-8 opacity-50" />
-        <p className="text-sm">Signing key management requires administrator access.</p>
+        <p className="text-sm">签名密钥管理需要管理员权限。</p>
       </div>
     );
   }
@@ -135,15 +135,15 @@ export default function SigningPage() {
         <div className="flex items-center gap-2">
           <FileSignature className="size-6" />
           <div>
-            <h1 className="text-xl font-semibold">Signing Keys</h1>
+            <h1 className="text-xl font-semibold">签名密钥</h1>
             <p className="text-sm text-muted-foreground">
-              GPG and RSA keys used to sign Debian, RPM, Alpine, and Conda artifacts.
+              用于对 Debian、RPM、Alpine 和 Conda 制品进行签名的 GPG 和 RSA 密钥。
             </p>
           </div>
         </div>
         <Button onClick={() => setCreateOpen(true)}>
           <Plus className="size-4" />
-          New Key
+          新建密钥
         </Button>
       </div>
 
@@ -157,11 +157,11 @@ export default function SigningPage() {
       {!isLoading && isError && (
         <div className="flex flex-col items-center justify-center py-12 text-center" role="alert">
           <AlertCircle className="size-8 mb-2 text-destructive opacity-80" />
-          <p className="text-sm font-medium">Couldn&apos;t load signing keys</p>
-          <p className="mt-1 text-xs text-muted-foreground">{toUserMessage(error, "Unknown error")}</p>
+          <p className="text-sm font-medium">无法加载签名密钥</p>
+          <p className="mt-1 text-xs text-muted-foreground">{toUserMessage(error, "未知错误")}</p>
           <Button variant="outline" size="sm" className="mt-4" onClick={() => refetch()} disabled={isFetching}>
             <RotateCcw className={`size-4 ${isFetching ? "animate-spin" : ""}`} />
-            Retry
+            重试
           </Button>
         </div>
       )}
@@ -169,8 +169,8 @@ export default function SigningPage() {
       {!isLoading && !isError && (keys?.length ?? 0) === 0 && (
         <div className="flex flex-col items-center justify-center rounded-md border border-dashed py-12 text-center text-muted-foreground">
           <FileSignature className="size-8 mb-2 opacity-50" />
-          <p className="text-sm">No signing keys yet.</p>
-          <p className="text-xs">Create one to start signing artifacts.</p>
+          <p className="text-sm">暂无签名密钥。</p>
+          <p className="text-xs">创建一个以开始对制品签名。</p>
         </div>
       )}
 
@@ -183,9 +183,9 @@ export default function SigningPage() {
                   <span className="truncate font-medium">{key.name}</span>
                   <Badge variant="outline" className="uppercase">{key.key_type}</Badge>
                   {key.is_active ? (
-                    <Badge variant="secondary">active</Badge>
+                    <Badge variant="secondary">已激活</Badge>
                   ) : (
-                    <Badge variant="destructive">revoked</Badge>
+                    <Badge variant="destructive">已吊销</Badge>
                   )}
                 </div>
                 <p className="truncate font-mono text-xs text-muted-foreground">
@@ -193,18 +193,18 @@ export default function SigningPage() {
                 </p>
               </div>
               <div className="flex items-center gap-1">
-                <Button variant="ghost" size="icon-sm" aria-label={`View public key for ${key.name}`} onClick={() => setViewKey(key)}>
+                <Button variant="ghost" size="icon-sm" aria-label={`查看 ${key.name} 的公钥`} onClick={() => setViewKey(key)}>
                   <Eye className="size-4" />
                 </Button>
-                <Button variant="ghost" size="icon-sm" aria-label={`Rotate ${key.name}`} onClick={() => setRotateTarget(key)}>
+                <Button variant="ghost" size="icon-sm" aria-label={`轮换 ${key.name}`} onClick={() => setRotateTarget(key)}>
                   <RotateCcw className="size-4" />
                 </Button>
                 {key.is_active && (
-                  <Button variant="ghost" size="icon-sm" aria-label={`Revoke ${key.name}`} onClick={() => setRevokeTarget(key)}>
+                  <Button variant="ghost" size="icon-sm" aria-label={`吊销 ${key.name}`} onClick={() => setRevokeTarget(key)}>
                     <Ban className="size-4 text-amber-500" />
                   </Button>
                 )}
-                <Button variant="ghost" size="icon-sm" aria-label={`Delete ${key.name}`} onClick={() => setDeleteTarget(key)}>
+                <Button variant="ghost" size="icon-sm" aria-label={`删除 ${key.name}`} onClick={() => setDeleteTarget(key)}>
                   <Trash2 className="size-4 text-destructive" />
                 </Button>
               </div>
@@ -218,14 +218,14 @@ export default function SigningPage() {
         <DialogContent>
           <form onSubmit={submitCreate}>
             <DialogHeader>
-              <DialogTitle>New signing key</DialogTitle>
+              <DialogTitle>新建签名密钥</DialogTitle>
               <DialogDescription>
-                Generate a key pair. The private key never leaves the server.
+                生成密钥对。私钥永远不会离开服务器。
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-1.5">
-                <Label htmlFor="key-name">Name</Label>
+                <Label htmlFor="key-name">名称</Label>
                 <Input
                   id="key-name"
                   value={form.name}
@@ -234,7 +234,7 @@ export default function SigningPage() {
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="key-type">Type</Label>
+                <Label htmlFor="key-type">类型</Label>
                 <Select
                   value={form.key_type}
                   onValueChange={(v) => setForm((f) => ({ ...f, key_type: v }))}
@@ -250,7 +250,7 @@ export default function SigningPage() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label htmlFor="uid-name">UID name (optional)</Label>
+                  <Label htmlFor="uid-name">UID 名称（可选）</Label>
                   <Input
                     id="uid-name"
                     value={form.uid_name ?? ""}
@@ -258,7 +258,7 @@ export default function SigningPage() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="uid-email">UID email (optional)</Label>
+                  <Label htmlFor="uid-email">UID 邮箱（可选）</Label>
                   <Input
                     id="uid-email"
                     type="email"
@@ -270,11 +270,11 @@ export default function SigningPage() {
             </div>
             <DialogFooter>
               <Button type="button" variant="ghost" onClick={() => setCreateOpen(false)}>
-                Cancel
+                取消
               </Button>
               <Button type="submit" disabled={!canCreate}>
                 {createMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
-                Create
+                创建
               </Button>
             </DialogFooter>
           </form>
@@ -285,8 +285,8 @@ export default function SigningPage() {
       <Dialog open={viewKey !== null} onOpenChange={(o) => !o && setViewKey(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Public key — {viewKey?.name}</DialogTitle>
-            <DialogDescription>Distribute this to verify signed artifacts.</DialogDescription>
+            <DialogTitle>公钥 — {viewKey?.name}</DialogTitle>
+            <DialogDescription>分发此公钥以验证已签名的制品。</DialogDescription>
           </DialogHeader>
           <div className="relative">
             <pre className="max-h-72 overflow-auto rounded-md bg-muted p-3 font-mono text-xs">
@@ -302,9 +302,9 @@ export default function SigningPage() {
       <ConfirmDialog
         open={rotateTarget !== null}
         onOpenChange={(o) => !o && setRotateTarget(null)}
-        title="Rotate signing key?"
-        description={`A new key replaces "${rotateTarget?.name ?? ""}". Artifacts already signed stay valid; new signatures use the new key.`}
-        confirmText="Rotate"
+        title="轮换签名密钥？"
+        description={`新密钥将替换"${rotateTarget?.name ?? ""}"。已签名的制品仍然有效；新签名将使用新密钥。`}
+        confirmText="轮换"
         loading={rotateMutation.isPending}
         onConfirm={() => rotateTarget && rotateMutation.mutate(rotateTarget.id)}
       />
@@ -312,9 +312,9 @@ export default function SigningPage() {
       <ConfirmDialog
         open={revokeTarget !== null}
         onOpenChange={(o) => !o && setRevokeTarget(null)}
-        title="Revoke signing key?"
-        description={`"${revokeTarget?.name ?? ""}" will be marked revoked and can no longer sign artifacts.`}
-        confirmText="Revoke"
+        title="吊销签名密钥？"
+        description={`"${revokeTarget?.name ?? ""}"将被标记为已吊销，无法再对制品签名。`}
+        confirmText="吊销"
         danger
         loading={revokeMutation.isPending}
         onConfirm={() => revokeTarget && revokeMutation.mutate(revokeTarget.id)}
@@ -323,9 +323,9 @@ export default function SigningPage() {
       <ConfirmDialog
         open={deleteTarget !== null}
         onOpenChange={(o) => !o && setDeleteTarget(null)}
-        title="Delete signing key?"
-        description={`"${deleteTarget?.name ?? ""}" will be permanently deleted. This cannot be undone.`}
-        confirmText="Delete"
+        title="删除签名密钥？"
+        description={`"${deleteTarget?.name ?? ""}"将被永久删除。此操作无法撤销。`}
+        confirmText="删除"
         danger
         loading={deleteMutation.isPending}
         onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}

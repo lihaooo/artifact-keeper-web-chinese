@@ -62,9 +62,9 @@ export default function QualityChecksPage() {
     mutationFn: () => qualityChecksApi.trigger({}),
     onSuccess: (res) => {
       queryClient.invalidateQueries({ queryKey: CHECKS_KEY });
-      toast.success(res.message || `Queued ${res.queued} artifact(s)`);
+      toast.success(res.message || `已将 ${res.queued} 个制品加入队列`);
     },
-    onError: mutationErrorToast("Failed to trigger checks"),
+    onError: mutationErrorToast("触发检查失败"),
   });
 
   const suppressMutation = useMutation({
@@ -74,25 +74,25 @@ export default function QualityChecksPage() {
       invalidateIssues();
       setSuppressTarget(null);
       setReason("");
-      toast.success("Issue suppressed");
+      toast.success("问题已屏蔽");
     },
-    onError: mutationErrorToast("Failed to suppress issue"),
+    onError: mutationErrorToast("屏蔽问题失败"),
   });
 
   const unsuppressMutation = useMutation({
     mutationFn: (id: string) => qualityChecksApi.unsuppressIssue(id),
     onSuccess: () => {
       invalidateIssues();
-      toast.success("Issue un-suppressed");
+      toast.success("问题已取消屏蔽");
     },
-    onError: mutationErrorToast("Failed to un-suppress issue"),
+    onError: mutationErrorToast("取消屏蔽问题失败"),
   });
 
   if (!user?.is_admin) {
     return (
       <div className="p-8 text-center text-muted-foreground" role="alert">
         <ShieldCheck className="mx-auto mb-2 size-8 opacity-50" />
-        <p className="text-sm">Quality checks require administrator access.</p>
+        <p className="text-sm">质量检查需要管理员权限。</p>
       </div>
     );
   }
@@ -106,15 +106,15 @@ export default function QualityChecksPage() {
         <div className="flex items-center gap-2">
           <ListChecks className="size-6" />
           <div>
-            <h1 className="text-xl font-semibold">Quality Checks</h1>
+            <h1 className="text-xl font-semibold">质量检查</h1>
             <p className="text-sm text-muted-foreground">
-              Artifact quality-check results and their findings.
+              制品质量检查结果及其发现。
             </p>
           </div>
         </div>
         <Button onClick={() => triggerMutation.mutate()} disabled={triggerMutation.isPending}>
           {triggerMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : <PlayCircle className="size-4" />}
-          Run checks
+          运行检查
         </Button>
       </div>
 
@@ -128,11 +128,11 @@ export default function QualityChecksPage() {
       {!isLoading && isError && (
         <div className="flex flex-col items-center justify-center py-12 text-center" role="alert">
           <AlertCircle className="size-8 mb-2 text-destructive opacity-80" />
-          <p className="text-sm font-medium">Couldn&apos;t load quality checks</p>
-          <p className="mt-1 text-xs text-muted-foreground">{toUserMessage(error, "Unknown error")}</p>
+          <p className="text-sm font-medium">无法加载质量检查</p>
+          <p className="mt-1 text-xs text-muted-foreground">{toUserMessage(error, "未知错误")}</p>
           <Button variant="outline" size="sm" className="mt-4" onClick={() => refetch()} disabled={isFetching}>
             <RotateCcw className={`size-4 ${isFetching ? "animate-spin" : ""}`} />
-            Retry
+            重试
           </Button>
         </div>
       )}
@@ -140,8 +140,8 @@ export default function QualityChecksPage() {
       {!isLoading && !isError && rows.length === 0 && (
         <div className="flex flex-col items-center justify-center rounded-md border border-dashed py-12 text-center text-muted-foreground">
           <ListChecks className="size-8 mb-2 opacity-50" />
-          <p className="text-sm">No quality-check results yet.</p>
-          <p className="text-xs">Run checks to evaluate your artifacts.</p>
+          <p className="text-sm">暂无质量检查结果。</p>
+          <p className="text-xs">运行检查以评估你的制品。</p>
         </div>
       )}
 
@@ -152,20 +152,20 @@ export default function QualityChecksPage() {
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="truncate font-medium capitalize">{c.check_type}</span>
-                  {c.passed === true && <Badge variant="secondary">passed</Badge>}
-                  {c.passed === false && <Badge variant="destructive">failed</Badge>}
-                  {c.score != null && <span className="text-xs text-muted-foreground">score {c.score}</span>}
+                  {c.passed === true && <Badge variant="secondary">通过</Badge>}
+                  {c.passed === false && <Badge variant="destructive">失败</Badge>}
+                  {c.score != null && <span className="text-xs text-muted-foreground">分数 {c.score}</span>}
                 </div>
                 <p className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                  <span>{c.issues_count} issue{c.issues_count === 1 ? "" : "s"}</span>
-                  {c.critical_count > 0 && <Badge variant="destructive">{c.critical_count} critical</Badge>}
-                  {c.high_count > 0 && <Badge variant="destructive">{c.high_count} high</Badge>}
-                  {c.medium_count > 0 && <Badge variant="secondary">{c.medium_count} medium</Badge>}
+                  <span>{c.issues_count} 个问题</span>
+                  {c.critical_count > 0 && <Badge variant="destructive">{c.critical_count} 严重</Badge>}
+                  {c.high_count > 0 && <Badge variant="destructive">{c.high_count} 高</Badge>}
+                  {c.medium_count > 0 && <Badge variant="secondary">{c.medium_count} 中</Badge>}
                   {c.error_message && <span className="truncate max-w-[16rem] text-destructive">· {c.error_message}</span>}
                 </p>
               </div>
-              <Button variant="ghost" size="sm" aria-label={`View issues for ${c.check_type}`} onClick={() => setSelected(c)} disabled={c.issues_count === 0}>
-                View issues
+              <Button variant="ghost" size="sm" aria-label={`查看 ${c.check_type} 的问题`} onClick={() => setSelected(c)} disabled={c.issues_count === 0}>
+                查看问题
               </Button>
             </li>
           ))}
@@ -176,13 +176,13 @@ export default function QualityChecksPage() {
       <Dialog open={selected !== null} onOpenChange={(o) => !o && setSelected(null)}>
         <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-2xl">
           <DialogHeader>
-            <DialogTitle className="capitalize">{selected?.check_type} issues</DialogTitle>
-            <DialogDescription>Suppress findings that are accepted or false positives.</DialogDescription>
+            <DialogTitle className="capitalize">{selected?.check_type} 问题</DialogTitle>
+            <DialogDescription>屏蔽已接受或误报的发现。</DialogDescription>
           </DialogHeader>
           <div className="space-y-2 py-2">
             {issuesLoading && <Skeleton className="h-16 w-full" />}
             {!issuesLoading && (issues?.length ?? 0) === 0 && (
-              <p className="py-6 text-center text-sm text-muted-foreground">No issues.</p>
+              <p className="py-6 text-center text-sm text-muted-foreground">暂无问题。</p>
             )}
             {!issuesLoading &&
               (issues ?? []).map((iss) => (
@@ -192,18 +192,18 @@ export default function QualityChecksPage() {
                       <div className="flex items-center gap-2">
                         <Badge variant={severityVariant(iss.severity)} className="capitalize">{iss.severity}</Badge>
                         <span className="truncate text-sm font-medium">{iss.title}</span>
-                        {iss.is_suppressed && <Badge variant="outline">suppressed</Badge>}
+                        {iss.is_suppressed && <Badge variant="outline">已屏蔽</Badge>}
                       </div>
                       {iss.description && <p className="mt-1 text-xs text-muted-foreground">{iss.description}</p>}
                       {iss.location && <p className="mt-0.5 font-mono text-xs text-muted-foreground">{iss.location}</p>}
                     </div>
                     {iss.is_suppressed ? (
-                      <Button variant="ghost" size="sm" aria-label={`Un-suppress ${iss.title}`} onClick={() => unsuppressMutation.mutate(iss.id)}>
-                        <Eye className="size-4" /> Restore
+                      <Button variant="ghost" size="sm" aria-label={`取消屏蔽 ${iss.title}`} onClick={() => unsuppressMutation.mutate(iss.id)}>
+                        <Eye className="size-4" /> 恢复
                       </Button>
                     ) : (
-                      <Button variant="ghost" size="sm" aria-label={`Suppress ${iss.title}`} onClick={() => { setSuppressTarget(iss); setReason(""); }}>
-                        <EyeOff className="size-4" /> Suppress
+                      <Button variant="ghost" size="sm" aria-label={`屏蔽 ${iss.title}`} onClick={() => { setSuppressTarget(iss); setReason(""); }}>
+                        <EyeOff className="size-4" /> 屏蔽
                       </Button>
                     )}
                   </div>
@@ -217,18 +217,18 @@ export default function QualityChecksPage() {
       <Dialog open={suppressTarget !== null} onOpenChange={(o) => { if (!o) { setSuppressTarget(null); setReason(""); } }}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Suppress issue</DialogTitle>
-            <DialogDescription>A reason is recorded for the audit trail.</DialogDescription>
+            <DialogTitle>屏蔽问题</DialogTitle>
+            <DialogDescription>原因将记录到审计轨迹中。</DialogDescription>
           </DialogHeader>
           <div className="py-2">
-            <Label htmlFor="qc-reason" className="sr-only">Reason</Label>
-            <Input id="qc-reason" aria-label="Reason" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Accepted risk / false positive" />
+            <Label htmlFor="qc-reason" className="sr-only">原因</Label>
+            <Input id="qc-reason" aria-label="原因" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="已接受的风险 / 误报" />
           </div>
           <DialogFooter>
-            <Button variant="ghost" onClick={() => { setSuppressTarget(null); setReason(""); }}>Cancel</Button>
+            <Button variant="ghost" onClick={() => { setSuppressTarget(null); setReason(""); }}>取消</Button>
             <Button disabled={!canSuppress} onClick={() => suppressTarget && suppressMutation.mutate({ id: suppressTarget.id, reason: reason.trim() })}>
               {suppressMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : null}
-              Suppress
+              屏蔽
             </Button>
           </DialogFooter>
         </DialogContent>

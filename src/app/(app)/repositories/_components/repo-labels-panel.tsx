@@ -38,18 +38,18 @@ export function RepoLabelsPanel({ repository }: RepoLabelsPanelProps) {
       invalidate();
       setLabelKey("");
       setLabelValue("");
-      toast.success(`Label "${k}" saved`);
+      toast.success(`标签"${k}"已保存`);
     },
-    onError: mutationErrorToast("Failed to save label"),
+    onError: mutationErrorToast("保存标签失败"),
   });
 
   const removeMutation = useMutation({
     mutationFn: (k: string) => repoLabelsApi.remove(repository.key, k),
     onSuccess: () => {
       invalidate();
-      toast.success("Label removed");
+      toast.success("标签已移除");
     },
-    onError: mutationErrorToast("Failed to remove label"),
+    onError: mutationErrorToast("移除标签失败"),
   });
 
   const trimmedKey = labelKey.trim();
@@ -66,15 +66,15 @@ export function RepoLabelsPanel({ repository }: RepoLabelsPanelProps) {
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
-        Key/value labels for organizing and filtering repositories.
+        用于组织和筛选仓库的键/值标签。
       </p>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-2 sm:flex-row sm:items-center" aria-label="Add a label">
-        <Input placeholder="key (e.g. team)" value={labelKey} onChange={(e) => setLabelKey(e.target.value)} aria-label="Label key" className="sm:max-w-xs" />
-        <Input placeholder="value (e.g. platform)" value={labelValue} onChange={(e) => setLabelValue(e.target.value)} aria-label="Label value" />
+      <form onSubmit={handleSubmit} className="flex flex-col gap-2 sm:flex-row sm:items-center" aria-label="添加标签">
+        <Input placeholder="键（例如 team）" value={labelKey} onChange={(e) => setLabelKey(e.target.value)} aria-label="标签键" className="sm:max-w-xs" />
+        <Input placeholder="值（例如 platform）" value={labelValue} onChange={(e) => setLabelValue(e.target.value)} aria-label="标签值" />
         <Button type="submit" disabled={!canAdd}>
           {addMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
-          Add
+          添加
         </Button>
       </form>
 
@@ -88,7 +88,7 @@ export function RepoLabelsPanel({ repository }: RepoLabelsPanelProps) {
       {!isLoading && rows.length === 0 && (
         <div className="flex flex-col items-center justify-center rounded-md border border-dashed py-10 text-center text-muted-foreground">
           <Tag className="size-6 mb-2 opacity-50" />
-          <p className="text-sm">No labels yet.</p>
+          <p className="text-sm">暂无标签。</p>
         </div>
       )}
 
@@ -103,7 +103,7 @@ export function RepoLabelsPanel({ repository }: RepoLabelsPanelProps) {
               <Button
                 variant="ghost"
                 size="icon-sm"
-                aria-label={`Remove label ${l.key}`}
+                aria-label={`移除标签 ${l.key}`}
                 disabled={removeMutation.isPending}
                 onClick={() => removeMutation.mutate(l.key)}
               >

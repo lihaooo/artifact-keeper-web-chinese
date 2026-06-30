@@ -84,16 +84,16 @@ export default function SyncPoliciesPage() {
       setDialogOpen(false);
       setEditing(null);
       setForm(emptyForm);
-      toast.success(vars.id ? "Sync policy updated" : "Sync policy created");
+      toast.success(vars.id ? "同步策略已更新" : "同步策略已创建");
     },
-    onError: mutationErrorToast("Failed to save sync policy"),
+    onError: mutationErrorToast("保存同步策略失败"),
   });
 
   const toggleMutation = useMutation({
     mutationFn: (vars: { id: string; enabled: boolean }) =>
       syncPoliciesApi.toggle(vars.id, vars.enabled),
     onSuccess: () => invalidate(),
-    onError: mutationErrorToast("Failed to toggle sync policy"),
+    onError: mutationErrorToast("切换同步策略失败"),
   });
 
   const deleteMutation = useMutation({
@@ -101,16 +101,16 @@ export default function SyncPoliciesPage() {
     onSuccess: () => {
       invalidate();
       setDeleteTarget(null);
-      toast.success("Sync policy deleted");
+      toast.success("同步策略已删除");
     },
-    onError: mutationErrorToast("Failed to delete sync policy"),
+    onError: mutationErrorToast("删除同步策略失败"),
   });
 
   if (!user?.is_admin) {
     return (
       <div className="p-8 text-center text-muted-foreground" role="alert">
         <Workflow className="mx-auto mb-2 size-8 opacity-50" />
-        <p className="text-sm">Sync policy management requires administrator access.</p>
+        <p className="text-sm">同步策略管理需要管理员权限。</p>
       </div>
     );
   }
@@ -147,15 +147,15 @@ export default function SyncPoliciesPage() {
         <div className="flex items-center gap-2">
           <Workflow className="size-6" />
           <div>
-            <h1 className="text-xl font-semibold">Sync Policies</h1>
+            <h1 className="text-xl font-semibold">同步策略</h1>
             <p className="text-sm text-muted-foreground">
-              Rules deciding which artifacts replicate to which peers, and how.
+              决定哪些制品复制到哪些对等节点、以及如何复制的规则。
             </p>
           </div>
         </div>
         <Button onClick={openCreate}>
           <Plus className="size-4" />
-          New Policy
+          新建策略
         </Button>
       </div>
 
@@ -169,11 +169,11 @@ export default function SyncPoliciesPage() {
       {!isLoading && isError && (
         <div className="flex flex-col items-center justify-center py-12 text-center" role="alert">
           <AlertCircle className="size-8 mb-2 text-destructive opacity-80" />
-          <p className="text-sm font-medium">Couldn&apos;t load sync policies</p>
-          <p className="mt-1 text-xs text-muted-foreground">{toUserMessage(error, "Unknown error")}</p>
+          <p className="text-sm font-medium">无法加载同步策略</p>
+          <p className="mt-1 text-xs text-muted-foreground">{toUserMessage(error, "未知错误")}</p>
           <Button variant="outline" size="sm" className="mt-4" onClick={() => refetch()} disabled={isFetching}>
             <RotateCcw className={`size-4 ${isFetching ? "animate-spin" : ""}`} />
-            Retry
+            重试
           </Button>
         </div>
       )}
@@ -181,8 +181,8 @@ export default function SyncPoliciesPage() {
       {!isLoading && !isError && rows.length === 0 && (
         <div className="flex flex-col items-center justify-center rounded-md border border-dashed py-12 text-center text-muted-foreground">
           <Workflow className="size-8 mb-2 opacity-50" />
-          <p className="text-sm">No sync policies yet.</p>
-          <p className="text-xs">Create one to control what replicates and where.</p>
+          <p className="text-sm">暂无同步策略。</p>
+          <p className="text-xs">创建一个以控制复制的内容和目标。</p>
         </div>
       )}
 
@@ -194,24 +194,24 @@ export default function SyncPoliciesPage() {
                 <Switch
                   checked={p.enabled}
                   onCheckedChange={(v) => toggleMutation.mutate({ id: p.id, enabled: v })}
-                  aria-label={`Enable ${p.name}`}
+                  aria-label={`启用 ${p.name}`}
                 />
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="truncate font-medium">{p.name}</span>
                     <Badge variant="outline" className="capitalize">{p.replication_mode}</Badge>
-                    <span className="text-xs text-muted-foreground">priority {p.priority}</span>
+                    <span className="text-xs text-muted-foreground">优先级 {p.priority}</span>
                   </div>
                   <p className="truncate text-xs text-muted-foreground">
-                    {p.filter ? `filter: ${p.filter}` : p.description || "all artifacts"}
+                    {p.filter ? `过滤器：${p.filter}` : p.description || "所有制品"}
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-1">
-                <Button variant="ghost" size="icon-sm" aria-label={`Edit ${p.name}`} onClick={() => openEdit(p)}>
+                <Button variant="ghost" size="icon-sm" aria-label={`编辑 ${p.name}`} onClick={() => openEdit(p)}>
                   <Pencil className="size-4" />
                 </Button>
-                <Button variant="ghost" size="icon-sm" aria-label={`Delete ${p.name}`} onClick={() => setDeleteTarget(p)}>
+                <Button variant="ghost" size="icon-sm" aria-label={`删除 ${p.name}`} onClick={() => setDeleteTarget(p)}>
                   <Trash2 className="size-4 text-destructive" />
                 </Button>
               </div>
@@ -225,23 +225,23 @@ export default function SyncPoliciesPage() {
         <DialogContent>
           <form onSubmit={submit}>
             <DialogHeader>
-              <DialogTitle>{editing ? "Edit sync policy" : "New sync policy"}</DialogTitle>
+              <DialogTitle>{editing ? "编辑同步策略" : "新建同步策略"}</DialogTitle>
               <DialogDescription>
-                A higher priority wins when multiple policies match an artifact.
+                当多个策略匹配同一制品时，优先级高的生效。
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-1.5">
-                <Label htmlFor="sp-name">Name</Label>
+                <Label htmlFor="sp-name">名称</Label>
                 <Input id="sp-name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="mirror-releases" />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="sp-desc">Description</Label>
+                <Label htmlFor="sp-desc">描述</Label>
                 <Input id="sp-desc" value={form.description ?? ""} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label htmlFor="sp-mode">Mode</Label>
+                  <Label htmlFor="sp-mode">模式</Label>
                   <Select value={form.replication_mode} onValueChange={(v) => setForm((f) => ({ ...f, replication_mode: v }))}>
                     <SelectTrigger id="sp-mode"><SelectValue /></SelectTrigger>
                     <SelectContent>
@@ -252,7 +252,7 @@ export default function SyncPoliciesPage() {
                   </Select>
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="sp-priority">Priority</Label>
+                  <Label htmlFor="sp-priority">优先级</Label>
                   <Input
                     id="sp-priority"
                     type="number"
@@ -268,15 +268,15 @@ export default function SyncPoliciesPage() {
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="sp-filter">Filter glob (optional)</Label>
+                <Label htmlFor="sp-filter">过滤器 glob（可选）</Label>
                 <Input id="sp-filter" value={form.filter ?? ""} onChange={(e) => setForm((f) => ({ ...f, filter: e.target.value }))} placeholder="*.tar.gz" />
               </div>
             </div>
             <DialogFooter>
-              <Button type="button" variant="ghost" onClick={() => setDialogOpen(false)}>Cancel</Button>
+              <Button type="button" variant="ghost" onClick={() => setDialogOpen(false)}>取消</Button>
               <Button type="submit" disabled={!canSave}>
                 {saveMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : null}
-                {editing ? "Save" : "Create"}
+                {editing ? "保存" : "创建"}
               </Button>
             </DialogFooter>
           </form>
@@ -286,9 +286,9 @@ export default function SyncPoliciesPage() {
       <ConfirmDialog
         open={deleteTarget !== null}
         onOpenChange={(o) => !o && setDeleteTarget(null)}
-        title="Delete sync policy?"
-        description={`"${deleteTarget?.name ?? ""}" will be permanently deleted. Replication stops following this rule.`}
-        confirmText="Delete"
+        title="删除同步策略？"
+        description={`"${deleteTarget?.name ?? ""}"将被永久删除。复制将不再遵循此规则。`}
+        confirmText="删除"
         danger
         loading={deleteMutation.isPending}
         onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}

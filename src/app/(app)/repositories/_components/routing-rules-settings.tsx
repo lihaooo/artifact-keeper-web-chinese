@@ -96,9 +96,9 @@ export function RoutingRulesSettings({ repository }: RoutingRulesSettingsProps) 
     onSuccess: (resp) => {
       setRules(resp.rules);
       queryClient.invalidateQueries({ queryKey });
-      toast.success("Routing rules saved");
+      toast.success("路由规则已保存");
     },
-    onError: mutationErrorToast("Failed to save routing rules"),
+    onError: mutationErrorToast("保存路由规则失败"),
   });
 
   const clearMutation = useMutation({
@@ -106,9 +106,9 @@ export function RoutingRulesSettings({ repository }: RoutingRulesSettingsProps) 
     onSuccess: () => {
       setRules([]);
       queryClient.invalidateQueries({ queryKey });
-      toast.success("Routing rules cleared");
+      toast.success("路由规则已清空");
     },
-    onError: mutationErrorToast("Failed to clear routing rules"),
+    onError: mutationErrorToast("清空路由规则失败"),
   });
 
   const isBusy = saveMutation.isPending || clearMutation.isPending;
@@ -117,7 +117,7 @@ export function RoutingRulesSettings({ repository }: RoutingRulesSettingsProps) 
     const pattern = draft.path_pattern.trim();
     const rewrite = draft.rewrite_to.trim();
     if (!pattern || !rewrite) {
-      setAddError("Both pattern and rewrite target are required.");
+      setAddError("模式和重写目标均为必填项。");
       return;
     }
     // The pattern is a regex evaluated by the backend; reject an invalid one
@@ -126,7 +126,7 @@ export function RoutingRulesSettings({ repository }: RoutingRulesSettingsProps) 
     try {
       new RegExp(pattern);
     } catch {
-      setAddError("Path pattern is not a valid regular expression.");
+      setAddError("路径模式不是有效的正则表达式。");
       return;
     }
     setAddError(null);
@@ -136,7 +136,7 @@ export function RoutingRulesSettings({ repository }: RoutingRulesSettingsProps) 
         setRules(resp.rules);
         setDraft({ path_pattern: "", rewrite_to: "" });
         queryClient.invalidateQueries({ queryKey });
-        toast.success("Routing rule added");
+        toast.success("路由规则已添加");
       },
     });
   };
@@ -152,7 +152,7 @@ export function RoutingRulesSettings({ repository }: RoutingRulesSettingsProps) 
       onSuccess: (resp) => {
         setRules(resp.rules);
         queryClient.invalidateQueries({ queryKey });
-        toast.success("Routing rule removed");
+        toast.success("路由规则已移除");
       },
     });
   };
@@ -175,15 +175,14 @@ export function RoutingRulesSettings({ repository }: RoutingRulesSettingsProps) 
           id="settings-routing-rules-heading"
           className="text-base font-semibold"
         >
-          Routing Rules
+          路由规则
         </h3>
       </div>
       <p className="text-xs text-muted-foreground mb-4">
-        Rewrite request paths before they are forwarded upstream. Each rule is a
-        regex pattern and a rewrite template. Reference capture groups with{" "}
-        <code className="font-mono">$1</code>,{" "}
-        <code className="font-mono">$2</code>, and so on. Rules are evaluated in
-        order; the first match wins.
+        在请求转发到上游之前重写请求路径。每条规则由一个正则表达式模式和一个重写模板组成。使用{" "}
+        <code className="font-mono">$1</code>、{" "}
+        <code className="font-mono">$2</code>{" "}
+        等引用捕获组。规则按顺序评估；第一个匹配的规则生效。
       </p>
 
       {isLoading ? (
@@ -196,17 +195,16 @@ export function RoutingRulesSettings({ repository }: RoutingRulesSettingsProps) 
           {rules.length === 0 ? (
             <div className="rounded-md border border-dashed p-6 text-center">
               <p className="text-sm text-muted-foreground">
-                No routing rules configured. Requests are forwarded upstream
-                unchanged.
+                未配置路由规则。请求将原样转发到上游。
               </p>
             </div>
           ) : (
-            <Table aria-label="Routing rules">
+            <Table aria-label="路由规则">
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-12">#</TableHead>
-                  <TableHead>Path pattern</TableHead>
-                  <TableHead>Rewrite to</TableHead>
+                  <TableHead>路径模式</TableHead>
+                  <TableHead>重写为</TableHead>
                   <TableHead className="w-12" />
                 </TableRow>
               </TableHeader>
@@ -218,7 +216,7 @@ export function RoutingRulesSettings({ repository }: RoutingRulesSettingsProps) 
                     </TableCell>
                     <TableCell>
                       <Input
-                        aria-label={`Rule ${index + 1} path pattern`}
+                        aria-label={`规则 ${index + 1} 路径模式`}
                         value={rule.path_pattern}
                         onChange={(e) =>
                           handleEditField(index, "path_pattern", e.target.value)
@@ -228,7 +226,7 @@ export function RoutingRulesSettings({ repository }: RoutingRulesSettingsProps) 
                     </TableCell>
                     <TableCell>
                       <Input
-                        aria-label={`Rule ${index + 1} rewrite to`}
+                        aria-label={`规则 ${index + 1} 重写为`}
                         value={rule.rewrite_to}
                         onChange={(e) =>
                           handleEditField(index, "rewrite_to", e.target.value)
@@ -243,7 +241,7 @@ export function RoutingRulesSettings({ repository }: RoutingRulesSettingsProps) 
                         className="text-destructive hover:text-destructive"
                         onClick={() => handleRemove(index)}
                         disabled={isBusy}
-                        aria-label={`Remove rule ${index + 1}`}
+                        aria-label={`移除规则 ${index + 1}`}
                       >
                         <Trash2 className="size-3.5" />
                       </Button>
@@ -265,10 +263,10 @@ export function RoutingRulesSettings({ repository }: RoutingRulesSettingsProps) 
                 {saveMutation.isPending ? (
                   <>
                     <Loader2 className="size-4 animate-spin" />
-                    Saving...
+                    保存中…
                   </>
                 ) : (
-                  "Save changes"
+                  "保存更改"
                 )}
               </Button>
               <Button
@@ -277,18 +275,18 @@ export function RoutingRulesSettings({ repository }: RoutingRulesSettingsProps) 
                 onClick={() => setRules(data?.rules ?? [])}
                 disabled={isBusy}
               >
-                Discard
+                放弃
               </Button>
             </div>
           )}
 
           {/* Add a new rule */}
           <div className="rounded-md border p-4 space-y-3">
-            <p className="text-sm font-medium">Add a rule</p>
+            <p className="text-sm font-medium">添加规则</p>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto_1fr]">
               <div className="space-y-1.5">
                 <Label htmlFor="routing-rule-pattern" className="text-xs">
-                  Path pattern
+                  路径模式
                 </Label>
                 <Input
                   id="routing-rule-pattern"
@@ -308,7 +306,7 @@ export function RoutingRulesSettings({ repository }: RoutingRulesSettingsProps) 
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="routing-rule-rewrite" className="text-xs">
-                  Rewrite to
+                  重写为
                 </Label>
                 <Input
                   id="routing-rule-rewrite"
@@ -340,7 +338,7 @@ export function RoutingRulesSettings({ repository }: RoutingRulesSettingsProps) 
               ) : (
                 <Plus className="size-4" />
               )}
-              Add rule
+              添加规则
             </Button>
           </div>
         </div>

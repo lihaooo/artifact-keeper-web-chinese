@@ -141,9 +141,9 @@ export default function PromotionRulesPage() {
       setDialogOpen(false);
       setEditing(null);
       setForm(emptyForm);
-      toast.success(vars.id ? "Promotion rule updated" : "Promotion rule created");
+      toast.success(vars.id ? "晋升规则已更新" : "晋升规则已创建");
     },
-    onError: mutationErrorToast("Failed to save promotion rule"),
+    onError: mutationErrorToast("保存晋升规则失败"),
   });
 
   const deleteMutation = useMutation({
@@ -151,24 +151,24 @@ export default function PromotionRulesPage() {
     onSuccess: () => {
       invalidate();
       setDeleteTarget(null);
-      toast.success("Promotion rule deleted");
+      toast.success("晋升规则已删除");
     },
-    onError: mutationErrorToast("Failed to delete promotion rule"),
+    onError: mutationErrorToast("删除晋升规则失败"),
   });
 
   const evaluateMutation = useMutation({
     mutationFn: (id: string) => promotionRulesApi.evaluate(id),
     onSuccess: (res) => {
-      toast.success(`"${res.rule_name}": ${res.passed}/${res.total} pass, ${res.failed} fail`);
+      toast.success(`${res.rule_name}：${res.passed}/${res.total} 通过，${res.failed} 失败`);
     },
-    onError: mutationErrorToast("Evaluation failed"),
+    onError: mutationErrorToast("评估失败"),
   });
 
   if (!user?.is_admin) {
     return (
       <div className="p-8 text-center text-muted-foreground" role="alert">
         <GitPullRequestArrow className="mx-auto mb-2 size-8 opacity-50" />
-        <p className="text-sm">Promotion rule management requires administrator access.</p>
+        <p className="text-sm">晋升规则管理需要管理员权限。</p>
       </div>
     );
   }
@@ -221,15 +221,15 @@ export default function PromotionRulesPage() {
         <div className="flex items-center gap-2">
           <GitPullRequestArrow className="size-6" />
           <div>
-            <h1 className="text-xl font-semibold">Promotion Rules</h1>
+            <h1 className="text-xl font-semibold">晋升规则</h1>
             <p className="text-sm text-muted-foreground">
-              Gating criteria for promoting artifacts from staging to release repositories.
+              将制品从暂存仓库晋升到发布仓库的门控条件。
             </p>
           </div>
         </div>
         <Button onClick={openCreate}>
           <Plus className="size-4" />
-          New Rule
+          新建规则
         </Button>
       </div>
 
@@ -243,11 +243,11 @@ export default function PromotionRulesPage() {
       {!isLoading && isError && (
         <div className="flex flex-col items-center justify-center py-12 text-center" role="alert">
           <AlertCircle className="size-8 mb-2 text-destructive opacity-80" />
-          <p className="text-sm font-medium">Couldn&apos;t load promotion rules</p>
-          <p className="mt-1 text-xs text-muted-foreground">{toUserMessage(error, "Unknown error")}</p>
+          <p className="text-sm font-medium">无法加载晋升规则</p>
+          <p className="mt-1 text-xs text-muted-foreground">{toUserMessage(error, "未知错误")}</p>
           <Button variant="outline" size="sm" className="mt-4" onClick={() => refetch()} disabled={isFetching}>
             <RotateCcw className={`size-4 ${isFetching ? "animate-spin" : ""}`} />
-            Retry
+            重试
           </Button>
         </div>
       )}
@@ -255,8 +255,8 @@ export default function PromotionRulesPage() {
       {!isLoading && !isError && rows.length === 0 && (
         <div className="flex flex-col items-center justify-center rounded-md border border-dashed py-12 text-center text-muted-foreground">
           <GitPullRequestArrow className="size-8 mb-2 opacity-50" />
-          <p className="text-sm">No promotion rules yet.</p>
-          <p className="text-xs">Create one to gate staging-to-release promotions.</p>
+          <p className="text-sm">暂无晋升规则。</p>
+          <p className="text-xs">创建一个以控制从暂存到发布的晋升。</p>
         </div>
       )}
 
@@ -267,26 +267,26 @@ export default function PromotionRulesPage() {
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="truncate font-medium">{r.name}</span>
-                  {r.auto_promote && <Badge variant="secondary">auto-promote</Badge>}
-                  {!r.is_enabled && <Badge variant="outline">disabled</Badge>}
-                  {r.require_signature && <Badge variant="outline">signed</Badge>}
+                  {r.auto_promote && <Badge variant="secondary">自动晋升</Badge>}
+                  {!r.is_enabled && <Badge variant="outline">已禁用</Badge>}
+                  {r.require_signature && <Badge variant="outline">已签名</Badge>}
                 </div>
                 <p className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
                   <span className="font-mono">{repoKey(r.source_repo_id)}</span>
                   <ArrowRight className="size-3" />
                   <span className="font-mono">{repoKey(r.target_repo_id)}</span>
-                  {r.max_cve_severity && <span>· max CVE {r.max_cve_severity}</span>}
-                  {r.min_health_score != null && <span>· health ≥ {r.min_health_score}</span>}
+                  {r.max_cve_severity && <span>· 最大 CVE {r.max_cve_severity}</span>}
+                  {r.min_health_score != null && <span>· 健康度 ≥ {r.min_health_score}</span>}
                 </p>
               </div>
               <div className="flex items-center gap-1">
-                <Button variant="ghost" size="icon-sm" aria-label={`Evaluate ${r.name}`} disabled={evaluateMutation.isPending} onClick={() => evaluateMutation.mutate(r.id)}>
+                <Button variant="ghost" size="icon-sm" aria-label={`评估 ${r.name}`} disabled={evaluateMutation.isPending} onClick={() => evaluateMutation.mutate(r.id)}>
                   <FlaskConical className="size-4" />
                 </Button>
-                <Button variant="ghost" size="icon-sm" aria-label={`Edit ${r.name}`} onClick={() => openEdit(r)}>
+                <Button variant="ghost" size="icon-sm" aria-label={`编辑 ${r.name}`} onClick={() => openEdit(r)}>
                   <Pencil className="size-4" />
                 </Button>
-                <Button variant="ghost" size="icon-sm" aria-label={`Delete ${r.name}`} onClick={() => setDeleteTarget(r)}>
+                <Button variant="ghost" size="icon-sm" aria-label={`删除 ${r.name}`} onClick={() => setDeleteTarget(r)}>
                   <Trash2 className="size-4 text-destructive" />
                 </Button>
               </div>
@@ -300,24 +300,24 @@ export default function PromotionRulesPage() {
         <DialogContent className="max-h-[85vh] overflow-y-auto">
           <form onSubmit={submit}>
             <DialogHeader>
-              <DialogTitle>{editing ? "Edit promotion rule" : "New promotion rule"}</DialogTitle>
+              <DialogTitle>{editing ? "编辑晋升规则" : "新建晋升规则"}</DialogTitle>
               <DialogDescription>
-                Artifacts in the source repo are promoted to the target repo when they meet every gate below.
+                当源仓库中的制品满足以下所有门控条件时，将被晋升到目标仓库。
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-1.5">
-                <Label htmlFor="pr-name">Name</Label>
+                <Label htmlFor="pr-name">名称</Label>
                 <Input id="pr-name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="promote-stable" />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label htmlFor="pr-source">Source (staging)</Label>
+                  <Label htmlFor="pr-source">源（暂存）</Label>
                   {editing ? (
                     <Input id="pr-source" value={repoKey(form.source_repo_id)} disabled />
                   ) : (
                     <Select value={form.source_repo_id} onValueChange={(v) => setForm((f) => ({ ...f, source_repo_id: v }))}>
-                      <SelectTrigger id="pr-source" aria-label="Source repository"><SelectValue placeholder="Select source" /></SelectTrigger>
+                      <SelectTrigger id="pr-source" aria-label="源仓库"><SelectValue placeholder="选择源" /></SelectTrigger>
                       <SelectContent>
                         {repoOptions.map((r) => <SelectItem key={r.id} value={r.id}>{r.key}</SelectItem>)}
                       </SelectContent>
@@ -325,12 +325,12 @@ export default function PromotionRulesPage() {
                   )}
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="pr-target">Target (release)</Label>
+                  <Label htmlFor="pr-target">目标（发布）</Label>
                   {editing ? (
                     <Input id="pr-target" value={repoKey(form.target_repo_id)} disabled />
                   ) : (
                     <Select value={form.target_repo_id} onValueChange={(v) => setForm((f) => ({ ...f, target_repo_id: v }))}>
-                      <SelectTrigger id="pr-target" aria-label="Target repository"><SelectValue placeholder="Select target" /></SelectTrigger>
+                      <SelectTrigger id="pr-target" aria-label="目标仓库"><SelectValue placeholder="选择目标" /></SelectTrigger>
                       <SelectContent>
                         {repoOptions.map((r) => <SelectItem key={r.id} value={r.id}>{r.key}</SelectItem>)}
                       </SelectContent>
@@ -340,51 +340,51 @@ export default function PromotionRulesPage() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label htmlFor="pr-cve">Max CVE severity</Label>
+                  <Label htmlFor="pr-cve">最大 CVE 严重程度</Label>
                   <Select value={form.max_cve_severity} onValueChange={(v) => setForm((f) => ({ ...f, max_cve_severity: v }))}>
-                    <SelectTrigger id="pr-cve" aria-label="Max CVE severity"><SelectValue /></SelectTrigger>
+                    <SelectTrigger id="pr-cve" aria-label="最大 CVE 严重程度"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       {SEVERITIES.map((s) => <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="pr-health">Min health score</Label>
+                  <Label htmlFor="pr-health">最低健康度</Label>
                   <Input id="pr-health" type="number" min={0} value={form.min_health_score ?? ""} onChange={(e) => setForm((f) => ({ ...f, min_health_score: numField(e.target.value) }))} />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label htmlFor="pr-staging">Min staging hours</Label>
+                  <Label htmlFor="pr-staging">最短暂存时长（小时）</Label>
                   <Input id="pr-staging" type="number" min={0} value={form.min_staging_hours ?? ""} onChange={(e) => setForm((f) => ({ ...f, min_staging_hours: numField(e.target.value) }))} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="pr-age">Max artifact age (days)</Label>
+                  <Label htmlFor="pr-age">制品最大年龄（天）</Label>
                   <Input id="pr-age" type="number" min={0} value={form.max_artifact_age_days ?? ""} onChange={(e) => setForm((f) => ({ ...f, max_artifact_age_days: numField(e.target.value) }))} />
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="pr-licenses">Allowed licenses (comma-separated, blank = any)</Label>
+                <Label htmlFor="pr-licenses">允许的许可证（逗号分隔，留空 = 任意）</Label>
                 <Input id="pr-licenses" value={form.allowed_licenses} onChange={(e) => setForm((f) => ({ ...f, allowed_licenses: e.target.value }))} placeholder="MIT, Apache-2.0, BSD-3-Clause" />
               </div>
               <div className="flex items-center justify-between rounded-md border p-3">
-                <Label htmlFor="pr-auto">Auto-promote when gates pass</Label>
+                <Label htmlFor="pr-auto">门控通过时自动晋升</Label>
                 <Switch id="pr-auto" checked={form.auto_promote} onCheckedChange={(v) => setForm((f) => ({ ...f, auto_promote: v }))} />
               </div>
               <div className="flex items-center justify-between rounded-md border p-3">
-                <Label htmlFor="pr-sig">Require signature</Label>
+                <Label htmlFor="pr-sig">要求签名</Label>
                 <Switch id="pr-sig" checked={form.require_signature} onCheckedChange={(v) => setForm((f) => ({ ...f, require_signature: v }))} />
               </div>
               <div className="flex items-center justify-between rounded-md border p-3">
-                <Label htmlFor="pr-enabled">Enabled</Label>
+                <Label htmlFor="pr-enabled">已启用</Label>
                 <Switch id="pr-enabled" checked={form.is_enabled} onCheckedChange={(v) => setForm((f) => ({ ...f, is_enabled: v }))} />
               </div>
             </div>
             <DialogFooter>
-              <Button type="button" variant="ghost" onClick={() => setDialogOpen(false)}>Cancel</Button>
+              <Button type="button" variant="ghost" onClick={() => setDialogOpen(false)}>取消</Button>
               <Button type="submit" disabled={!canSave}>
                 {saveMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : null}
-                {editing ? "Save" : "Create"}
+                {editing ? "保存" : "创建"}
               </Button>
             </DialogFooter>
           </form>
@@ -394,9 +394,9 @@ export default function PromotionRulesPage() {
       <ConfirmDialog
         open={deleteTarget !== null}
         onOpenChange={(o) => !o && setDeleteTarget(null)}
-        title="Delete promotion rule?"
-        description={`"${deleteTarget?.name ?? ""}" will be permanently deleted. Promotions stop following this rule.`}
-        confirmText="Delete"
+        title="删除晋升规则？"
+        description={`"${deleteTarget?.name ?? ""}"将被永久删除。晋升将不再遵循此规则。`}
+        confirmText="删除"
         danger
         loading={deleteMutation.isPending}
         onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}

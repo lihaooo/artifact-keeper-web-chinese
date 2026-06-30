@@ -148,9 +148,9 @@ export function isValidCidr(value: string): boolean {
 /** Validate a create request, returning an error message or null if valid. */
 export function validateExemption(req: CreateExemptionRequest): string | null {
   const value = req.value.trim();
-  if (!value) return "Value is required";
+  if (!value) return "请输入值";
   if (req.type === "cidr" && !isValidCidr(value)) {
-    return "Enter a valid CIDR range, for example 10.0.0.0/8 or 2001:db8::/32";
+    return "请输入有效的 CIDR 范围，例如 10.0.0.0/8 或 2001:db8::/32";
   }
   return null;
 }
